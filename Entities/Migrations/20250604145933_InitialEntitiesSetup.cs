@@ -252,18 +252,19 @@ namespace Entities.Migrations
                         column: x => x.CreatedBy,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_Vehicles_AspNetUsers_IDFK_Owner",
                         column: x => x.IDFK_Owner,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_Vehicles_AspNetUsers_ModifiedBy",
                         column: x => x.ModifiedBy,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -385,24 +386,25 @@ namespace Entities.Migrations
                         column: x => x.CreatedBy,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_VehicleChangeRequests_AspNetUsers_IDFK_Requester",
                         column: x => x.IDFK_Requester,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_VehicleChangeRequests_AspNetUsers_ModifiedBy",
                         column: x => x.ModifiedBy,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_VehicleChangeRequests_Auto_Vehicles_IDFK_Vehicle",
                         column: x => x.IDFK_Vehicle,
                         principalTable: "Auto_Vehicles",
                         principalColumn: "IDPK_Vehicle",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -430,24 +432,25 @@ namespace Entities.Migrations
                         column: x => x.CreatedBy,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_Inspections_AspNetUsers_IDFK_Specialist",
                         column: x => x.IDFK_Specialist,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_Inspections_AspNetUsers_ModifiedBy",
                         column: x => x.ModifiedBy,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Auto_Inspections_Auto_InspectionRequests_IDFK_InspectionRequest",
                         column: x => x.IDFK_InspectionRequest,
                         principalTable: "Auto_InspectionRequests",
                         principalColumn: "IDPK_InspectionRequest",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

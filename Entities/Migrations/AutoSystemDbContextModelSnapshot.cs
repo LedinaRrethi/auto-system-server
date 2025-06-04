@@ -1001,24 +1001,25 @@ namespace Entities.Migrations
                     b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_InspectionRequests", "Request")
                         .WithMany()
                         .HasForeignKey("IDFK_InspectionRequest")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "Specialist")
                         .WithMany()
                         .HasForeignKey("IDFK_Specialist")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
                         .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1059,24 +1060,25 @@ namespace Entities.Migrations
                     b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "Requester")
                         .WithMany()
                         .HasForeignKey("IDFK_Requester")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
                         .WithMany()
                         .HasForeignKey("IDFK_Vehicle")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
                         .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1092,18 +1094,19 @@ namespace Entities.Migrations
                     b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "Owner")
                         .WithMany()
                         .HasForeignKey("IDFK_Owner")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
                         .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 

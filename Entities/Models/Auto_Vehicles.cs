@@ -16,7 +16,7 @@ namespace Entities.Models
         public Guid IDPK_Vehicle { get; set; }
 
         [Required]
-        public string IDFK_Owner { get; set; }
+        public string IDFK_Owner { get; set; } = null!;
 
         [Required]
         [MaxLength(20)]
