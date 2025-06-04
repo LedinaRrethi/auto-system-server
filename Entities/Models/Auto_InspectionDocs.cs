@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
-    public class Auto_InspectionDocs
+    public partial class Auto_InspectionDocs
     {
         [Key]
         public Guid IDPK_InspectionDoc { get; set; }
@@ -31,7 +31,7 @@ namespace Entities.Models
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public Guid CreatedBy { get; set; }
+        public required string CreatedBy { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
@@ -39,7 +39,7 @@ namespace Entities.Models
         [MaxLength(46)]
         public string? CreatedIp { get; set; }
 
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
         [MaxLength(46)]

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
-    public class Auto_Directorates
+    public partial class Auto_Directorates
     {
         [Key]
         public Guid IDPK_Directory { get; set; }
@@ -20,18 +20,19 @@ namespace Entities.Models
         [Required]
         public string Address { get; set; } = null!;
 
+        public virtual ICollection<Auto_Users>? Specialists { get; set; } = new List<Auto_Users>();
 
         // Audit
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public Guid CreatedBy { get; set; }
+        public required string CreatedBy { get; set; } 
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)] 
         public string? CreatedIp { get; set; }
 
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
         [MaxLength(46)] 

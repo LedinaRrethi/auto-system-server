@@ -6,16 +6,17 @@ using System.Threading.Tasks;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Helpers.Enumerations;
 
 namespace Entities.Models
 {
-    public class Auto_Vehicles
+    public partial class Auto_Vehicles
     {
         [Key]
         public Guid IDPK_Vehicle { get; set; }
 
         [Required]
-        public Guid IDFK_Owner { get; set; }
+        public string IDFK_Owner { get; set; }
 
         [Required]
         [MaxLength(20)]
@@ -36,7 +37,7 @@ namespace Entities.Models
         public string ChassisNumber { get; set; } = null!;
 
         [Required]
-        public byte Status { get; set; }  // 0 = pending, 1 = approved, 2 = rejected
+        public VehicleStatus Status { get; set; } = VehicleStatus.Pending;
 
         [MaxLength(500)]
         public string? ApprovalComment { get; set; }
@@ -45,15 +46,15 @@ namespace Entities.Models
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public Guid CreatedBy { get; set; }
+        public required string CreatedBy { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)]
-        public string CreatedIp { get; set; }
+        public string? CreatedIp { get; set; }
 
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
         [MaxLength(46)]
@@ -69,4 +70,5 @@ namespace Entities.Models
         [ForeignKey("ModifiedBy")]
         public virtual Auto_Users? ModifiedByUser { get; set; }
     }
+
 }

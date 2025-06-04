@@ -10,25 +10,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
-    public class Auto_Inspections
+    public partial class Auto_Inspections
     {
         [Key]
         public Guid IDPK_Inspection { get; set; }
         public Guid IDFK_InspectionRequest { get; set; }
-        public Guid IDFK_Specialist { get; set; }
-        public bool IsPassed { get; set; }
+        public string IDFK_Specialist { get; set; }
+        public bool IsPassed { get; set; } = false;
         public string? Comment { get; set; }
 
         //Audit
         public Byte Invalidated { get; set; }
 
         [Required]
-        public Guid CreatedBy { get; set; }
+        public required string CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
 
         [MaxLength(46)]
         public string? CreatedIp { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
         [MaxLength(46)]

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Entities.Models;
 
 namespace Entities.Models
 {
-    public class Auto_Fines
+    public partial class Auto_Fines
     {
         [Key]
         public Guid IDPK_Fine { get; set; }
@@ -16,7 +17,7 @@ namespace Entities.Models
         public Guid? IDFK_Vehicle { get; set; } // Nëse makina është e regjistruar
 
         [Required]
-        public Guid IDFK_FineRecipient { get; set; } // Lidhet me Auto_FineRecipients
+        public Guid IDFK_FineRecipient { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
@@ -32,7 +33,7 @@ namespace Entities.Models
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public Guid CreatedBy { get; set; }
+        public required string CreatedBy { get; set; } // Polici që krijon gjobën
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
@@ -40,7 +41,7 @@ namespace Entities.Models
         [MaxLength(46)]
         public string? CreatedIp { get; set; }
 
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
         [MaxLength(46)]
@@ -54,7 +55,7 @@ namespace Entities.Models
         public virtual Auto_FineRecipients FineRecipient { get; set; } = null!;
 
         [ForeignKey("CreatedBy")]
-        public virtual Auto_Users CreatedByUser { get; set; } = null!;
+        public virtual Auto_Users PoliceOfficer { get; set; } = null!; // Emri saktë sipas funksionit
 
         [ForeignKey("ModifiedBy")]
         public virtual Auto_Users? ModifiedByUser { get; set; }

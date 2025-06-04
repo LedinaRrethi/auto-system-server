@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Helpers.Enumerations;
 
 namespace Entities.Models
 {
-    public class Auto_InspectionRequests
+    public partial class Auto_InspectionRequests
     {
         [Key]
         public Guid IDPK_InspectionRequest { get; set; }
@@ -20,7 +21,7 @@ namespace Entities.Models
         public Guid IDFK_Directory { get; set; }
 
         [Required]
-        public DateTime RequestedDate { get; set; }
+        public DateTime RequestedDate { get; set; } = DateTime.UtcNow;
 
         public InspectionStatus Status { get; set; } = InspectionStatus.Pending;
 
@@ -30,12 +31,12 @@ namespace Entities.Models
         public byte Invalidated { get; set; } = 0;
 
         [Required] 
-        public Guid CreatedBy { get; set; }
+        public required string CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)] 
         public string? CreatedIp { get; set; }
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
         [MaxLength(46)] 
@@ -55,13 +56,6 @@ namespace Entities.Models
 
         [ForeignKey("ModifiedBy")]
         public virtual Auto_Users? ModifiedByUser { get; set; }
-    }
-
-    public enum InspectionStatus : byte
-    {
-        Pending = 0,
-        Approved = 1,
-        Rejected = 2
     }
 
 }

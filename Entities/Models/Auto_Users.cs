@@ -5,18 +5,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
-    public class Auto_Users : IdentityUser
+    public partial class Auto_Users : IdentityUser
     {
         [Required]
         [MaxLength(50)]
-        public string FirstName { get; set; }
-
-        [MaxLength(50)]
-        public string? FatherName { get; set; }
+        public string FirstName { get; set; } = null!;
 
         [Required]
         [MaxLength(50)]
-        public string LastName { get; set; }
+        public string FatherName { get; set; } = null!;
+
+        [Required]
+        [MaxLength(50)]
+        public string LastName { get; set; } = null!;
+
+        [Required]
+        public bool IsSpecialist { get; set; } = false;
 
         [MaxLength(50)]
         public string? SpecialistNumber { get; set; }
@@ -28,14 +32,16 @@ namespace Entities.Models
         // Audit Fields
         public Byte Invalidated { get; set; } = 0;
 
-        public Guid? CreatedBy { get; set; }
+        [Required]
+        public required string CreatedBy { get; set; }
 
+        [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)]
         public string? CreatedIp { get; set; }
 
-        public Guid? ModifiedBy { get; set; }
+        public string? ModifiedBy { get; set; }
 
         public DateTime? ModifiedOn { get; set; }
 
