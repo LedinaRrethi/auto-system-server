@@ -11,8 +11,9 @@ namespace Domain.DI
         public DomainRegistry()
         {
             IncludeRegistry<DomainUnitOfWorkRegistry>();
+            For<IAuthDomain>().Use<AuthDomain>();
 
-           
+
             AddRepositoryRegistries();
             AddHttpContextRegistries();
         }

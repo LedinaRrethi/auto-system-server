@@ -32,8 +32,8 @@ namespace Entities.Models
         // Audit Fields
         public Byte Invalidated { get; set; } = 0;
 
-        [Required]
-        public required string CreatedBy { get; set; }
+        [Column("CreatedBy")]
+        public string? CreatedBy { get; set; }
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
@@ -51,11 +51,5 @@ namespace Entities.Models
         // Relationships 
         [ForeignKey("IDFK_Directory")]
         public virtual Auto_Directorates? Directorate { get; set; }
-
-        [ForeignKey("CreatedBy")]
-        public virtual Auto_Users? Creator { get; set; }
-
-        [ForeignKey("ModifiedBy")]
-        public virtual Auto_Users? Modifier { get; set; }
     }
 }

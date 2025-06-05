@@ -1,6 +1,7 @@
 ﻿using Entities.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Helpers.Enumerations;
 
 namespace Entities.Models
 {
@@ -10,7 +11,7 @@ namespace Entities.Models
         public Guid IDPK_Notification { get; set; }
 
         [Required]
-        public string IDFK_Receiver { get; set; }
+        public required string IDFK_Receiver { get; set; }
 
         [MaxLength(50)]
         public string? Title { get; set; }
@@ -36,28 +37,13 @@ namespace Entities.Models
         [MaxLength(46)]
         public string? CreatedIp { get; set; }
 
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedOn { get; set; }
-
-        [MaxLength(46)]
-        public string? ModifiedIp { get; set; }
-
         // Relationships
-        [ForeignKey("FKID_Receiver")]
+        [ForeignKey("IDFK_Receiver")]
         public virtual Auto_Users Receiver { get; set; } = null!;
 
         [ForeignKey("CreatedBy")]
         public virtual Auto_Users Sender { get; set; } = null!;
 
-        [ForeignKey("ModifiedBy")]
-        public virtual Auto_Users? ModifiedByUser { get; set; }
-    }
-
-    public enum NotificationType : byte
-    {
-        FineIssued = 0,
-        InspectionResult = 1,
-        General = 2
     }
 
 }

@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Helpers.Enumerations;
@@ -20,31 +14,30 @@ namespace Entities.Models
         public Guid IDFK_Vehicle { get; set; }
 
         [Required]
-        public string IDFK_Requester { get; set; }
+        public string IDFK_Requester { get; set; } = null!;
 
         [Required]
-        public ChangeRequestType RequestType { get; set; } 
+        public ChangeRequestType RequestType { get; set; }
 
         [Required]
-        public string RequestDataJson { get; set; } = null!; // vlerat e reja në JSON
+        public string RequestDataJson { get; set; } = null!;
 
         [Required]
-        public string CurrentDataSnapshotJson { get; set; } = null!; // vlerat ekzistuese në JSON
+        public string CurrentDataSnapshotJson { get; set; } = null!;
 
-        public string? RequesterComment { get; set; } 
+        public string? RequesterComment { get; set; }
 
-        public ChangeRequestStatus Status { get; set; } = 0; 
+        public ChangeRequestStatus Status { get; set; } = ChangeRequestStatus.Pending;
 
-        public string? AdminComment { get; set; } 
-
+        [MaxLength(500)]
+        public string? AdminComment { get; set; }
 
         // Audit Fields
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public required string CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
-        [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)]

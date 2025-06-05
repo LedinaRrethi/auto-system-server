@@ -16,7 +16,7 @@ namespace Domain.Mappings
                 .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(_ => false))
                 .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(_ => "system"))
-                .ForMember(dest => dest.Invalidated, opt => opt.MapFrom(_ => (byte)0))
+                .ForMember(dest => dest.Invalidated, opt => opt.MapFrom(_ => (byte)1))
                 .ForMember(dest => dest.PhoneNumberConfirmed, opt => opt.Ignore())
                 .ForMember(dest => dest.EmailConfirmed, opt => opt.Ignore())
                 .ForMember(dest => dest.SecurityStamp, opt => opt.Ignore())

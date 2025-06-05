@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Helpers.Enumerations;
@@ -20,7 +15,7 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(20)]
-        public string PlateNumber { get; set; } = null!; // unique constraint in DbContext
+        public string PlateNumber { get; set; } = null!;
 
         [Required]
         [MaxLength(50)]
@@ -42,13 +37,11 @@ namespace Entities.Models
         [MaxLength(500)]
         public string? ApprovalComment { get; set; }
 
-        // Audit Fields
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public required string CreatedBy { get; set; }
+        public string CreatedBy { get; set; } = null!;
 
-        [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)]
@@ -69,6 +62,8 @@ namespace Entities.Models
 
         [ForeignKey("ModifiedBy")]
         public virtual Auto_Users? ModifiedByUser { get; set; }
-    }
 
+        [InverseProperty(nameof(Auto_VehicleChangeRequests.Vehicle))]
+        public virtual ICollection<Auto_VehicleChangeRequests> VehicleChangeRequests { get; set; } = new List<Auto_VehicleChangeRequests>();
+    }
 }

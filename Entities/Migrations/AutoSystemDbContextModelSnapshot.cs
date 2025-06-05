@@ -23,1153 +23,1120 @@ namespace Entities.Migrations
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Entities.Models.AutoNotification", b =>
-                {
-                    b.Property<Guid>("IDPK_Notification")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_Notification")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("FKID_Receiver")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("IDFK_Receiver")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("IDFK_Receiver")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<bool>("IsSeen")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsSeen")
-                        .HasColumnType("bit");
+                b.Property<string>("Message")
+                    .HasMaxLength(1000)
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Message")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("Title")
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<byte>("Type")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.HasKey("IDPK_Notification");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.HasIndex("CreatedBy");
 
-                    b.Property<string>("Title")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.HasIndex("IDFK_Receiver");
 
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("IDPK_Notification");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("FKID_Receiver");
-
-                    b.HasIndex("ModifiedBy");
-
-                    b.ToTable("Auto_Notifications");
-                });
+                b.ToTable("Auto_Notifications");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Directorates", b =>
-                {
-                    b.Property<Guid>("IDPK_Directory")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_Directory")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Address")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DirectoryName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("DirectoryName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("IDPK_Directory");
+                b.HasKey("IDPK_Directory");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("DirectoryName")
-                        .IsUnique();
+                b.HasIndex("DirectoryName")
+                    .IsUnique();
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Directorates");
-                });
+                b.ToTable("Auto_Directorates");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_FineRecipients", b =>
-                {
-                    b.Property<Guid>("IDPK_FineRecipient")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_FineRecipient")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("FatherName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("FatherName")
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("FirstName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("IDFK_User")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("IDFK_User")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("LastName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("PersonalId")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                b.Property<string>("PersonalId")
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                b.Property<string>("PhoneNumber")
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("PlateNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                b.Property<string>("PlateNumber")
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("IDPK_FineRecipient");
+                b.HasKey("IDPK_FineRecipient");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_User");
+                b.HasIndex("IDFK_User");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.HasIndex("PersonalId")
-                        .IsUnique()
-                        .HasFilter("[PersonalId] IS NOT NULL");
+                b.HasIndex("PersonalId")
+                    .IsUnique()
+                    .HasFilter("[PersonalId] IS NOT NULL");
 
-                    b.HasIndex("PlateNumber");
+                b.HasIndex("PlateNumber");
 
-                    b.ToTable("Auto_FineRecipients");
-                });
+                b.ToTable("Auto_FineRecipients");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Fines", b =>
-                {
-                    b.Property<Guid>("IDPK_Fine")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_Fine")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<decimal>("FineAmount")
-                        .HasColumnType("decimal(10,2)");
+                b.Property<decimal>("FineAmount")
+                    .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateTime>("FineDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("FineDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("FineReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                b.Property<string>("FineReason")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid>("IDFK_FineRecipient")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("IDFK_FineRecipient")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("IDFK_Vehicle")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("IDFK_Vehicle")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("IDPK_Fine");
+                b.HasKey("IDPK_Fine");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_FineRecipient");
+                b.HasIndex("IDFK_FineRecipient");
 
-                    b.HasIndex("IDFK_Vehicle");
+                b.HasIndex("IDFK_Vehicle");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Fines");
-                });
+                b.ToTable("Auto_Fines");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionDocs", b =>
-                {
-                    b.Property<Guid>("IDPK_InspectionDoc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_InspectionDoc")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("DocumentName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("DocumentName")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("FileBase64")
-                        .IsRequired()
-                        .HasMaxLength(7000000)
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FileBase64")
+                    .IsRequired()
+                    .HasMaxLength(7000000)
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("IDFK_InspectionRequest")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("IDFK_InspectionRequest")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("IDPK_InspectionDoc");
+                b.HasKey("IDPK_InspectionDoc");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_InspectionRequest");
+                b.HasIndex("IDFK_InspectionRequest");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_InspectionDocs");
-                });
+                b.ToTable("Auto_InspectionDocs");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionRequests", b =>
-                {
-                    b.Property<Guid>("IDPK_InspectionRequest")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_InspectionRequest")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IDFK_Directory")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("IDFK_Directory")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IDFK_Vehicle")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("IDFK_Vehicle")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("RequestedDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("RequestedDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<byte>("Status")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Status")
+                    .HasColumnType("tinyint");
 
-                    b.HasKey("IDPK_InspectionRequest");
+                b.HasKey("IDPK_InspectionRequest");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_Directory");
+                b.HasIndex("IDFK_Directory");
 
-                    b.HasIndex("IDFK_Vehicle");
+                b.HasIndex("IDFK_Vehicle");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_InspectionRequests");
-                });
+                b.ToTable("Auto_InspectionRequests");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Inspections", b =>
-                {
-                    b.Property<Guid>("IDPK_Inspection")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_Inspection")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Comment")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IDFK_InspectionRequest")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("IDFK_InspectionRequest")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("IDFK_Specialist")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("IDFK_Specialist")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<bool>("IsPassed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                b.Property<bool>("IsPassed")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("bit")
+                    .HasDefaultValue(false);
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("IDPK_Inspection");
+                b.HasKey("IDPK_Inspection");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_InspectionRequest");
+                b.HasIndex("IDFK_InspectionRequest");
 
-                    b.HasIndex("IDFK_Specialist");
+                b.HasIndex("IDFK_Specialist");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Inspections");
-                });
+                b.ToTable("Auto_Inspections");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Users", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                b.Property<int>("AccessFailedCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .HasColumnType("nvarchar(max)")
+                    .HasColumnName("CreatedBy");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("EmailConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("FatherName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("FatherName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("FirstName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("IDFK_Directory")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("IDFK_Directory")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsApproved")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsSpecialist")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsSpecialist")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("LastName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("LockoutEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedEmail")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedUserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("PhoneNumberConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SecurityStamp")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SpecialistNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("SpecialistNumber")
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("TwoFactorEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("UserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("IDFK_Directory");
 
-                    b.HasIndex("IDFK_Directory");
+                b.HasIndex("NormalizedEmail")
+                    .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasDatabaseName("UserNameIndex")
+                    .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
+                b.ToTable("AspNetUsers", (string)null);
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_VehicleChangeRequests", b =>
-                {
-                    b.Property<Guid>("IDPK_ChangeRequest")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_ChangeRequest")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AdminComment")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AdminComment")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("CurrentDataSnapshotJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CurrentDataSnapshotJson")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IDFK_Requester")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("IDFK_Requester")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("IDFK_Vehicle")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("IDFK_Vehicle")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("RequestDataJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RequestDataJson")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("RequestType")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("RequestType")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("RequesterComment")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RequesterComment")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("Status")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Status")
+                    .HasColumnType("tinyint");
 
-                    b.HasKey("IDPK_ChangeRequest");
+                b.HasKey("IDPK_ChangeRequest");
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_Requester");
+                b.HasIndex("IDFK_Requester");
 
-                    b.HasIndex("IDFK_Vehicle");
+                b.HasIndex("IDFK_Vehicle");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_VehicleChangeRequests");
-                });
+                b.ToTable("Auto_VehicleChangeRequests");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Vehicles", b =>
-                {
-                    b.Property<Guid>("IDPK_Vehicle")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("IDPK_Vehicle")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApprovalComment")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                b.Property<string>("ApprovalComment")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("ChassisNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("ChassisNumber")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("Color")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("CreatedBy")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("CreatedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<byte>("DoorCount")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("DoorCount")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("IDFK_Owner")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("IDFK_Owner")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Invalidated")
+                    .HasColumnType("tinyint");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ModifiedBy")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
+                b.Property<string>("ModifiedIp")
+                    .HasMaxLength(46)
+                    .HasColumnType("nvarchar(46)");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ModifiedOn")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("PlateNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                b.Property<string>("PlateNumber")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<byte>("SeatCount")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("SeatCount")
+                    .HasColumnType("tinyint");
 
-                    b.Property<byte>("Status")
-                        .HasColumnType("tinyint");
+                b.Property<byte>("Status")
+                    .HasColumnType("tinyint");
 
-                    b.HasKey("IDPK_Vehicle");
+                b.HasKey("IDPK_Vehicle");
 
-                    b.HasIndex("ChassisNumber")
-                        .IsUnique();
+                b.HasIndex("ChassisNumber")
+                    .IsUnique();
 
-                    b.HasIndex("CreatedBy");
+                b.HasIndex("CreatedBy");
 
-                    b.HasIndex("IDFK_Owner");
+                b.HasIndex("IDFK_Owner");
 
-                    b.HasIndex("ModifiedBy");
+                b.HasIndex("ModifiedBy");
 
-                    b.HasIndex("PlateNumber")
-                        .IsUnique();
+                b.HasIndex("PlateNumber")
+                    .IsUnique();
 
-                    b.ToTable("Auto_Vehicles");
-                });
+                b.ToTable("Auto_Vehicles");
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Name")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                b.HasIndex("NormalizedName")
+                    .IsUnique()
+                    .HasDatabaseName("RoleNameIndex")
+                    .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
-                });
+                b.ToTable("AspNetRoles", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("RoleId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
+                b.ToTable("AspNetRoleClaims", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                b.ToTable("AspNetUserClaims", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ProviderKey")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProviderDisplayName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
+                b.ToTable("AspNetUserLogins", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("RoleId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId", "RoleId");
+                b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
+                b.ToTable("AspNetUserRoles", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
+                b.ToTable("AspNetUserTokens", (string)null);
+            });
 
             modelBuilder.Entity("Entities.Models.AutoNotification", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "Sender")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "Sender")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("FKID_Receiver");
+                b.HasOne("Entities.Models.Auto_Users", "Receiver")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Receiver")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                b.Navigation("Receiver");
 
-                    b.Navigation("ModifiedByUser");
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
+                b.Navigation("Sender");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Directorates", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CreatedByUser");
+                b.Navigation("CreatedByUser");
 
-                    b.Navigation("ModifiedByUser");
-                });
+                b.Navigation("ModifiedByUser");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_FineRecipients", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "User")
-                        .WithMany()
-                        .HasForeignKey("IDFK_User");
+                b.HasOne("Entities.Models.Auto_Users", "User")
+                    .WithMany()
+                    .HasForeignKey("IDFK_User");
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CreatedByUser");
+                b.Navigation("CreatedByUser");
 
-                    b.Navigation("ModifiedByUser");
+                b.Navigation("ModifiedByUser");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Fines", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "PoliceOfficer")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "PoliceOfficer")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_FineRecipients", "FineRecipient")
-                        .WithMany()
-                        .HasForeignKey("IDFK_FineRecipient")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_FineRecipients", "FineRecipient")
+                    .WithMany()
+                    .HasForeignKey("IDFK_FineRecipient")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Vehicle");
+                b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Vehicle");
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy");
 
-                    b.Navigation("FineRecipient");
+                b.Navigation("FineRecipient");
 
-                    b.Navigation("ModifiedByUser");
+                b.Navigation("ModifiedByUser");
 
-                    b.Navigation("PoliceOfficer");
+                b.Navigation("PoliceOfficer");
 
-                    b.Navigation("Vehicle");
-                });
+                b.Navigation("Vehicle");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionDocs", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Inspections", "Inspection")
-                        .WithMany()
-                        .HasForeignKey("IDFK_InspectionRequest")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Inspections", "Inspection")
+                    .WithMany()
+                    .HasForeignKey("IDFK_InspectionRequest")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CreatedByUser");
+                b.Navigation("CreatedByUser");
 
-                    b.Navigation("Inspection");
+                b.Navigation("Inspection");
 
-                    b.Navigation("ModifiedByUser");
-                });
+                b.Navigation("ModifiedByUser");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionRequests", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "Requester")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "Requester")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Directorates", "Directory")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Directory")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Directorates", "Directory")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Directory")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Vehicle")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Vehicle")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy");
 
-                    b.Navigation("Directory");
+                b.Navigation("Directory");
 
-                    b.Navigation("ModifiedByUser");
+                b.Navigation("ModifiedByUser");
 
-                    b.Navigation("Requester");
+                b.Navigation("Requester");
 
-                    b.Navigation("Vehicle");
-                });
+                b.Navigation("Vehicle");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Inspections", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_InspectionRequests", "Request")
-                        .WithMany()
-                        .HasForeignKey("IDFK_InspectionRequest")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_InspectionRequests", "Request")
+                    .WithMany()
+                    .HasForeignKey("IDFK_InspectionRequest")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "Specialist")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Specialist")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Users", "Specialist")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Specialist")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CreatedByUser");
+                b.Navigation("CreatedByUser");
 
-                    b.Navigation("ModifiedByUser");
+                b.Navigation("ModifiedByUser");
 
-                    b.Navigation("Request");
+                b.Navigation("Request");
 
-                    b.Navigation("Specialist");
-                });
+                b.Navigation("Specialist");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Users", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Directorates", "Directorate")
+                    .WithMany("Specialists")
+                    .HasForeignKey("IDFK_Directory")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Entities.Models.Auto_Directorates", "Directorate")
-                        .WithMany("Specialists")
-                        .HasForeignKey("IDFK_Directory")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Entities.Models.Auto_Users", "Modifier")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Creator");
-
-                    b.Navigation("Directorate");
-
-                    b.Navigation("Modifier");
-                });
+                b.Navigation("Directorate");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_VehicleChangeRequests", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "Requester")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Requester")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Users", "Requester")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Requester")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Vehicle")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
+                    .WithMany("VehicleChangeRequests")
+                    .HasForeignKey("IDFK_Vehicle")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CreatedByUser");
+                b.Navigation("CreatedByUser");
 
-                    b.Navigation("ModifiedByUser");
+                b.Navigation("ModifiedByUser");
 
-                    b.Navigation("Requester");
+                b.Navigation("Requester");
 
-                    b.Navigation("Vehicle");
-                });
+                b.Navigation("Vehicle");
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Vehicles", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
+                    .WithMany()
+                    .HasForeignKey("CreatedBy")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "Owner")
-                        .WithMany()
-                        .HasForeignKey("IDFK_Owner")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("Entities.Models.Auto_Users", "Owner")
+                    .WithMany()
+                    .HasForeignKey("IDFK_Owner")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
+                    .WithMany()
+                    .HasForeignKey("ModifiedBy")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CreatedByUser");
+                b.Navigation("CreatedByUser");
 
-                    b.Navigation("ModifiedByUser");
+                b.Navigation("ModifiedByUser");
 
-                    b.Navigation("Owner");
-                });
+                b.Navigation("Owner");
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("Entities.Models.Auto_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("Entities.Models.Auto_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("Entities.Models.Auto_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("Entities.Models.Auto_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("Entities.Models.Auto_Users", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Entities.Models.Auto_Directorates", b =>
-                {
-                    b.Navigation("Specialists");
-                });
+            {
+                b.Navigation("Specialists");
+            });
+
+            modelBuilder.Entity("Entities.Models.Auto_Vehicles", b =>
+            {
+                b.Navigation("VehicleChangeRequests");
+            });
 #pragma warning restore 612, 618
         }
     }

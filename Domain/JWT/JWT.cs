@@ -1,50 +1,81 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Entities.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Entities.Models;
 
-namespace Domain.JWT
+public class JWT
 {
-    public class JWT
+    private readonly IConfiguration _config;
+    public JWT(IConfiguration config)
     {
-        private readonly IConfiguration _config;
+        _config = config;
+    }
 
-        public JWT(IConfiguration config)
+    public string CreateToken(Auto_Users user, IList<string> roles)
+    {
+        var claims = new List<Claim>
         {
-            _config = config;
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("FullName", $"{user.FirstName} {user.LastName}")
+        };
+
+        foreach (var role in roles)
+            claims.Add(new Claim(ClaimTypes.Role, role));
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+        var token = new JwtSecurityToken(
+            issuer: _config["JWT:Issuer"],
+            audience: _config["JWT:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public string RefreshToken(string expiredToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var tokenValidationParams = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false
+        };
+
+        var principal = tokenHandler.ValidateToken(expiredToken, tokenValidationParams, out var validatedToken);
+
+        if (!(validatedToken is JwtSecurityToken jwtToken) ||
+            !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid token");
         }
 
-        public string CreateToken(Auto_Users user, IList<string> roles)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim("IsSpecialist", user.IsSpecialist.ToString()),
-                new Claim("CreatedBy", user.CreatedBy),
-                new Claim("CreatedOn", user.CreatedOn.ToString("yyyy-MM-ddTHH:mm:ss"))
-            };
+        return CreateToken(principal.Claims);
+    }
 
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+    private string CreateToken(IEnumerable<Claim> claims)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+        var token = new JwtSecurityToken(
+            issuer: _config["JWT:Issuer"],
+            audience: _config["JWT:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
 
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(3),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

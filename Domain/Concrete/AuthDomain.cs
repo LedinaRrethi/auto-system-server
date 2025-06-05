@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Domain.JWT;
 using DTO.UserDTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
@@ -29,13 +28,18 @@ public class AuthDomain : IAuthDomain
 
     public async Task RegisterAsync(RegisterDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            throw new Exception("Email and password are required.");
+
         var existing = await _userManager.FindByEmailAsync(dto.Email);
         if (existing != null)
-            throw new Exception("User already exists");
+            throw new Exception("User already exists.");
 
         var user = _mapper.Map<Auto_Users>(dto);
         user.UserName = dto.Email;
         user.EmailConfirmed = true;
+        user.Invalidated = 1;
+        user.IsApproved = false;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
@@ -49,13 +53,19 @@ public class AuthDomain : IAuthDomain
 
     public async Task<string> LoginAsync(LoginDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            throw new Exception("Email and password are required.");
+
         var user = await _userManager.FindByEmailAsync(dto.Email);
         if (user == null || user.Invalidated == 1)
-            throw new Exception("Invalid credentials");
+            throw new Exception("Invalid credentials or user is blocked.");
+
+        if (!user.IsApproved)
+            throw new Exception("Your account is not yet approved by the administrator.");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
         if (!result.Succeeded)
-            throw new Exception("Invalid credentials");
+            throw new Exception("Invalid credentials.");
 
         var roles = await _userManager.GetRolesAsync(user);
         return _jwt.CreateToken(user, roles);

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Helpers.Enumerations;
@@ -25,26 +21,24 @@ namespace Entities.Models
 
         public InspectionStatus Status { get; set; } = InspectionStatus.Pending;
 
-
-
-        // Audit
+        // Audit Fields
         public byte Invalidated { get; set; } = 0;
 
-        [Required] 
-        public required string CreatedBy { get; set; }
+        [Required]
+        public string CreatedBy { get; set; } = null!;
+
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-        [MaxLength(46)] 
+        [MaxLength(46)]
         public string? CreatedIp { get; set; }
+
         public string? ModifiedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
 
-        [MaxLength(46)] 
+        [MaxLength(46)]
         public string? ModifiedIp { get; set; }
 
-
         // Relationships
-
         [ForeignKey("IDFK_Vehicle")]
         public virtual Auto_Vehicles Vehicle { get; set; } = null!;
 
@@ -57,5 +51,4 @@ namespace Entities.Models
         [ForeignKey("ModifiedBy")]
         public virtual Auto_Users? ModifiedByUser { get; set; }
     }
-
 }
