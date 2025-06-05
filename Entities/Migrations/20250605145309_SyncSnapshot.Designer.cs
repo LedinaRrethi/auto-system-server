@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entities.Migrations
 {
     [DbContext(typeof(AutoSystemDbContext))]
-    [Migration("20250604145933_InitialEntitiesSetup")]
-    partial class InitialEntitiesSetup
+    [Migration("20250605145309_SyncSnapshot")]
+    partial class SyncSnapshot
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,68 +24,6 @@ namespace Entities.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Entities.Models.AutoNotification", b =>
-                {
-                    b.Property<Guid>("IDPK_Notification")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CreatedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FKID_Receiver")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("IDFK_Receiver")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte>("Invalidated")
-                        .HasColumnType("tinyint");
-
-                    b.Property<bool>("IsSeen")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ModifiedIp")
-                        .HasMaxLength(46)
-                        .HasColumnType("nvarchar(46)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("IDPK_Notification");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("FKID_Receiver");
-
-                    b.HasIndex("ModifiedBy");
-
-                    b.ToTable("Auto_Notifications");
-                });
 
             modelBuilder.Entity("Entities.Models.Auto_Directorates", b =>
                 {
@@ -406,7 +344,6 @@ namespace Entities.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("IDFK_Specialist")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<byte>("Invalidated")
@@ -440,6 +377,96 @@ namespace Entities.Migrations
                     b.ToTable("Auto_Inspections");
                 });
 
+            modelBuilder.Entity("Entities.Models.Auto_Notifications", b =>
+                {
+                    b.Property<Guid>("IDPK_Notification")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatedIp")
+                        .HasMaxLength(46)
+                        .HasColumnType("nvarchar(46)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IDFK_Receiver")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte>("Invalidated")
+                        .HasColumnType("tinyint");
+
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("IDPK_Notification");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("IDFK_Receiver");
+
+                    b.ToTable("Auto_Notifications");
+                });
+
+            modelBuilder.Entity("Entities.Models.Auto_RefreshTokens", b =>
+                {
+                    b.Property<int>("IDPK_RefreshToken")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDPK_RefreshToken"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IDFK_User")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IDPK_RefreshToken");
+
+                    b.HasIndex("IDFK_User");
+
+                    b.ToTable("Auto_RefreshTokens");
+                });
+
             modelBuilder.Entity("Entities.Models.Auto_Users", b =>
                 {
                     b.Property<string>("Id")
@@ -453,8 +480,8 @@ namespace Entities.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CreatedBy");
 
                     b.Property<string>("CreatedIp")
                         .HasMaxLength(46)
@@ -504,7 +531,7 @@ namespace Entities.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ModifiedIp")
                         .HasMaxLength(46)
@@ -546,11 +573,7 @@ namespace Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedBy");
-
                     b.HasIndex("IDFK_Directory");
-
-                    b.HasIndex("ModifiedBy");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -570,7 +593,8 @@ namespace Entities.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AdminComment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -845,29 +869,6 @@ namespace Entities.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Entities.Models.AutoNotification", b =>
-                {
-                    b.HasOne("Entities.Models.Auto_Users", "Sender")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entities.Models.Auto_Users", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("FKID_Receiver");
-
-                    b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy");
-
-                    b.Navigation("ModifiedByUser");
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("Entities.Models.Auto_Directorates", b =>
                 {
                     b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
@@ -946,18 +947,19 @@ namespace Entities.Migrations
                     b.HasOne("Entities.Models.Auto_Users", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Inspections", "Inspection")
                         .WithMany()
                         .HasForeignKey("IDFK_InspectionRequest")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
                         .WithMany()
-                        .HasForeignKey("ModifiedBy");
+                        .HasForeignKey("ModifiedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1016,8 +1018,7 @@ namespace Entities.Migrations
                     b.HasOne("Entities.Models.Auto_Users", "Specialist")
                         .WithMany()
                         .HasForeignKey("IDFK_Specialist")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Entities.Models.Auto_Users", "ModifiedByUser")
                         .WithMany()
@@ -1033,29 +1034,44 @@ namespace Entities.Migrations
                     b.Navigation("Specialist");
                 });
 
-            modelBuilder.Entity("Entities.Models.Auto_Users", b =>
+            modelBuilder.Entity("Entities.Models.Auto_Notifications", b =>
                 {
-                    b.HasOne("Entities.Models.Auto_Users", "Creator")
+                    b.HasOne("Entities.Models.Auto_Users", "Sender")
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Entities.Models.Auto_Users", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("IDFK_Receiver")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("Entities.Models.Auto_RefreshTokens", b =>
+                {
+                    b.HasOne("Entities.Models.Auto_Users", "User")
+                        .WithMany()
+                        .HasForeignKey("IDFK_User")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Entities.Models.Auto_Users", b =>
+                {
                     b.HasOne("Entities.Models.Auto_Directorates", "Directorate")
                         .WithMany("Specialists")
                         .HasForeignKey("IDFK_Directory")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Entities.Models.Auto_Users", "Modifier")
-                        .WithMany()
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Creator");
-
                     b.Navigation("Directorate");
-
-                    b.Navigation("Modifier");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_VehicleChangeRequests", b =>
@@ -1073,7 +1089,7 @@ namespace Entities.Migrations
                         .IsRequired();
 
                     b.HasOne("Entities.Models.Auto_Vehicles", "Vehicle")
-                        .WithMany()
+                        .WithMany("VehicleChangeRequests")
                         .HasForeignKey("IDFK_Vehicle")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1172,6 +1188,11 @@ namespace Entities.Migrations
             modelBuilder.Entity("Entities.Models.Auto_Directorates", b =>
                 {
                     b.Navigation("Specialists");
+                });
+
+            modelBuilder.Entity("Entities.Models.Auto_Vehicles", b =>
+                {
+                    b.Navigation("VehicleChangeRequests");
                 });
 #pragma warning restore 612, 618
         }
