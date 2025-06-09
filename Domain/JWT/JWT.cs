@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using Domain.JWT;
 
 public class JWT
 {
@@ -13,12 +15,15 @@ public class JWT
         _config = config;
     }
 
-    public string CreateToken(Auto_Users user, IList<string> roles)
+    public TokenData GenerateToken(Auto_Users user, IList<string> roles)
     {
+        var jwtId = Guid.NewGuid().ToString();
+
         var claims = new List<Claim>
         {
+            new Claim(JwtRegisteredClaimNames.Jti, jwtId),
             new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Email, user.Email ?? ""),
             new Claim("FullName", $"{user.FirstName} {user.LastName}")
         };
 
@@ -28,54 +33,37 @@ public class JWT
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
+        var expiry = DateTime.UtcNow.AddMinutes(15);
+
         var token = new JwtSecurityToken(
             issuer: _config["JWT:Issuer"],
             audience: _config["JWT:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: expiry,
             signingCredentials: creds
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-    public string RefreshToken(string expiredToken)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-
-        var tokenValidationParams = new TokenValidationParameters
+        return new TokenData
         {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = false
+            Token = jwt,
+            JwtId = jwtId,
+            Expiry = expiry
         };
-
-        var principal = tokenHandler.ValidateToken(expiredToken, tokenValidationParams, out var validatedToken);
-
-        if (!(validatedToken is JwtSecurityToken jwtToken) ||
-            !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
-        {
-            throw new SecurityTokenException("Invalid token");
-        }
-
-        return CreateToken(principal.Claims);
     }
 
-    private string CreateToken(IEnumerable<Claim> claims)
+    public RefreshToken GenerateRefreshToken()
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+        var randomBytes = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
 
-        var token = new JwtSecurityToken(
-            issuer: _config["JWT:Issuer"],
-            audience: _config["JWT:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new RefreshToken
+        {
+            Token = Convert.ToBase64String(randomBytes),
+            ExpiryDate = DateTime.UtcNow.AddDays(7),
+            CreatedAt = DateTime.UtcNow
+        };
     }
 }

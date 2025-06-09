@@ -9,12 +9,10 @@ namespace AutoSystem.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthDomain _auth;
-        private readonly JWT _jwt;
 
-        public AccountController(IAuthDomain auth, JWT jwt)
+        public AccountController(IAuthDomain auth)
         {
             _auth = auth;
-            _jwt = jwt;
         }
 
         [HttpPost("register")]
@@ -42,8 +40,16 @@ namespace AutoSystem.Controllers
 
             try
             {
-                var token = await _auth.LoginAsync(dto);
-                return Ok(new { token });
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var result = await _auth.LoginAsync(dto, ip);
+
+                SetRefreshTokenCookie(result.RefreshToken, result.ExpiresAt);
+
+                return Ok(new
+                {
+                    token = result.Token,
+                    expiresAt = result.ExpiresAt
+                });
             }
             catch (Exception ex)
             {
@@ -52,18 +58,56 @@ namespace AutoSystem.Controllers
         }
 
         [HttpPost("refresh-token")]
-        [Authorize]
-        public IActionResult RefreshToken([FromBody] string expiredToken)
+        public async Task<IActionResult> RefreshToken()
         {
             try
             {
-                var newToken = _jwt.RefreshToken(expiredToken);
-                return Ok(new { token = newToken });
+                var refreshToken = Request.Cookies["refreshToken"];
+                if (string.IsNullOrEmpty(refreshToken))
+                    return Unauthorized(new { error = "Missing refresh token" });
+
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var result = await _auth.RefreshTokenAsync(refreshToken, ip);
+
+                SetRefreshTokenCookie(result.RefreshToken, result.ExpiresAt);
+
+                return Ok(new
+                {
+                    token = result.Token,
+                    expiresAt = result.ExpiresAt
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return Unauthorized(new { error = ex.Message });
             }
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                await _auth.LogoutAsync(refreshToken);
+                Response.Cookies.Delete("refreshToken");
+            }
+
+            return Ok(new { message = "Logged out successfully" });
+        }
+
+        private void SetRefreshTokenCookie(string token, DateTime expires)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = expires
+            };
+
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
     }
 }
