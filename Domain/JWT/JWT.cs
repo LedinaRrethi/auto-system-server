@@ -62,7 +62,7 @@ public class JWT
         return new RefreshToken
         {
             Token = Convert.ToBase64String(randomBytes),
-            ExpiryDate = DateTime.UtcNow.AddDays(7),
+            ExpiryDate = DateTime.UtcNow.AddMinutes(10),
             CreatedAt = DateTime.UtcNow
         };
     }

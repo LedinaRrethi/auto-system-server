@@ -48,6 +48,7 @@ namespace AutoSystem.Controllers
                 return Ok(new
                 {
                     token = result.Token,
+                    refreshToken = result.RefreshToken,
                     expiresAt = result.ExpiresAt
                 });
             }
@@ -63,8 +64,13 @@ namespace AutoSystem.Controllers
             try
             {
                 var refreshToken = Request.Cookies["refreshToken"];
+
                 if (string.IsNullOrEmpty(refreshToken))
+                {
                     return Unauthorized(new { error = "Missing refresh token" });
+                }
+                refreshToken = System.Net.WebUtility.UrlDecode(refreshToken);
+
 
                 var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 var result = await _auth.RefreshTokenAsync(refreshToken, ip);
@@ -74,6 +80,7 @@ namespace AutoSystem.Controllers
                 return Ok(new
                 {
                     token = result.Token,
+                    refreshToken = result.RefreshToken,
                     expiresAt = result.ExpiresAt
                 });
             }
@@ -88,8 +95,13 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> Logout()
         {
             var refreshToken = Request.Cookies["refreshToken"];
+
             if (!string.IsNullOrEmpty(refreshToken))
             {
+                refreshToken = System.Net.WebUtility.UrlDecode(refreshToken);
+
+                Console.WriteLine("LogoutAsync i thirrir me refresh token" + refreshToken);
+
                 await _auth.LogoutAsync(refreshToken);
                 Response.Cookies.Delete("refreshToken");
             }
@@ -102,8 +114,11 @@ namespace AutoSystem.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                //Secure = true,
+                //SameSite = SameSiteMode.Strict,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+
                 Expires = expires
             };
 

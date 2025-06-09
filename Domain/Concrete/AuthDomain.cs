@@ -130,7 +130,13 @@ public class AuthDomain : IAuthDomain
     public async Task LogoutAsync(string refreshToken)
     {
         var token = await _context.Auto_RefreshTokens.FirstOrDefaultAsync(t => t.Token == refreshToken);
-        if (token == null) return;
+        if (token == null)
+        {
+            Console.WriteLine("Token null ne LogoutAsync");
+            return;
+        }
+
+        Console.WriteLine($"Revoking token: {token.Token}");
 
         token.IsRevoked = true;
         _context.Update(token);
