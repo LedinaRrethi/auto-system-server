@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Helpers.Enumerations;
 
 namespace DTO.UserDTO
 {
@@ -32,5 +33,9 @@ namespace DTO.UserDTO
         [DataType(DataType.Password)]
         [MinLength(9)]
         public string Password { get; set; } = null!;
+
+        public RequestedRole RequestedRole { get; set; } 
+
+        public string? SpecialistNumber { get; set; }
     }
 }

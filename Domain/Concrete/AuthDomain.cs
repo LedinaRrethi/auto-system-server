@@ -48,13 +48,23 @@ using Microsoft.Extensions.Configuration;
             if (!result.Succeeded)
                 throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
 
-            if (!await _roleManager.RoleExistsAsync("Individ"))
-                await _roleManager.CreateAsync(new IdentityRole("Individ"));
+        user.RequestedRole = dto.RequestedRole;
 
-            await _userManager.AddToRoleAsync(user, "Individ");
+        if (user.RequestedRole == RequestedRole.Specialist)
+        {
+            user.IsSpecialist = true;
+            user.SpecialistNumber = dto.SpecialistNumber;
+        }
+        else
+        {
+            user.IsSpecialist = false;
+            user.SpecialistNumber = null;
         }
 
-        public async Task<AuthResponseDTO> LoginAsync(LoginDto dto, string ipAddress)
+
+    }
+
+    public async Task<AuthResponseDTO> LoginAsync(LoginDto dto, string ipAddress)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null || user.Invalidated == 1)

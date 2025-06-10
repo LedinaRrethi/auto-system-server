@@ -20,13 +20,20 @@ namespace Entities.Models
         [MaxLength(50)]
         public string LastName { get; set; } = null!;
 
+
+        [Required]
+        [MaxLength(20)]
+        public RequestedRole RequestedRole { get; set; }
+
         [Required]
         public bool IsSpecialist { get; set; } = false;
 
         [MaxLength(50)]
         public string? SpecialistNumber { get; set; }
 
+
         public Guid? IDFK_Directory { get; set; }
+
 
         //public bool IsApproved { get; set; } = false;
 
