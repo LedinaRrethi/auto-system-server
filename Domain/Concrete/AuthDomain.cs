@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DTO.UserDTO;
 using Entities.Models;
+using Helpers.Enumerations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +40,8 @@ public class AuthDomain : IAuthDomain
         user.UserName = dto.Email;
         user.EmailConfirmed = true;
         user.Invalidated = 1;
-        user.IsApproved = false;
+        //user.IsApproved = false;
+        user.Status = UserStatus.Pending;
 
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
@@ -56,8 +58,14 @@ public class AuthDomain : IAuthDomain
         var user = await _userManager.FindByEmailAsync(dto.Email);
         if (user == null || user.Invalidated == 1)
             throw new Exception("Invalid credentials or blocked user.");
-        if (!user.IsApproved)
-            throw new Exception("Your account is not yet approved.");
+        //if (!user.IsApproved)
+        //    throw new Exception("Your account is not yet approved.");
+
+        if (user.Status == UserStatus.Pending)
+            throw new Exception("Your account is pending approval.");
+        if (user.Status == UserStatus.Rejected)
+            throw new Exception("Your account was rejected.");
+
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
         if (!result.Succeeded) throw new Exception("Invalid credentials.");
