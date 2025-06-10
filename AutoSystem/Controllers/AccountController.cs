@@ -105,6 +105,11 @@ namespace AutoSystem.Controllers
                 await _auth.LogoutAsync(refreshToken);
                 Response.Cookies.Delete("refreshToken");
             }
+            else
+            {
+                Console.WriteLine("RefreshToken null – kontrollo withCredentials në frontend!");
+
+            }
 
             return Ok(new { message = "Logged out successfully" });
         }
@@ -116,8 +121,11 @@ namespace AutoSystem.Controllers
                 HttpOnly = true,
                 //Secure = true,
                 //SameSite = SameSiteMode.Strict,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                //Secure = false,
+                //SameSite = SameSiteMode.Lax,
+
+                Secure = true,
+                SameSite = SameSiteMode.None,
 
                 Expires = expires
             };
