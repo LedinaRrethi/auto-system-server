@@ -1,5 +1,7 @@
 ﻿using DAL.Contracts;
 using DAL.DI;
+using Domain.Concrete;
+using Domain.Contracts;
 using Lamar;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,7 @@ namespace Domain.DI
         {
             IncludeRegistry<DomainUnitOfWorkRegistry>();
             For<IAuthDomain>().Use<AuthDomain>();
+            For<IAdminDomain>().Use<AdminDomain>();
 
 
             AddRepositoryRegistries();

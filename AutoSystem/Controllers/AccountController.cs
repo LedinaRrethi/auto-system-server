@@ -1,4 +1,5 @@
-﻿using DTO.UserDTO;
+﻿using Domain.Contracts;
+using DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

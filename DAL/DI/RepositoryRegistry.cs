@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL.Concrete;
 using DAL.Contracts;
+using DAL.Repositories;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +15,7 @@ namespace DAL.DI
     {
         public RepositoryRegistry()
         {
+            For<IAdminRepository>().Use<AdminRepository>();
             IncludeRegistry<UnitOfWorkRegistry>();
 
         }
