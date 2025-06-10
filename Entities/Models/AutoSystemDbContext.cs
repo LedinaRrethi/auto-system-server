@@ -18,7 +18,9 @@ namespace Entities.Models
         public DbSet<Auto_InspectionRequests> Auto_InspectionRequests { get; set; }
         public DbSet<Auto_Inspections> Auto_Inspections { get; set; }
         public DbSet<Auto_InspectionDocs> Auto_InspectionDocs { get; set; }
-        public DbSet<AutoNotification> Auto_Notifications { get; set; }
+        public DbSet<Auto_Notifications> Auto_Notifications { get; set; }
+
+        public DbSet<Auto_RefreshTokens> Auto_RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -113,13 +115,13 @@ namespace Entities.Models
                 .HasForeignKey(f => f.ModifiedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<AutoNotification>()
+            modelBuilder.Entity<Auto_Notifications>()
                 .HasOne(n => n.Receiver)
                 .WithMany()
                 .HasForeignKey(n => n.IDFK_Receiver)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<AutoNotification>()
+            modelBuilder.Entity<Auto_Notifications>()
                 .HasOne(n => n.Sender)
                 .WithMany()
                 .HasForeignKey(n => n.CreatedBy)

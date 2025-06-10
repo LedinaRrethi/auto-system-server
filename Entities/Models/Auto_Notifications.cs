@@ -5,7 +5,7 @@ using Helpers.Enumerations;
 
 namespace Entities.Models
 {
-    public partial class AutoNotification
+    public partial class Auto_Notifications
     {
         [Key]
         public Guid IDPK_Notification { get; set; }

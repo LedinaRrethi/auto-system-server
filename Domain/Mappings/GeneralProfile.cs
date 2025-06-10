@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DTO.UserDTO;
 using Entities.Models;
+using Helpers.Enumerations;
+using JasperFx.CodeGeneration.Frames;
 
 namespace Domain.Mappings
 {
@@ -13,7 +15,8 @@ namespace Domain.Mappings
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.IsSpecialist, opt => opt.MapFrom(_ => false))
-                .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(_ => false))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => UserStatus.Pending))
+                //.ForMember(dest => dest.IsApproved, opt => opt.MapFrom(_ => false))
                 .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(_ => "system"))
                 .ForMember(dest => dest.Invalidated, opt => opt.MapFrom(_ => (byte)1))

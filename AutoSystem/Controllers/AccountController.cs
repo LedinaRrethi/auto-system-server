@@ -1,4 +1,5 @@
-﻿using DTO.UserDTO;
+﻿using Domain.Contracts;
+using DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,10 @@ namespace AutoSystem.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthDomain _auth;
-        private readonly JWT _jwt;
 
-        public AccountController(IAuthDomain auth, JWT jwt)
+        public AccountController(IAuthDomain auth)
         {
             _auth = auth;
-            _jwt = jwt;
         }
 
         [HttpPost("register")]
@@ -42,8 +41,17 @@ namespace AutoSystem.Controllers
 
             try
             {
-                var token = await _auth.LoginAsync(dto);
-                return Ok(new { token });
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var result = await _auth.LoginAsync(dto, ip);
+
+                SetRefreshTokenCookie(result.RefreshToken, result.ExpiresAt);
+
+                return Ok(new
+                {
+                    token = result.Token,
+                    refreshToken = result.RefreshToken,
+                    expiresAt = result.ExpiresAt
+                });
             }
             catch (Exception ex)
             {
@@ -52,18 +60,78 @@ namespace AutoSystem.Controllers
         }
 
         [HttpPost("refresh-token")]
-        [Authorize]
-        public IActionResult RefreshToken([FromBody] string expiredToken)
+        public async Task<IActionResult> RefreshToken()
         {
             try
             {
-                var newToken = _jwt.RefreshToken(expiredToken);
-                return Ok(new { token = newToken });
+                var refreshToken = Request.Cookies["refreshToken"];
+
+                if (string.IsNullOrEmpty(refreshToken))
+                {
+                    return Unauthorized(new { error = "Missing refresh token" });
+                }
+                refreshToken = System.Net.WebUtility.UrlDecode(refreshToken);
+
+
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var result = await _auth.RefreshTokenAsync(refreshToken, ip);
+
+                SetRefreshTokenCookie(result.RefreshToken, result.ExpiresAt);
+
+                return Ok(new
+                {
+                    token = result.Token,
+                    refreshToken = result.RefreshToken,
+                    expiresAt = result.ExpiresAt
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return Unauthorized(new { error = ex.Message });
             }
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                refreshToken = System.Net.WebUtility.UrlDecode(refreshToken);
+
+                Console.WriteLine("LogoutAsync i thirrir me refresh token" + refreshToken);
+
+                await _auth.LogoutAsync(refreshToken);
+                Response.Cookies.Delete("refreshToken");
+            }
+            else
+            {
+                Console.WriteLine("RefreshToken null – kontrollo withCredentials në frontend!");
+
+            }
+
+            return Ok(new { message = "Logged out successfully" });
+        }
+
+        private void SetRefreshTokenCookie(string token, DateTime expires)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                //Secure = true,
+                //SameSite = SameSiteMode.Strict,
+                //Secure = false,
+                //SameSite = SameSiteMode.Lax,
+
+                Secure = true,
+                SameSite = SameSiteMode.None,
+
+                Expires = expires
+            };
+
+            Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
     }
 }

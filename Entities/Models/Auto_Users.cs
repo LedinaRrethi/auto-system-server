@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Helpers.Enumerations;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -27,7 +28,10 @@ namespace Entities.Models
 
         public Guid? IDFK_Directory { get; set; }
 
-        public bool IsApproved { get; set; } = false;
+        //public bool IsApproved { get; set; } = false;
+
+        [Required]
+        public UserStatus Status { get; set; } = UserStatus.Pending;
 
         // Audit Fields
         public Byte Invalidated { get; set; } = 0;
