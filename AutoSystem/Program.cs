@@ -8,6 +8,8 @@ using System.Text;
 using DI;
 using Lamar.Microsoft.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using DAL.Seed;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +50,12 @@ builder.Services.AddAuthentication(opt =>
 });
 builder.Services.AddAuthorization();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+}); ;
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
@@ -112,5 +119,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+//seed data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AutoSystemDbContext>();
+
+    await RoleSeeder.SeedRolesAsync(services);
+    await DirectorateSeeder.SeedAsync(context); 
+}
+
 
 app.Run();

@@ -15,7 +15,7 @@ namespace Domain.DI
             IncludeRegistry<DomainUnitOfWorkRegistry>();
             For<IAuthDomain>().Use<AuthDomain>();
             For<IAdminDomain>().Use<AdminDomain>();
-
+            For<IDirectorateDomain>().Use<DirectorateDomain>();
 
             AddRepositoryRegistries();
             AddHttpContextRegistries();

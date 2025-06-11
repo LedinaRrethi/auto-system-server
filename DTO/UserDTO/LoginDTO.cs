@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DTO.UserDTO
 {
-    public class LoginDto
+    public class LoginDTO
     {
 
         [Required]

@@ -21,6 +21,9 @@ namespace Entities.Models
         public string LastName { get; set; } = null!;
 
         [Required]
+        public DateTime BirthDate { get; set; }
+
+        [Required]
         public bool IsSpecialist { get; set; } = false;
 
         [MaxLength(50)]

@@ -32,35 +32,51 @@ using Microsoft.Extensions.Configuration;
             _jwt = new JWT(config);
         }
 
-        public async Task RegisterAsync(RegisterDto dto)
+    public async Task RegisterAsync(RegisterDTO dto)
+    {
+        var existing = await _userManager.FindByEmailAsync(dto.Email);
+        if (existing != null) throw new Exception("User already exists.");
+
+        var user = new Auto_Users
         {
-            var existing = await _userManager.FindByEmailAsync(dto.Email);
-            if (existing != null) throw new Exception("User already exists.");
+            FirstName = dto.FirstName,
+            FatherName = dto.FatherName,
+            LastName = dto.LastName,
+            BirthDate = dto.BirthDate,
+            Email = dto.Email,
+            UserName = dto.Email,
+            CreatedOn = DateTime.UtcNow,
+            CreatedIp = "::1", 
 
-            var user = _mapper.Map<Auto_Users>(dto);
-            user.UserName = dto.Email;
-            user.EmailConfirmed = true;
-            user.Invalidated = 1;
-            //user.IsApproved = false;
-            user.Status = UserStatus.Pending;
+            EmailConfirmed = true,
+            Status = UserStatus.Pending,
+            Invalidated = 0
+        };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
-                throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
-
-            if (!await _roleManager.RoleExistsAsync("Individ"))
-                await _roleManager.CreateAsync(new IdentityRole("Individ"));
-
-            await _userManager.AddToRoleAsync(user, "Individ");
+        // Nese eshte specialist
+        if (dto.Role == "Specialist")
+        {
+            user.IsSpecialist = true;
+            user.SpecialistNumber = dto.SpecialistNumber;
+            user.IDFK_Directory = dto.DirectorateId;
         }
 
-        public async Task<AuthResponseDTO> LoginAsync(LoginDto dto, string ipAddress)
+        var result = await _userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+            throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+        // Roli (ruhet nga ui)
+        if (!await _roleManager.RoleExistsAsync(dto.Role))
+            await _roleManager.CreateAsync(new IdentityRole(dto.Role));
+
+        await _userManager.AddToRoleAsync(user, dto.Role);
+    }
+
+    public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto, string ipAddress)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null || user.Invalidated == 1)
-                throw new Exception("Invalid credentials or blocked user.");
-            //if (!user.IsApproved)
-            //    throw new Exception("Your account is not yet approved.");
+                throw new Exception("Invalid credentials or blocked user.");      
 
             if (user.Status == UserStatus.Pending)
                 throw new Exception("Your account is pending approval.");

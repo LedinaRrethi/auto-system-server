@@ -7,30 +7,33 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DTO.UserDTO
 {
-    public class RegisterDto
+    public class RegisterDTO
     {
-        [Required]
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string FirstName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string FatherName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string LastName { get; set; } = null!;
 
         [Required]
         public DateTime BirthDate { get; set; }
 
-        [Required]
-        [EmailAddress]
+        [Required, EmailAddress]
         public string Email { get; set; } = null!;
 
-        [Required]
-        [DataType(DataType.Password)]
-        [MinLength(9)]
+        [Required, DataType(DataType.Password), MinLength(9)]
         public string Password { get; set; } = null!;
+
+        [Required]
+        public string Role { get; set; } = null!; // "Individ", "Police", "Specialist"
+
+        public string? SpecialistNumber { get; set; }
+
+        public Guid? DirectorateId { get; set; }
     }
+
 }
+

@@ -1,15 +1,12 @@
-﻿using System;
+﻿using DTO.UserDTO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using DTO.AdminnDTO;
 
 namespace DAL.Contracts
-{ 
-        public interface IAdminRepository
-        {
-            Task<List<AdminDTO>> GetAllUsersForApprovalAsync();
-            Task<bool> UpdateUserStatusAsync(string userId, string newStatus);
-        }
+{
+    public interface IAdminRepository
+    {
+        Task<List<UserDTO>> GetAllUsersForApprovalAsync();
+        Task<bool> UpdateUserStatusAsync(string userId, string newStatus);
+    }
 }

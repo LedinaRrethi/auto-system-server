@@ -17,7 +17,7 @@ namespace AutoSystem.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -34,7 +34,7 @@ namespace AutoSystem.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -120,11 +120,6 @@ namespace AutoSystem.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                //Secure = true,
-                //SameSite = SameSiteMode.Strict,
-                //Secure = false,
-                //SameSite = SameSiteMode.Lax,
-
                 Secure = true,
                 SameSite = SameSiteMode.None,
 
@@ -132,6 +127,10 @@ namespace AutoSystem.Controllers
             };
 
             Response.Cookies.Append("refreshToken", token, cookieOptions);
+           
         }
+
+
+
     }
 }

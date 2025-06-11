@@ -16,6 +16,7 @@ namespace DAL.DI
         public RepositoryRegistry()
         {
             For<IAdminRepository>().Use<AdminRepository>();
+            For<IDirectorateRepository>().Use<DirectorateRepository>();
             IncludeRegistry<UnitOfWorkRegistry>();
 
         }

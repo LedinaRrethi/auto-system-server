@@ -1,5 +1,5 @@
 ﻿using Domain.Contracts;
-using DTO.AdminnDTO;
+using DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,18 +18,24 @@ namespace API.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<ActionResult<List<AdminDTO>>> GetUsers()
+        public async Task<ActionResult<PaginatedUserDTO>> GetUsers(
+            int page = 1,
+            int pageSize = 10,
+            string sortField = "CreatedOn",
+            string sortOrder = "desc")
         {
-            var users = await _domain.GetUsersAsync();
-            return Ok(users);
+            var result = await _domain.GetUsersPaginatedAsync(page, pageSize, sortField, sortOrder);
+            return Ok(result);
         }
 
         [HttpPost("users/{userId}/status")]
         public async Task<ActionResult> UpdateStatus(string userId, [FromBody] string newStatus)
         {
             var result = await _domain.ChangeUserStatusAsync(userId, newStatus);
-            if (!result) return BadRequest("Invalid status or user not found.");
-            return Ok();
+            if (!result)
+                return BadRequest("Invalid status or user not found.");
+            return Ok(new { message = $"User status updated to {newStatus}" });
         }
     }
+
 }

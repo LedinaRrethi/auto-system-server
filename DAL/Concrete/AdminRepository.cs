@@ -1,5 +1,5 @@
 ﻿using DAL.Contracts;
-using DTO.AdminnDTO;
+using DTO.UserDTO;
 using Entities.Models;
 using Helpers.Enumerations;
 using Microsoft.AspNetCore.Identity;
@@ -18,23 +18,31 @@ namespace DAL.Repositories
             _userManager = userManager;
         }
 
-        public async Task<List<AdminDTO>> GetAllUsersForApprovalAsync()
+        public async Task<List<UserDTO>> GetAllUsersForApprovalAsync()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users
+                .Include(u => u.Directorate)
+                .ToListAsync();
 
-            var result = new List<AdminDTO>();
+            var result = new List<UserDTO>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                result.Add(new AdminDTO
+
+                result.Add(new UserDTO
                 {
                     Id = user.Id,
-                    Name = $"{user.FirstName} {user.LastName}",
+                    FirstName = user.FirstName,
+                    FatherName = user.FatherName,
+                    LastName = user.LastName,
                     Email = user.Email,
+                    BirthDate = user.BirthDate,
                     Role = roles.FirstOrDefault() ?? "Unknown",
                     Status = user.Status.ToString(),
-                    CreatedAt = user.CreatedOn
+                    CreatedOn = user.CreatedOn,
+                    SpecialistNumber = user.SpecialistNumber,
+                    DirectorateName = user.Directorate?.DirectoryName
                 });
             }
 
@@ -44,17 +52,18 @@ namespace DAL.Repositories
         public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) return false;
+            if (user == null)
+                return false;
 
-            if (Enum.TryParse(typeof(UserStatus), newStatus, out var statusEnum))
-            {
-                user.Status = (UserStatus)statusEnum!;
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-                return true;
-            }
+            if (!Enum.TryParse(typeof(UserStatus), newStatus, true, out var statusEnum))
+                return false;
 
-            return false;
+            user.Status = (UserStatus)statusEnum!;
+            user.ModifiedOn = DateTime.UtcNow;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
