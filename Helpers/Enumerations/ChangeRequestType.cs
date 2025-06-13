@@ -8,7 +8,8 @@ namespace Helpers.Enumerations
 {
     public enum ChangeRequestType : byte
     {
-        Update = 0,
-        Delete = 1
+        Register = 0,
+        Update = 1,
+        Delete = 2
     }
 }

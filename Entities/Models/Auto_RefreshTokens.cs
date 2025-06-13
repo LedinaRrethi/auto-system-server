@@ -7,7 +7,7 @@ namespace Entities.Models
     public class Auto_RefreshTokens
     {
         [Key]
-        public int IDPK_RefreshToken { get; set; }
+        public Guid IDPK_RefreshToken { get; set; }
 
         [Required]
         public string Token { get; set; } = default!;

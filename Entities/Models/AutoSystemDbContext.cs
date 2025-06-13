@@ -19,8 +19,8 @@ namespace Entities.Models
         public DbSet<Auto_Inspections> Auto_Inspections { get; set; }
         public DbSet<Auto_InspectionDocs> Auto_InspectionDocs { get; set; }
         public DbSet<Auto_Notifications> Auto_Notifications { get; set; }
-
         public DbSet<Auto_RefreshTokens> Auto_RefreshTokens { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

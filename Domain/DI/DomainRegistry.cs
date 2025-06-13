@@ -16,6 +16,9 @@ namespace Domain.DI
             For<IAuthDomain>().Use<AuthDomain>();
             For<IAdminDomain>().Use<AdminDomain>();
             For<IDirectorateDomain>().Use<DirectorateDomain>();
+            For<IVehicleRequestDomain>().Use<VehicleRequestDomain>();
+            //For<IVehicleDomain>().Use<VehicleDomain>();
+            
 
             AddRepositoryRegistries();
             AddHttpContextRegistries();

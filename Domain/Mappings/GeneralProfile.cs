@@ -4,6 +4,8 @@ using DTO.DirectorateDTO;
 using Entities.Models;
 using Helpers.Enumerations;
 using System;
+using DTO.VehicleDTO;
+using DTO.VehicleRequest;
 
 namespace Domain.Mappings
 {
@@ -11,12 +13,12 @@ namespace Domain.Mappings
     {
         public GeneralProfile()
         {
-            #region UserDTO <-> Auto_Users
+            #region UserDTO <-> Auto_Users  
 
             CreateMap<Auto_Users, UserDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.Role, opt => opt.Ignore()) 
+                .ForMember(dest => dest.Role, opt => opt.Ignore())
                 .ForMember(dest => dest.DirectorateName, opt => opt.MapFrom(src => src.Directorate != null ? src.Directorate.DirectoryName : null));
 
             CreateMap<UserDTO, Auto_Users>()
@@ -42,7 +44,7 @@ namespace Domain.Mappings
 
             #endregion
 
-            #region RegisterDTO <-> Auto_Users
+            #region RegisterDTO <-> Auto_Users  
 
             CreateMap<RegisterDTO, Auto_Users>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
@@ -73,7 +75,7 @@ namespace Domain.Mappings
 
             #endregion
 
-            #region UpdateUserDTO -> Auto_Users
+            #region UpdateUserDTO -> Auto_Users  
 
             CreateMap<UpdateUserDTO, Auto_Users>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
@@ -105,19 +107,31 @@ namespace Domain.Mappings
 
             #endregion
 
-            #region LoginDTO <-> Auto_Users
+            #region LoginDTO <-> Auto_Users  
 
             CreateMap<Auto_Users, LoginDTO>().ReverseMap();
 
             #endregion
 
-            #region Directorate
+            #region Directorate  
 
             CreateMap<Auto_Directorates, DirectorateDTO>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.IDPK_Directory))
                 .ReverseMap()
                 .ForMember(dest => dest.IDPK_Directory, opt => opt.MapFrom(src => src.Id));
 
+            #endregion
+
+            #region Vehicle  
+
+            CreateMap<Auto_Vehicles, VehicleDTO>().ReverseMap();
+            CreateMap<Auto_Vehicles, VehicleRegisterDTO>().ReverseMap();
+
+            #endregion
+
+            #region VehicleRequest
+            CreateMap<Auto_VehicleChangeRequests, VehicleRequestDTO>().ReverseMap();
+            CreateMap<Auto_VehicleChangeRequests, VehicleChangeStatusDTO>().ReverseMap();
             #endregion
         }
     }

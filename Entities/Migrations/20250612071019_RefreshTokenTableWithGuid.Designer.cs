@@ -4,6 +4,7 @@ using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entities.Migrations
 {
     [DbContext(typeof(AutoSystemDbContext))]
-    partial class AutoSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250612071019_RefreshTokenTableWithGuid")]
+    partial class RefreshTokenTableWithGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +73,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Directorates", (string)null);
+                    b.ToTable("Auto_Directorates");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_FineRecipients", b =>
@@ -146,7 +149,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("PlateNumber");
 
-                    b.ToTable("Auto_FineRecipients", (string)null);
+                    b.ToTable("Auto_FineRecipients");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Fines", b =>
@@ -205,7 +208,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Fines", (string)null);
+                    b.ToTable("Auto_Fines");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionDocs", b =>
@@ -259,7 +262,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_InspectionDocs", (string)null);
+                    b.ToTable("Auto_InspectionDocs");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionRequests", b =>
@@ -314,7 +317,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_InspectionRequests", (string)null);
+                    b.ToTable("Auto_InspectionRequests");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Inspections", b =>
@@ -371,7 +374,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Inspections", (string)null);
+                    b.ToTable("Auto_Inspections");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Notifications", b =>
@@ -418,7 +421,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("IDFK_Receiver");
 
-                    b.ToTable("Auto_Notifications", (string)null);
+                    b.ToTable("Auto_Notifications");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_RefreshTokens", b =>
@@ -459,7 +462,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("IDFK_User");
 
-                    b.ToTable("Auto_RefreshTokens", (string)null);
+                    b.ToTable("Auto_RefreshTokens");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Users", b =>
@@ -652,7 +655,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_VehicleChangeRequests", (string)null);
+                    b.ToTable("Auto_VehicleChangeRequests");
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Vehicles", b =>
@@ -731,7 +734,7 @@ namespace Entities.Migrations
                     b.HasIndex("PlateNumber")
                         .IsUnique();
 
-                    b.ToTable("Auto_Vehicles", (string)null);
+                    b.ToTable("Auto_Vehicles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
