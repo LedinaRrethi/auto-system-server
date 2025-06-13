@@ -8,6 +8,7 @@ namespace DAL.Concrete
     public class VehicleRequestRepository : IVehicleRequestRepository
     {
         private readonly AutoSystemDbContext _context;
+
         public VehicleRequestRepository(AutoSystemDbContext context)
         {
             _context = context;
@@ -17,6 +18,7 @@ namespace DAL.Concrete
         {
             return await _context.Auto_VehicleChangeRequests
                 .Where(r => r.IDFK_Requester == userId)
+                .Include(r => r.Vehicle) // Optional: helpful if you want to see vehicle details in list
                 .ToListAsync();
         }
 
@@ -32,7 +34,9 @@ namespace DAL.Concrete
 
         public async Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId)
         {
-            return await _context.Auto_Vehicles.FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
+            return await _context.Auto_Vehicles
+                .AsNoTracking() // Prevents accidental tracking
+                .FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
         }
 
         public async Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId)
@@ -40,13 +44,6 @@ namespace DAL.Concrete
             return await _context.Auto_VehicleChangeRequests
                 .AnyAsync(r => r.IDFK_Vehicle == vehicleId && r.Status == ChangeRequestStatus.Pending);
         }
-
-        public async Task<bool> HasPendingRequestForUserAsync(string userId, ChangeRequestType type)
-        {
-            return await _context.Auto_VehicleChangeRequests
-                .AnyAsync(r => r.IDFK_Requester == userId && r.RequestType == type && r.Status == ChangeRequestStatus.Pending);
-        }
-
 
         public async Task SaveChangesAsync()
         {

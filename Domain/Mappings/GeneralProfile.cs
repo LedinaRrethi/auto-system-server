@@ -133,6 +133,12 @@ namespace Domain.Mappings
             CreateMap<Auto_VehicleChangeRequests, VehicleRequestDTO>().ReverseMap();
             CreateMap<Auto_VehicleChangeRequests, VehicleChangeStatusDTO>().ReverseMap();
             #endregion
+
+            CreateMap<Auto_VehicleChangeRequests, VehicleRequestListDTO>()
+    .ForMember(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.Vehicle.PlateNumber))
+    .ReverseMap();
+
+
         }
     }
 }

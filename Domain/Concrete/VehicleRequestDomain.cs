@@ -21,12 +21,10 @@ namespace Domain.Concrete
             _vehicleRequestRepository = unitOfWork.GetRepository<IVehicleRequestRepository>();
         }
 
-        public async Task RegisterVehicleAsync(VehicleRegisterDTO dto, string userId)
+        public async Task RegisterVehicleAsync(Guid vehicleId, VehicleRegisterDTO dto, string userId)
         {
-            var hasPending = await _vehicleRequestRepository.HasPendingRequestForUserAsync(userId, ChangeRequestType.Register);
-            if (hasPending)
-                throw new Exception("You already have a pending registration request.");
-
+            if (await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId))
+                throw new Exception("A pending request already exists for this vehicle plate.");
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
@@ -69,19 +67,18 @@ namespace Domain.Concrete
 
         public async Task RequestVehicleUpdateAsync(Guid vehicleId, VehicleRegisterDTO dto, string userId)
         {
-            var pendingExists = await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId);
-            if (pendingExists)
-                throw new Exception("A pending request already exists for this vehicle.");
+            var vehicle = await _vehicleRequestRepository.GetVehicleByIdAsync(vehicleId);
+            if (vehicle == null || vehicle.IDFK_Owner != userId)
+                throw new Exception("Vehicle not found or not owned by user.");
 
+            var hasPending = await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId);
+            if (hasPending)
+                throw new Exception("This vehicle already has a pending request.");
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
-                var vehicle = await _vehicleRequestRepository.GetVehicleByIdAsync(vehicleId);
-                if (vehicle == null || vehicle.IDFK_Owner != userId)
-                    throw new Exception("Vehicle not found or not owned by user.");
-
                 var snapshot = JsonSerializer.Serialize(vehicle);
 
                 var request = new Auto_VehicleChangeRequests
@@ -110,15 +107,18 @@ namespace Domain.Concrete
 
         public async Task RequestVehicleDeletionAsync(Guid vehicleId, string userId)
         {
+            var vehicle = await _vehicleRequestRepository.GetVehicleByIdAsync(vehicleId);
+            if (vehicle == null || vehicle.IDFK_Owner != userId)
+                throw new Exception("Vehicle not found or not owned by user.");
+
+            var hasPending = await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId);
+            if (hasPending)
+                throw new Exception("This vehicle already has a pending request.");
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
             {
-                var vehicle = await _vehicleRequestRepository.GetVehicleByIdAsync(vehicleId);
-                if (vehicle == null || vehicle.IDFK_Owner != userId)
-                    throw new Exception("Vehicle not found or not owned by user.");
-
                 var snapshot = JsonSerializer.Serialize(vehicle);
 
                 var request = new Auto_VehicleChangeRequests
@@ -145,9 +145,26 @@ namespace Domain.Concrete
             }
         }
 
-        public async Task<List<Auto_VehicleChangeRequests>> GetMyRequestsAsync(string userId)
+
+        public async Task<List<VehicleRequestListDTO>> GetMyRequestsAsync(string userId)
         {
-            return await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
+            var entities = await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
+
+            var result = entities.Select(r => new VehicleRequestListDTO
+            {
+                IDPK_ChangeRequest = r.IDPK_ChangeRequest,
+                IDFK_Vehicle = r.IDFK_Vehicle,
+                PlateNumber = r.Vehicle?.PlateNumber,
+                RequestType = r.RequestType,
+                Status = r.Status,
+                CreatedOn = r.CreatedOn
+            }).ToList();
+
+            return _mapper.Map<List<VehicleRequestListDTO>>(entities);
+
         }
+
+
+
     }
 }
