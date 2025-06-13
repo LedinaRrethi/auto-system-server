@@ -1,5 +1,6 @@
 ﻿using Entities.Models;
 using Lamar;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DAL.UoW
 {
@@ -31,6 +32,12 @@ namespace DAL.UoW
             _context.Dispose();
             GC.SuppressFinalize(this);
         }
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
+        }
+
+
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using System.Threading.Tasks;
 
 namespace DAL.UoW
@@ -7,6 +8,8 @@ namespace DAL.UoW
     {
         TRepository GetRepository<TRepository>() where TRepository : class;
         int Save();
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
 
     }
 }

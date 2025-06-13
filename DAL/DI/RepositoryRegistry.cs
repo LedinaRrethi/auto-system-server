@@ -17,6 +17,8 @@ namespace DAL.DI
         {
             For<IAdminRepository>().Use<AdminRepository>();
             For<IDirectorateRepository>().Use<DirectorateRepository>();
+            For<IVehicleRepository>().Use<VehicleRepository>();
+            For<IVehicleRequestRepository>().Use<VehicleRequestRepository>();
             IncludeRegistry<UnitOfWorkRegistry>();
 
         }
