@@ -13,7 +13,7 @@ namespace Domain.Contracts
     {
         Task RegisterVehicleAsync(VehicleRegisterDTO dto, string userId);
         Task RequestVehicleUpdateAsync(Guid vehicleId, VehicleRegisterDTO dto, string userId);
-        Task RequestVehicleDeletionAsync(Guid vehicleId, string requesterComment, string userId);
+        Task RequestVehicleDeletionAsync(Guid vehicleId, string userId);
         Task<List<Auto_VehicleChangeRequests>> GetMyRequestsAsync(string userId);
     }
 }

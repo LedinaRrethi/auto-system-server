@@ -23,6 +23,11 @@ namespace Domain.Concrete
 
         public async Task RegisterVehicleAsync(VehicleRegisterDTO dto, string userId)
         {
+            var hasPending = await _vehicleRequestRepository.HasPendingRequestForUserAsync(userId, ChangeRequestType.Register);
+            if (hasPending)
+                throw new Exception("You already have a pending registration request.");
+
+
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -64,6 +69,11 @@ namespace Domain.Concrete
 
         public async Task RequestVehicleUpdateAsync(Guid vehicleId, VehicleRegisterDTO dto, string userId)
         {
+            var pendingExists = await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId);
+            if (pendingExists)
+                throw new Exception("A pending request already exists for this vehicle.");
+
+
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -98,8 +108,9 @@ namespace Domain.Concrete
             }
         }
 
-        public async Task RequestVehicleDeletionAsync(Guid vehicleId, string requesterComment, string userId)
+        public async Task RequestVehicleDeletionAsync(Guid vehicleId, string userId)
         {
+
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -118,7 +129,6 @@ namespace Domain.Concrete
                     RequestType = ChangeRequestType.Delete,
                     RequestDataJson = string.Empty,
                     CurrentDataSnapshotJson = snapshot,
-                    RequesterComment = requesterComment,
                     Status = ChangeRequestStatus.Pending,
                     CreatedBy = userId,
                     CreatedOn = DateTime.UtcNow

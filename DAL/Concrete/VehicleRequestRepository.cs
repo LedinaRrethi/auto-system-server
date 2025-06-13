@@ -1,5 +1,6 @@
 ﻿using DAL.Contracts;
 using Entities.Models;
+using Helpers.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Concrete
@@ -33,6 +34,19 @@ namespace DAL.Concrete
         {
             return await _context.Auto_Vehicles.FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
         }
+
+        public async Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId)
+        {
+            return await _context.Auto_VehicleChangeRequests
+                .AnyAsync(r => r.IDFK_Vehicle == vehicleId && r.Status == ChangeRequestStatus.Pending);
+        }
+
+        public async Task<bool> HasPendingRequestForUserAsync(string userId, ChangeRequestType type)
+        {
+            return await _context.Auto_VehicleChangeRequests
+                .AnyAsync(r => r.IDFK_Requester == userId && r.RequestType == type && r.Status == ChangeRequestStatus.Pending);
+        }
+
 
         public async Task SaveChangesAsync()
         {

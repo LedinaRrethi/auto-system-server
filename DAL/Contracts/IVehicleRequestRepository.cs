@@ -1,4 +1,5 @@
 ﻿using Entities.Models;
+using Helpers.Enumerations;
 
 namespace DAL.Contracts
 {
@@ -8,6 +9,9 @@ namespace DAL.Contracts
         Task AddVehicleAsync(Auto_Vehicles vehicle);
         Task AddRequestAsync(Auto_VehicleChangeRequests request);
         Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId);
+
+        Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId);
+        Task<bool> HasPendingRequestForUserAsync(string userId, ChangeRequestType type);
         Task SaveChangesAsync();
     }
 }

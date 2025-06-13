@@ -25,6 +25,7 @@ namespace AutoSystem.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterVehicle([FromBody] VehicleRegisterDTO dto)
         {
+
             await _domain.RegisterVehicleAsync(dto, GetUserId());
             return Ok(new { message = "Request submitted successfully" });
         }
@@ -37,9 +38,9 @@ namespace AutoSystem.Controllers
         }
 
         [HttpDelete("request-delete/{vehicleId}")]
-        public async Task<IActionResult> RequestDelete(Guid vehicleId, [FromQuery] string comment)
+        public async Task<IActionResult> RequestDelete(Guid vehicleId)
         {
-            await _domain.RequestVehicleDeletionAsync(vehicleId, comment, GetUserId());
+            await _domain.RequestVehicleDeletionAsync(vehicleId, GetUserId());
             return Ok(new { message = "Delete request submitted" });
         }
 
