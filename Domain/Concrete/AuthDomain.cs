@@ -35,7 +35,8 @@ public class AuthDomain : IAuthDomain
     public async Task RegisterAsync(RegisterDTO dto)
     {
         var existing = await _userManager.FindByEmailAsync(dto.Email);
-        if (existing != null) throw new Exception("User already exists.");
+        if (existing != null) throw new Exception("User with that email exists.");
+
 
         var user = new Auto_Users
         {
@@ -62,8 +63,14 @@ public class AuthDomain : IAuthDomain
         }
 
         var result = await _userManager.CreateAsync(user, dto.Password);
+   
+
         if (!result.Succeeded)
-            throw new Exception(string.Join("; ", result.Errors.Select(e => e.Description)));
+        {
+            var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new Exception($"Gabim gjatë krijimit: {errorMessage}");
+        }
+
 
         // Roli (ruhet nga ui)
         if (!await _roleManager.RoleExistsAsync(dto.Role))

@@ -24,7 +24,8 @@ namespace DTO.UserDTO
         [Required, EmailAddress]
         public string Email { get; set; } = null!;
 
-        [Required, DataType(DataType.Password), MinLength(9)]
+        [Required, DataType(DataType.Password), MinLength(8)]
+        
         public string Password { get; set; } = null!;
 
         [Required]

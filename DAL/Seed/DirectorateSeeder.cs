@@ -16,7 +16,7 @@ namespace DAL.Seed
                         IDPK_Directory = Guid.NewGuid(),
                         DirectoryName = "Tirana",
                         Address = "Rruga e Dibrës",
-                        CreatedBy = "070d74c3-7550-4b5a-a618-42bc327fdd0b", 
+                        CreatedBy = "b103da7f-891a-45a5-a1c1-00cafba110c0", 
                         CreatedOn = DateTime.UtcNow,
                         CreatedIp = "127.0.0.1"
                     },
@@ -25,7 +25,7 @@ namespace DAL.Seed
                         IDPK_Directory = Guid.NewGuid(),
                         DirectoryName = "Durrës",
                         Address = "Sheshi Liria",
-                        CreatedBy = "070d74c3-7550-4b5a-a618-42bc327fdd0b", 
+                        CreatedBy = "b103da7f-891a-45a5-a1c1-00cafba110c0", 
                         CreatedOn = DateTime.UtcNow,
                         CreatedIp = "127.0.0.1"
                     }
