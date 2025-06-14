@@ -1,4 +1,5 @@
 ﻿using Domain.Contracts;
+using Domain.JWT;
 using DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -129,7 +130,9 @@ namespace AutoSystem.Controllers
                 Expires = expires
             };
 
-            Response.Cookies.Append("refreshToken", token, cookieOptions);
+            //Response.Cookies.Append("refreshToken", token, cookieOptions);
+            Response.Cookies.Append("refreshToken", Uri.EscapeDataString(token), cookieOptions);
+
 
         }
 
