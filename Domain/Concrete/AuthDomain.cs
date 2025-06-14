@@ -161,9 +161,14 @@ public class AuthDomain : IAuthDomain
 
     public async Task LogoutAsync(string refreshToken)
     {
+        Console.WriteLine($"[Domain] Querying DB for token: {refreshToken}");
+
         var token = await _context.Auto_RefreshTokens
             //.AsTracking()
             .FirstOrDefaultAsync(t => t.Token == refreshToken);
+
+        Console.WriteLine($"[Domain] Querying DB for token: {refreshToken}");
+
         if (token == null)
         {
             Console.WriteLine("Token null ne LogoutAsync");

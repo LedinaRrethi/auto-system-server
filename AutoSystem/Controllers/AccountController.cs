@@ -97,9 +97,12 @@ namespace AutoSystem.Controllers
         {
             var refreshToken = Request.Cookies["refreshToken"];
 
+            Console.WriteLine($"[Controller] RefreshToken from cookie: {refreshToken}");
+
+
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                refreshToken = System.Net.WebUtility.UrlDecode(refreshToken);
+                refreshToken = Uri.UnescapeDataString(refreshToken);
 
                 Console.WriteLine("LogoutAsync i thirrir me refresh token" + refreshToken);
 
