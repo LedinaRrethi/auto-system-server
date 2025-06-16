@@ -93,5 +93,13 @@ namespace Domain.Concrete
                 HasNextPage = result.Count > pageSize
             };
         }
+
+
+        public async Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize)
+        {
+            var fines = await _repo.GetAllFinesAsync(page, pageSize);
+            return _mapper.Map<List<FineResponseDTO>>(fines);
+        }
+
     }
 }

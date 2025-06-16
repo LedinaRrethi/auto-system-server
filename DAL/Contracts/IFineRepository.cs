@@ -31,6 +31,9 @@ namespace DAL.Contracts
         // Kërkon gjobat sipas targës së automjetit për Policin, me pagination.
         Task<List<Auto_Fines>> SearchFinesByPlateAsync(string plate, int page, int pageSize);
 
+        Task<List<Auto_Fines>> GetAllFinesAsync(int page, int pageSize);
+
+
     }
 
 }

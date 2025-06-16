@@ -15,6 +15,9 @@ namespace Domain.Contracts
         Task<PaginationResult<FineResponseDTO>> GetMyFinesAsync(string userId, FineFilterDTO filter, int page, int pageSize);
 
         Task<PaginationResult<FineResponseDTO>> SearchFinesByPlateAsync(string plate, int page, int pageSize);
+
+        Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize);
+
     }
 
 }

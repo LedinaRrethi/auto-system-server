@@ -60,6 +60,21 @@ namespace DAL.Concrete
                 .OrderByDescending(f => f.FineDate)
                 .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
+
+        public async Task<List<Auto_Fines>> GetAllFinesAsync(int page, int pageSize)
+        {
+            return await _context.Auto_Fines
+                .Include(f => f.FineRecipient)
+                .Include(f => f.Vehicle)
+                .Include(f => f.PoliceOfficer)
+                .Where(f => f.Invalidated == 0)
+                .OrderByDescending(f => f.FineDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+
     }
 
 }

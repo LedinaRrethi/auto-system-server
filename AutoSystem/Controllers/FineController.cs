@@ -46,6 +46,16 @@ namespace AutoSystem.Controllers
             var result = await _domain.SearchFinesByPlateAsync(plate, page, pageSize);
             return Ok(result);
         }
+
+
+        [Authorize(Roles = "Police")]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllFines([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            var result = await _domain.GetAllFinesAsync(page, pageSize);
+            return Ok(result);
+        }
+
     }
 
 }
