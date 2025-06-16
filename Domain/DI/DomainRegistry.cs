@@ -17,6 +17,7 @@ namespace Domain.DI
             For<IAdminDomain>().Use<AdminDomain>();
             For<IDirectorateDomain>().Use<DirectorateDomain>();
             For<IVehicleRequestDomain>().Use<VehicleRequestDomain>();
+            For<IAdminVehicleRequestDomain>().Use<AdminVehicleRequestDomain>();
             //For<IVehicleDomain>().Use<VehicleDomain>();
             
 
