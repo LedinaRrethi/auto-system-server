@@ -3,6 +3,7 @@ using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO.UserDTO;
+using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,15 +24,18 @@ namespace Domain.Concrete
 
         public async Task<PaginatedUserDTO> GetUsersPaginatedAsync(int page, int pageSize, string sortField, string sortOrder)
         {
+            // Merr të gjithë përdoruesit që presin aprovim
             var users = await AdminRepository.GetAllUsersForApprovalAsync();
-            var paginatedUsers = _paginationHelper.GetPaginatedData(users, page, pageSize, sortField, sortOrder).ToList();
 
-            var totalPages = (int)Math.Ceiling((double)users.Count / pageSize);
+            // Apliko pagination me sortim dhe HasNextPage
+            var paginationResult = _paginationHelper.GetPaginatedData(users, page, pageSize, sortField, sortOrder);
 
             return new PaginatedUserDTO
             {
-                Users = paginatedUsers,
-                TotalPages = totalPages
+                Users = paginationResult.Items,
+                Page = paginationResult.Page,
+                PageSize = paginationResult.PageSize,
+                HasNextPage = paginationResult.HasNextPage
             };
         }
 
@@ -40,5 +44,4 @@ namespace Domain.Concrete
             return AdminRepository.UpdateUserStatusAsync(userId, newStatus);
         }
     }
-
 }
