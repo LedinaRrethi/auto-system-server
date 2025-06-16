@@ -1,5 +1,6 @@
 ﻿using DAL.Contracts;
 using DTO.FineDTO;
+using DTO.VehicleDTO;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -73,6 +74,25 @@ namespace DAL.Concrete
                 .Take(pageSize)
                 .ToListAsync();
         }
+
+        public async Task<VehicleOwnerInfoDTO?> GetOwnerInfoByPlateAsync(string plateNumber)
+        {
+            var vehicle = await _context.Auto_Vehicles
+                .Include(v => v.Owner)
+                .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber && v.Invalidated == 0);
+
+            if (vehicle?.Owner == null) return null;
+
+            return new VehicleOwnerInfoDTO
+            {
+                FirstName = vehicle.Owner.FirstName,
+                LastName = vehicle.Owner.LastName,
+                FatherName = vehicle.Owner.FatherName,
+                PhoneNumber = vehicle.Owner.PhoneNumber,
+            
+            };
+        }
+
 
 
     }

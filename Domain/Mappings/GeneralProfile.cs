@@ -152,6 +152,8 @@ namespace Domain.Mappings
     .ReverseMap();
 
 
+            CreateMap<Auto_FineRecipients, VehicleOwnerInfoDTO>().ReverseMap();
+
 
         }
     }

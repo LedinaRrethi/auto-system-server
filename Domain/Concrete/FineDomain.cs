@@ -2,6 +2,7 @@
 using DAL.Contracts;
 using Domain.Contracts;
 using DTO.FineDTO;
+using DTO.VehicleDTO;
 using Entities.Models;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Identity;
@@ -100,6 +101,12 @@ namespace Domain.Concrete
             var fines = await _repo.GetAllFinesAsync(page, pageSize);
             return _mapper.Map<List<FineResponseDTO>>(fines);
         }
+
+        public async Task<VehicleOwnerInfoDTO?> GetVehicleOwnerInfoAsync(string plate)
+        {
+            return await _repo.GetOwnerInfoByPlateAsync(plate);
+        }
+
 
     }
 }

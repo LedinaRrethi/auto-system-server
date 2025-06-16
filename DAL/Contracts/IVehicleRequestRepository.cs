@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using DTO.VehicleDTO;
+using Entities.Models;
 using Helpers.Enumerations;
 
 namespace DAL.Contracts

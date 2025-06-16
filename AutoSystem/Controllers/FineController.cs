@@ -56,6 +56,18 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "Police")]
+        [HttpGet("owner-details")]
+        public async Task<IActionResult> GetVehicleOwnerDetails([FromQuery] string plate)
+        {
+            var result = await _domain.GetVehicleOwnerInfoAsync(plate);
+            if (result == null)
+                return NotFound("Vehicle not ofund.");
+
+            return Ok(result);
+        }
+
     }
 
 }

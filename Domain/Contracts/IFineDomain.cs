@@ -1,4 +1,5 @@
 ﻿using DTO.FineDTO;
+using DTO.VehicleDTO;
 using Helpers.Pagination;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace Domain.Contracts
         Task<PaginationResult<FineResponseDTO>> SearchFinesByPlateAsync(string plate, int page, int pageSize);
 
         Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize);
+
+        Task<VehicleOwnerInfoDTO?> GetVehicleOwnerInfoAsync(string plate);
 
     }
 

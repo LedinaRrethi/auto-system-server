@@ -1,4 +1,5 @@
 ﻿using DTO.FineDTO;
+using DTO.VehicleDTO;
 using Entities.Models;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,9 @@ namespace DAL.Contracts
         Task<List<Auto_Fines>> SearchFinesByPlateAsync(string plate, int page, int pageSize);
 
         Task<List<Auto_Fines>> GetAllFinesAsync(int page, int pageSize);
+
+
+        Task<VehicleOwnerInfoDTO?> GetOwnerInfoByPlateAsync(string plateNumber);
 
 
     }
