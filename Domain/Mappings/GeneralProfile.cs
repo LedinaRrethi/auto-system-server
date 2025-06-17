@@ -6,6 +6,7 @@ using Helpers.Enumerations;
 using System;
 using DTO.VehicleDTO;
 using DTO.VehicleRequest;
+using DTO.FineDTO;
 
 namespace Domain.Mappings
 {
@@ -137,6 +138,21 @@ namespace Domain.Mappings
             CreateMap<Auto_VehicleChangeRequests, VehicleRequestListDTO>()
     .ForMember(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.Vehicle.PlateNumber))
     .ReverseMap();
+
+            CreateMap<Auto_Fines, FineDTO>().ReverseMap();
+            CreateMap<Auto_FineRecipients, FineRecipientDTO>().ReverseMap();
+
+            CreateMap<Auto_Fines, FineResponseDTO>()
+    .ForMember(dest => dest.PoliceFullName,
+        opt => opt.MapFrom(src => src.PoliceOfficer.FirstName + " " + src.PoliceOfficer.LastName))
+    .ForMember(dest => dest.RecipientFullName,
+        opt => opt.MapFrom(src => src.FineRecipient.FirstName + " " + src.FineRecipient.LastName))
+    .ForMember(dest => dest.PlateNumber,
+        opt => opt.MapFrom(src => src.FineRecipient.PlateNumber))
+    .ReverseMap();
+
+
+            CreateMap<Auto_FineRecipients, VehicleOwnerInfoDTO>().ReverseMap();
 
 
         }

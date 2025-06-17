@@ -2,37 +2,61 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class PaginationHelper<T>
+namespace Helpers.Pagination
 {
-    public IEnumerable<T> GetPaginatedData(IEnumerable<T> data, int page, int pageSize, string sortField, string sortOrder, string searchString = null, Func<T, bool> filterFunc = null)
+    public class PaginationResult<T>
     {
-
-        if (filterFunc != null)
-        {
-            data = data.Where(filterFunc);
-        }
-
-        if (!string.IsNullOrEmpty(sortField))
-        {
-            data = ApplySorting(data, sortField, sortOrder);
-        }
-
-        int skipCount = (page - 1) * pageSize;
-
-        data = data.Skip(skipCount).Take(pageSize);
-
-        return data;
+        public List<T> Items { get; set; } = new();
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public bool HasNextPage { get; set; }
     }
 
-    private IEnumerable<T> ApplySorting(IEnumerable<T> data, string sortField, string sortOrder)
+    public class PaginationHelper<T>
     {
-        if (sortOrder.ToLower() == "asc")
+        public PaginationResult<T> GetPaginatedData(
+            IEnumerable<T> source,
+            int page,
+            int pageSize,
+            string? sortField = null,
+            string sortOrder = "asc",
+            Func<T, bool>? filterFunc = null)
         {
-            return data.OrderBy(item => item.GetType().GetProperty(sortField).GetValue(item, null));
+            // Filter
+            if (filterFunc != null)
+            {
+                source = source.Where(filterFunc);
+            }
+
+            // Sort
+            if (!string.IsNullOrEmpty(sortField))
+            {
+                source = ApplySorting(source, sortField, sortOrder);
+            }
+
+            // Load pageSize + 1 to detect if there's a next page
+            var items = source
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize + 1)
+                .ToList();
+
+            return new PaginationResult<T>
+            {
+                Items = items.Take(pageSize).ToList(),
+                Page = page,
+                PageSize = pageSize,
+                HasNextPage = items.Count > pageSize
+            };
         }
-        else
+
+        private IEnumerable<T> ApplySorting(IEnumerable<T> data, string sortField, string sortOrder)
         {
-            return data.OrderByDescending(item => item.GetType().GetProperty(sortField).GetValue(item, null));
+            var prop = typeof(T).GetProperty(sortField);
+            if (prop == null) return data;
+
+            return sortOrder.ToLower() == "asc"
+                ? data.OrderBy(x => prop.GetValue(x))
+                : data.OrderByDescending(x => prop.GetValue(x));
         }
     }
 }
