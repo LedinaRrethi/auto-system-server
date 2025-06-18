@@ -19,7 +19,11 @@ namespace Domain.Contracts
 
         Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize);
 
-        Task<VehicleOwnerInfoDTO?> GetVehicleOwnerInfoAsync(string plate);
+        Task<object?> GetRecipientDetailsByPlateAsync(string plate);
+
+
+        Task<PaginationResult<FineResponseDTO>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter, int page, int pageSize);
+
 
     }
 

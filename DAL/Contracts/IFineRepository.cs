@@ -34,8 +34,17 @@ namespace DAL.Contracts
 
         Task<List<Auto_Fines>> GetAllFinesAsync(int page, int pageSize);
 
+        Task<Auto_FineRecipients?> GetFineRecipientByUserIdAsync(string userId);
+        Task<Auto_FineRecipients?> GetFineRecipientByPersonalIdAsync(string personalId);
 
-        Task<VehicleOwnerInfoDTO?> GetOwnerInfoByPlateAsync(string plateNumber);
+        Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter, int page, int pageSize);
+
+
+        Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate);
+    
+
+
+
 
 
     }

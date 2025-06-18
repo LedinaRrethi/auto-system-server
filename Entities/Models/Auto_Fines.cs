@@ -14,7 +14,7 @@ namespace Entities.Models
         [Key]
         public Guid IDPK_Fine { get; set; }
 
-        public Guid? IDFK_Vehicle { get; set; } // Nëse makina është e regjistruar
+        public Guid? IDFK_Vehicle { get; set; } 
 
         [Required]
         public Guid IDFK_FineRecipient { get; set; }
@@ -33,7 +33,7 @@ namespace Entities.Models
         public byte Invalidated { get; set; } = 0;
 
         [Required]
-        public required string CreatedBy { get; set; } // Polici që krijon gjobën
+        public required string CreatedBy { get; set; } 
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
@@ -55,7 +55,7 @@ namespace Entities.Models
         public virtual Auto_FineRecipients FineRecipient { get; set; } = null!;
 
         [ForeignKey("CreatedBy")]
-        public virtual Auto_Users PoliceOfficer { get; set; } = null!; // Emri saktë sipas funksionit
+        public virtual Auto_Users PoliceOfficer { get; set; } = null!;
 
         [ForeignKey("ModifiedBy")]
         public virtual Auto_Users? ModifiedByUser { get; set; }

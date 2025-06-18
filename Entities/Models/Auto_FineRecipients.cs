@@ -13,7 +13,7 @@ namespace Entities.Models
         [Key]
         public Guid IDPK_FineRecipient { get; set; }
 
-        public string? IDFK_User { get; set; } // Nëse është përdorues i regjistruar
+        public string? IDFK_User { get; set; } 
 
         [Required]
         [MaxLength(50)]

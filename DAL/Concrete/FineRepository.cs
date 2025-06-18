@@ -75,23 +75,45 @@ namespace DAL.Concrete
                 .ToListAsync();
         }
 
-        public async Task<VehicleOwnerInfoDTO?> GetOwnerInfoByPlateAsync(string plateNumber)
+ 
+
+        public Task<Auto_FineRecipients?> GetFineRecipientByUserIdAsync(string userId) =>
+    _context.Auto_FineRecipients
+        .FirstOrDefaultAsync(r => r.IDFK_User == userId && r.Invalidated == 0);
+
+        public Task<Auto_FineRecipients?> GetFineRecipientByPersonalIdAsync(string personalId) =>
+            _context.Auto_FineRecipients
+                .FirstOrDefaultAsync(r => r.PersonalId == personalId && r.Invalidated == 0);
+
+
+        public async Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter, int page, int pageSize)
         {
-            var vehicle = await _context.Auto_Vehicles
-                .Include(v => v.Owner)
-                .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber && v.Invalidated == 0);
+            var query = _context.Auto_Fines
+                .Include(f => f.FineRecipient)
+                .Include(f => f.Vehicle)
+                .Include(f => f.PoliceOfficer)
+                .Where(f => f.CreatedBy == policeId && f.Invalidated == 0);
 
-            if (vehicle?.Owner == null) return null;
+            if (filter.FromDate.HasValue)
+                query = query.Where(f => f.FineDate >= filter.FromDate.Value);
 
-            return new VehicleOwnerInfoDTO
-            {
-                FirstName = vehicle.Owner.FirstName,
-                LastName = vehicle.Owner.LastName,
-                FatherName = vehicle.Owner.FatherName,
-                PhoneNumber = vehicle.Owner.PhoneNumber,
-            
-            };
+            if (filter.ToDate.HasValue)
+                query = query.Where(f => f.FineDate <= filter.ToDate.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.PlateNumber))
+                query = query.Where(f => f.FineRecipient.PlateNumber != null &&
+                                         f.FineRecipient.PlateNumber.Contains(filter.PlateNumber));
+
+            return await query
+                .OrderByDescending(f => f.FineDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
+
+        public Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate) =>
+    _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.PlateNumber == plate);
+
 
 
 

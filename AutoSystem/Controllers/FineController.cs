@@ -26,11 +26,10 @@ namespace AutoSystem.Controllers
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             var success = await _domain.CreateFineAsync(dto, userId, ip ?? "unknown");
 
-            return success ? Ok("Gjoba u vendos.") : BadRequest("Gabim në regjistrim.");
+            return success ? Ok("Fine successfully issued.") : BadRequest("An error occurred while registering the fine.");
         }
 
         [Authorize(Roles = "Individ")]
-
         [HttpGet("my-fines")]
         public async Task<IActionResult> GetMyFines([FromQuery] FineFilterDTO filter, int page = 1, int pageSize = 10)
         {
@@ -47,7 +46,6 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
-
         [Authorize(Roles = "Police")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllFines([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -56,18 +54,35 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
-
         [Authorize(Roles = "Police")]
-        [HttpGet("owner-details")]
-        public async Task<IActionResult> GetVehicleOwnerDetails([FromQuery] string plate)
+        [HttpGet("recipient-details")]
+        public async Task<IActionResult> GetRecipientDetailsByPlate([FromQuery] string plate)
         {
-            var result = await _domain.GetVehicleOwnerInfoAsync(plate);
+            var result = await _domain.GetRecipientDetailsByPlateAsync(plate);
+
             if (result == null)
-                return NotFound("Vehicle not ofund.");
+            {
+                return Ok(new
+                {
+                    IsFrom = "Manual",
+                    FirstName = "",
+                    FatherName = "",
+                    LastName = "",
+                    PhoneNumber = "",
+                    PersonalId = ""
+                });
+            }
 
             return Ok(result);
         }
 
+        [Authorize(Roles = "Police")]
+        [HttpGet("my-issued-fines")]
+        public async Task<IActionResult> GetPoliceFines([FromQuery] FineFilterDTO filter, int page = 1, int pageSize = 10)
+        {
+            var policeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _domain.GetFinesCreatedByPoliceAsync(policeId, filter, page, pageSize);
+            return Ok(result);
+        }
     }
-
 }
