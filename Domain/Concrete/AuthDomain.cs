@@ -82,8 +82,8 @@ public class AuthDomain : IAuthDomain
     public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto, string ipAddress)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-        if (user == null || user.Invalidated == 1)
-            throw new Exception("Invalid credentials or blocked user.");
+        if (user == null)
+            throw new Exception("Invalid email or password.");
 
         if (user.Status == UserStatus.Pending)
             throw new Exception("Your account is pending approval.");
