@@ -26,6 +26,12 @@ namespace Entities.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Auto_Users>()
+    .HasIndex(u => u.PersonalId)
+    .IsUnique()
+    .HasFilter("[PersonalId] IS NOT NULL");
+
+
             // Auto_Vehicles
             modelBuilder.Entity<Auto_Vehicles>()
                 .HasIndex(v => v.PlateNumber)

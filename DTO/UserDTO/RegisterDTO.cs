@@ -34,6 +34,9 @@ namespace DTO.UserDTO
         public string? SpecialistNumber { get; set; }
 
         public Guid? DirectorateId { get; set; }
+        public string? PersonalId { get; set; }
+
+    
     }
 
 }

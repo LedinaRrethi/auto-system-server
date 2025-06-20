@@ -44,11 +44,11 @@ public class AuthDomain : IAuthDomain
             FatherName = dto.FatherName,
             LastName = dto.LastName,
             BirthDate = dto.BirthDate,
+            PersonalId = dto.PersonalId,
             Email = dto.Email,
             UserName = dto.Email,
             CreatedOn = DateTime.UtcNow,
             CreatedIp = "::1",
-
             EmailConfirmed = true,
             Status = UserStatus.Pending,
             Invalidated = 0

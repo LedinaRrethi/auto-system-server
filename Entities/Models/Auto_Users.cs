@@ -23,6 +23,9 @@ namespace Entities.Models
         [Required]
         public DateTime BirthDate { get; set; }
 
+        [MaxLength(20)]
+        public string? PersonalId { get; set; }
+
         [Required]
         public bool IsSpecialist { get; set; } = false;
 

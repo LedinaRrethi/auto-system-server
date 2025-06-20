@@ -66,13 +66,17 @@ namespace Domain.Mappings
                 .ForMember(dest => dest.TwoFactorEnabled, opt => opt.Ignore())
                 .ForMember(dest => dest.LockoutEnabled, opt => opt.Ignore())
                 .ForMember(dest => dest.AccessFailedCount, opt => opt.Ignore())
-                .ForMember(dest => dest.Directorate, opt => opt.Ignore());
+                .ForMember(dest => dest.Directorate, opt => opt.Ignore())
+.ForMember(dest => dest.PersonalId, opt => opt.MapFrom(src => src.PersonalId));
+
 
             CreateMap<Auto_Users, RegisterDTO>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.IsSpecialist ? "Specialist" : "Individ"))
                 .ForMember(dest => dest.SpecialistNumber, opt => opt.MapFrom(src => src.SpecialistNumber))
                 .ForMember(dest => dest.DirectorateId, opt => opt.MapFrom(src => src.IDFK_Directory))
-                .ForMember(dest => dest.Password, opt => opt.Ignore());
+                .ForMember(dest => dest.Password, opt => opt.Ignore())        
+.ForMember(dest => dest.PersonalId, opt => opt.MapFrom(src => src.PersonalId));
+
 
             #endregion
 
