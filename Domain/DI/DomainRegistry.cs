@@ -19,6 +19,7 @@ namespace Domain.DI
             For<IVehicleRequestDomain>().Use<VehicleRequestDomain>();
             For<IAdminVehicleRequestDomain>().Use<AdminVehicleRequestDomain>();
             For<IFineDomain>().Use<FineDomain>();
+            For<IInspectionDomain>().Use<InspectionDomain>();
             
 
             AddRepositoryRegistries();

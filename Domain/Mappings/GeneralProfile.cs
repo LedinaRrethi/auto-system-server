@@ -7,6 +7,7 @@ using System;
 using DTO.VehicleDTO;
 using DTO.VehicleRequest;
 using DTO.FineDTO;
+using DTO.InspectionDTO;
 
 namespace Domain.Mappings
 {
@@ -157,6 +158,8 @@ namespace Domain.Mappings
 
 
             CreateMap<Auto_FineRecipients, VehicleOwnerInfoDTO>().ReverseMap();
+
+            CreateMap<Auto_InspectionRequests, InspectionRequestCreateDTO>().ReverseMap();
 
 
         }
