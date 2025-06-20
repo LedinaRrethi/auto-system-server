@@ -95,10 +95,16 @@ namespace DAL.Concrete
                 .Where(f => f.CreatedBy == policeId && f.Invalidated == 0);
 
             if (filter.FromDate.HasValue)
-                query = query.Where(f => f.FineDate >= filter.FromDate.Value);
+            {
+                query = query.Where(f => f.FineDate >= filter.FromDate.Value.Date);
+            }
 
             if (filter.ToDate.HasValue)
-                query = query.Where(f => f.FineDate <= filter.ToDate.Value);
+            {
+                var toDateExclusive = filter.ToDate.Value.Date.AddDays(1);
+                query = query.Where(f => f.FineDate < toDateExclusive);
+            }
+
 
             if (!string.IsNullOrWhiteSpace(filter.PlateNumber))
                 query = query.Where(f => f.FineRecipient.PlateNumber != null &&

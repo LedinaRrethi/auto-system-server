@@ -58,8 +58,7 @@ namespace Domain.Concrete
                         FirstName = owner?.FirstName ?? dto.FirstName!,
                         LastName = owner?.LastName ?? dto.LastName!,
                         FatherName = owner?.FatherName ?? dto.FatherName,
-                        PhoneNumber = owner?.PhoneNumber ?? dto.PhoneNumber,
-                        PersonalId = dto.PersonalId,
+                        PersonalId = owner?.PersonalId ?? dto.PersonalId,
                         PlateNumber = dto.PlateNumber,
                         CreatedBy = policeId,
                         CreatedOn = DateTime.UtcNow,
@@ -164,7 +163,7 @@ namespace Domain.Concrete
                         FirstName = owner.FirstName,
                         FatherName = owner.FatherName,
                         LastName = owner.LastName,
-                        PhoneNumber = owner.PhoneNumber
+                        PersonalId = owner.PersonalId
                     };
                 }
             }
@@ -178,7 +177,6 @@ namespace Domain.Concrete
                     FirstName = recipient.FirstName,
                     FatherName = recipient.FatherName,
                     LastName = recipient.LastName,
-                    PhoneNumber = recipient.PhoneNumber,
                     PersonalId = recipient.PersonalId
                 };
             }
