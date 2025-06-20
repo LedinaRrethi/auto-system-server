@@ -16,7 +16,7 @@ namespace DTO.UserDTO
 
         [Required]
         [DataType(DataType.Password)]
-        [MinLength(9)]
+        [MinLength(8)]
         public string Password { get; set; } = null!;
     }
 }
