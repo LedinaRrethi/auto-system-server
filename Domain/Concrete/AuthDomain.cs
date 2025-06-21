@@ -42,6 +42,7 @@ public class AuthDomain : DomainBase, IAuthDomain
         if (existing != null)
             throw new Exception("A user with this email already exists.");
 
+   
         if (dto.Role == UserRole.Specialist)
         {
             if (string.IsNullOrWhiteSpace(dto.SpecialistNumber) || dto.DirectorateId == null)

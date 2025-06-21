@@ -26,8 +26,12 @@ namespace DTO.UserDTO
         public string Email { get; set; } = null!;
 
         [Required, DataType(DataType.Password), MinLength(8)]
-        
         public string Password { get; set; } = null!;
+
+        [Required]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; } = null!;
+
 
         [Required]
         public UserRole Role { get; set; }  
