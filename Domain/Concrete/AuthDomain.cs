@@ -1,82 +1,74 @@
 ﻿using AutoMapper;
+using DAL.UoW;
+using Domain.Concrete;
 using Domain.Contracts;
 using DTO.UserDTO;
 using Entities.Models;
 using Helpers.Enumerations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-public class AuthDomain : IAuthDomain
+public class AuthDomain : DomainBase, IAuthDomain
 {
     private readonly UserManager<Auto_Users> _userManager;
     private readonly SignInManager<Auto_Users> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly AutoSystemDbContext _context;
-    private readonly IMapper _mapper;
     private readonly JWT _jwt;
 
     public AuthDomain(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IHttpContextAccessor httpContextAccessor,
         UserManager<Auto_Users> userManager,
         SignInManager<Auto_Users> signInManager,
         RoleManager<IdentityRole> roleManager,
         AutoSystemDbContext context,
-        IMapper mapper,
         IConfiguration config)
+        : base(unitOfWork, mapper, httpContextAccessor)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
         _context = context;
-        _mapper = mapper;
         _jwt = new JWT(config);
     }
 
     public async Task RegisterAsync(RegisterDTO dto)
     {
         var existing = await _userManager.FindByEmailAsync(dto.Email);
-        if (existing != null) throw new Exception("User with that email exists.");
+        if (existing != null)
+            throw new Exception("A user with this email already exists.");
 
-
-        var user = new Auto_Users
+        if (dto.Role == UserRole.Specialist)
         {
-            FirstName = dto.FirstName,
-            FatherName = dto.FatherName,
-            LastName = dto.LastName,
-            BirthDate = dto.BirthDate,
-            PersonalId = dto.PersonalId,
-            Email = dto.Email,
-            UserName = dto.Email,
-            CreatedOn = DateTime.UtcNow,
-            CreatedIp = "::1",
-            EmailConfirmed = true,
-            Status = UserStatus.Pending,
-            Invalidated = 0
-        };
-
-        // Nese eshte specialist
-        if (dto.Role == "Specialist")
-        {
-            user.IsSpecialist = true;
-            user.SpecialistNumber = dto.SpecialistNumber;
-            user.IDFK_Directory = dto.DirectorateId;
+            if (string.IsNullOrWhiteSpace(dto.SpecialistNumber) || dto.DirectorateId == null)
+                throw new Exception("Specialists must provide both a specialist number and a directorate.");
         }
 
-        var result = await _userManager.CreateAsync(user, dto.Password);
-   
+        var user = _mapper.Map<Auto_Users>(dto);
 
+        SetAuditOnCreate(user);
+
+        user.UserName = dto.Email;
+        user.EmailConfirmed = true;
+        user.Status = UserStatus.Pending;
+        user.Invalidated = 0;
+
+        var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
         {
             var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new Exception($"Gabim gjatë krijimit: {errorMessage}");
+            throw new Exception($"Error creating user: {errorMessage}");
         }
 
+        var roleName = dto.Role.ToString();
+        if (!await _roleManager.RoleExistsAsync(roleName))
+            await _roleManager.CreateAsync(new IdentityRole(roleName));
 
-        // Roli (ruhet nga ui)
-        if (!await _roleManager.RoleExistsAsync(dto.Role))
-            await _roleManager.CreateAsync(new IdentityRole(dto.Role));
-
-        await _userManager.AddToRoleAsync(user, dto.Role);
+        await _userManager.AddToRoleAsync(user, roleName);
     }
 
     public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto, string ipAddress)
@@ -87,15 +79,15 @@ public class AuthDomain : IAuthDomain
 
         if (user.Status == UserStatus.Pending)
             throw new Exception("Your account is pending approval.");
+
         if (user.Status == UserStatus.Rejected)
             throw new Exception("Your account was rejected.");
 
-
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-        if (!result.Succeeded) throw new Exception("Invalid credentials.");
+        if (!result.Succeeded)
+            throw new Exception("Invalid credentials.");
 
         var roles = await _userManager.GetRolesAsync(user);
-
         var tokenData = _jwt.GenerateToken(user, roles);
         var refreshToken = _jwt.GenerateRefreshToken();
 
@@ -104,7 +96,7 @@ public class AuthDomain : IAuthDomain
             Token = refreshToken.Token,
             JwtId = tokenData.JwtId,
             IDFK_User = user.Id,
-            CreatedAt = refreshToken.CreatedAt,
+            CreatedOn = refreshToken.CreatedOn,
             ExpiryDate = refreshToken.ExpiryDate,
             CreatedByIp = ipAddress
         };
@@ -143,7 +135,7 @@ public class AuthDomain : IAuthDomain
             Token = newRefresh.Token,
             JwtId = tokenData.JwtId,
             IDFK_User = user.Id,
-            CreatedAt = newRefresh.CreatedAt,
+            CreatedOn = newRefresh.CreatedOn,
             ExpiryDate = newRefresh.ExpiryDate,
             CreatedByIp = ipAddress
         };
@@ -161,31 +153,15 @@ public class AuthDomain : IAuthDomain
 
     public async Task LogoutAsync(string refreshToken)
     {
-        Console.WriteLine($"[Domain] Querying DB for token: {refreshToken}");
-
         var token = await _context.Auto_RefreshTokens
-            //.AsTracking()
             .FirstOrDefaultAsync(t => t.Token == refreshToken);
 
-        Console.WriteLine($"[Domain] Querying DB for token: {refreshToken}");
+        if (token == null) return;
 
-        if (token == null)
-        {
-            Console.WriteLine("Token null ne LogoutAsync");
-            return;
-        }
-
-        Console.WriteLine($"Revoking token: {token.Token}");
-        /*
-        token.IsRevoked = true;
-        _context.Update(token);
-        await _context.SaveChangesAsync();
-        */
         token.IsRevoked = true;
         _context.Attach(token);
         _context.Entry(token).Property(t => t.IsRevoked).IsModified = true;
+
         await _context.SaveChangesAsync();
-
-
     }
 }

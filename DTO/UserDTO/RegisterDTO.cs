@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Helpers.Enumerations;
 
 namespace DTO.UserDTO
 {
@@ -29,7 +30,7 @@ namespace DTO.UserDTO
         public string Password { get; set; } = null!;
 
         [Required]
-        public string Role { get; set; } = null!; // "Individ", "Police", "Specialist"
+        public UserRole Role { get; set; }  
 
         public string? SpecialistNumber { get; set; }
 

@@ -63,7 +63,7 @@ public class JWT
         {
             Token = Convert.ToBase64String(randomBytes),
             ExpiryDate = DateTime.UtcNow.AddMinutes(10),
-            CreatedAt = DateTime.UtcNow
+            CreatedOn = DateTime.UtcNow
         };
     }
 }

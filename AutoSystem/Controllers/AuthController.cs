@@ -8,11 +8,11 @@ namespace AutoSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly IAuthDomain _auth;
 
-        public AccountController(IAuthDomain auth)
+        public AuthController(IAuthDomain auth)
         {
             _auth = auth;
         }

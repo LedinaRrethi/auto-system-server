@@ -25,7 +25,7 @@ namespace Entities.Models
         public bool IsRevoked { get; set; } = false;
 
         [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [Required]
         public string CreatedByIp { get; set; } = default!;

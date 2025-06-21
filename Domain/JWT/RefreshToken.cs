@@ -10,6 +10,6 @@ namespace Domain.JWT
     {
         public string Token { get; set; } = null!;
         public DateTime ExpiryDate { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }

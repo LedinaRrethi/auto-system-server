@@ -55,7 +55,7 @@ namespace Domain.Mappings
                 .ForMember(dest => dest.FatherName, opt => opt.MapFrom(src => src.FatherName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate))
-                .ForMember(dest => dest.IsSpecialist, opt => opt.MapFrom(src => src.Role == "Specialist"))
+                .ForMember(dest => dest.IsSpecialist, opt => opt.MapFrom(src => src.Role == UserRole.Specialist))
                 .ForMember(dest => dest.SpecialistNumber, opt => opt.MapFrom(src => src.SpecialistNumber))
                 .ForMember(dest => dest.IDFK_Directory, opt => opt.MapFrom(src => src.DirectorateId))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => UserStatus.Pending))
