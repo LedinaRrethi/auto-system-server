@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace DAL.Contracts
 {
-    public class IRepository
+    public interface IRepository<TEntity> where TEntity : class
     {
+        Task<TEntity?> GetByIdAsync(Guid id);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
+        Task AddAsync(TEntity entity);
+        Task AddRangeAsync(IEnumerable<TEntity> entities);
+        Task RemoveAsync(TEntity entity);
+        Task UpdateAsync(TEntity entity);
+        Task SaveChangesAsync();
     }
 }

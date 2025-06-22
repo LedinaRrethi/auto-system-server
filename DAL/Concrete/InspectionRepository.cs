@@ -1,47 +1,34 @@
 ﻿using DAL.Contracts;
 using Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Helpers.Enumerations;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace DAL.Concrete
 {
-    public class InspectionRepository : IInspectionRepository
+    public class InspectionRepository : BaseRepository<Auto_InspectionRequests>, IInspectionRepository
     {
-        private readonly AutoSystemDbContext _context;
-
-        public InspectionRepository(AutoSystemDbContext context)
+        public InspectionRepository(AutoSystemDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<int> CountInspectionsByDateAndDirectoryAsync(Guid directoryId, DateTime date)
         {
-            return await _context.Auto_InspectionRequests
-                .CountAsync(r => r.IDFK_Directory == directoryId
-                              && r.RequestedDate.Date == date.Date
-                              && r.Invalidated == 0);
-        }
-
-        public async Task AddInspectionRequestAsync(Auto_InspectionRequests request)
-        {
-            await _context.Auto_InspectionRequests.AddAsync(request);
+            return await _dbSet
+                .CountAsync(r =>
+                    r.IDFK_Directory == directoryId &&
+                    r.RequestedDate.Date == date.Date &&
+                    r.Invalidated == 0);
         }
 
         public async Task<bool> HasPendingRequestAsync(Guid vehicleId)
         {
-            return await _context.Auto_InspectionRequests
+            return await _dbSet
                 .AnyAsync(r =>
                     r.IDFK_Vehicle == vehicleId &&
                     r.Status == InspectionStatus.Pending &&
                     r.Invalidated == 0);
         }
-
-        public Task SaveChangesAsync() => _context.SaveChangesAsync();
     }
-
 }
