@@ -9,7 +9,7 @@ namespace Domain.Contracts
 {
     public interface IInspectionDomain
     {
-        Task<bool> CreateInspectionRequestAsync(InspectionRequestCreateDTO dto, string userId, string ip);
+        Task<bool> CreateInspectionRequestAsync(InspectionRequestCreateDTO dto);
     }
 
 

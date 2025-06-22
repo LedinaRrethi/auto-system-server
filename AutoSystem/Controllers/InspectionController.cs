@@ -27,7 +27,7 @@ namespace AutoSystem.Controllers
 
             try
             {
-                var success = await _domain.CreateInspectionRequestAsync(dto, userId, ip ?? "unknown");
+                var success = await _domain.CreateInspectionRequestAsync(dto);
                 return success ? Ok("Request submitted.") : BadRequest("Submission failed.");
             }
             catch (InvalidOperationException ex)
