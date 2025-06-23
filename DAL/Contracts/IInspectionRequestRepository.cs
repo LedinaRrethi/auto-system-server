@@ -1,5 +1,7 @@
-﻿using DTO.InspectionDTO;
+﻿using DTO;
+using DTO.InspectionDTO;
 using Entities.Models;
+using Helpers.Pagination;
 using System;
 using System.Threading.Tasks;
 
@@ -10,6 +12,8 @@ namespace DAL.Contracts
         Task<int> CountInspectionsByDateAndDirectoryAsync(Guid directoryId, DateTime date);
         Task<bool> HasPendingRequestAsync(Guid vehicleId);
 
-        Task<List<MyInspectionRequestDTO>> GetRequestsByUserAsync(string userId);
+        //Task<List<MyInspectionRequestDTO>> GetRequestsByUserAsync(string userId);
+
+        Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(string userId, PaginationDTO dto);
     }
 }

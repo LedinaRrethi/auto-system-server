@@ -1,4 +1,5 @@
 ﻿using Domain.Contracts;
+using DTO;
 using DTO.InspectionDTO;
 using JasperFx.CodeGeneration.Frames;
 using Microsoft.AspNetCore.Authorization;
@@ -37,13 +38,22 @@ namespace AutoSystem.Controllers
         }
 
 
+        //[Authorize(Roles = "Individ")]
+        //[HttpGet("my-requests")]
+        //public async Task<IActionResult> GetMyRequests()
+        //{
+        //    var result = await _domain.GetRequestsByCurrentUserAsync();
+        //    return Ok(result);
+        //}
+
         [Authorize(Roles = "Individ")]
-        [HttpGet("my-requests")]
-        public async Task<IActionResult> GetMyRequests()
+        [HttpGet("my-requests-paged")]
+        public async Task<IActionResult> GetPagedRequests([FromQuery] PaginationDTO dto)
         {
-            var result = await _domain.GetRequestsByCurrentUserAsync();
+            var result = await _domain.GetCurrentUserPagedInspectionRequestsAsync(dto);
             return Ok(result);
         }
+
 
     }
 }

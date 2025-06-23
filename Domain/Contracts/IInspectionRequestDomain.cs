@@ -1,4 +1,6 @@
-﻿using DTO.InspectionDTO;
+﻿using DTO;
+using DTO.InspectionDTO;
+using Helpers.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,11 @@ namespace Domain.Contracts
     public interface IInspectionRequestDomain
     {
         Task<bool> CreateInspectionRequestAsync(InspectionRequestCreateDTO dto);
-        Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync();
+       // Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync();
+
+        Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(PaginationDTO dto);
+
+        
     }
 
 

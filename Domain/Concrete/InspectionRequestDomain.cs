@@ -2,9 +2,11 @@
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using DTO;
 using DTO.InspectionDTO;
 using Entities.Models;
 using Helpers.Enumerations;
+using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
@@ -30,12 +32,6 @@ namespace Domain.Concrete
             if (count >= 3)
                 throw new InvalidOperationException("This directorate already has 3 inspections scheduled on this date.");
 
-
-    //        dto.RequestedDate = TimeZoneInfo.ConvertTimeFromUtc(
-    //    DateTime.SpecifyKind(dto.RequestedDate, DateTimeKind.Utc),
-    //    TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time")
-    //);
-
             var request = _mapper.Map<Auto_InspectionRequests>(dto);
             request.IDPK_InspectionRequest = Guid.NewGuid();
             SetAuditOnCreate(request);
@@ -45,13 +41,21 @@ namespace Domain.Concrete
             return true;
         }
 
-        public async Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync()
+        //public async Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync()
+        //{
+        //    var userId = GetCurrentUserId();
+        //    if (string.IsNullOrEmpty(userId))
+        //        return new List<MyInspectionRequestDTO>();
+
+        //    return await _repo.GetRequestsByUserAsync(userId);
+        //}
+
+        public async Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(PaginationDTO dto)
         {
             var userId = GetCurrentUserId();
-            if (string.IsNullOrEmpty(userId))
-                return new List<MyInspectionRequestDTO>();
-
-            return await _repo.GetRequestsByUserAsync(userId);
+            if (string.IsNullOrEmpty(userId)) 
+                return new PaginationResult<MyInspectionRequestDTO>();
+            return await _repo.GetCurrentUserPagedInspectionRequestsAsync(userId, dto);
         }
     }
 }
