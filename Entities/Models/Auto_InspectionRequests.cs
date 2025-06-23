@@ -21,7 +21,6 @@ namespace Entities.Models
 
         public InspectionStatus Status { get; set; } = InspectionStatus.Pending;
 
-        // Audit Fields
         public byte Invalidated { get; set; } = 0;
 
         [Required]

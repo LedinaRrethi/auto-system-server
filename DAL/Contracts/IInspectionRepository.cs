@@ -1,12 +1,10 @@
 ﻿using Entities.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace DAL.Contracts
 {
-    public interface IInspectionRepository : IRepository<Auto_InspectionRequests>
+    public interface IInspectionRepository : IRepository<Auto_Inspections>
     {
-        Task<int> CountInspectionsByDateAndDirectoryAsync(Guid directoryId, DateTime date);
-        Task<bool> HasPendingRequestAsync(Guid vehicleId);
+        Task<Auto_InspectionRequests?> GetRequestByIdAsync(Guid requestId);
+        Task<List<Auto_InspectionRequests>> GetRequestsBySpecialistAsync(string specialistId);
     }
 }

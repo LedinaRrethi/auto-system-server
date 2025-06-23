@@ -161,6 +161,20 @@ namespace Domain.Mappings
 
             CreateMap<Auto_InspectionRequests, InspectionRequestCreateDTO>().ReverseMap();
 
+            CreateMap<Auto_Inspections, InspectionReviewDTO>().ReverseMap();
+            
+
+            CreateMap<Auto_InspectionDocs, InspectionDocDeleteDTO>().ReverseMap();
+
+            CreateMap<Auto_InspectionDocs, InspectionDocDTO>().ReverseMap();
+
+            CreateMap<Auto_InspectionDocs, InspectionDocumentUploadDTO>().ReverseMap();
+
+            CreateMap<Auto_Inspections , InspectionDTO>().ReverseMap();
+
+
+
+
 
         }
     }

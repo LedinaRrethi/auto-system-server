@@ -23,7 +23,7 @@ namespace Entities.Models
         public string DocumentName { get; set; } = null!;
 
         [Required]
-        [MaxLength(7_000_000)] // ~6.65MB për Base64 e një file 5MB
+        [MaxLength(7_000_000)] 
         public string FileBase64 { get; set; } = null!;
 
 

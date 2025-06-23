@@ -1,12 +1,12 @@
 ﻿using Domain.Contracts;
 using DTO.InspectionDTO;
-using JasperFx.CodeGeneration.Frames;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace AutoSystem.Controllers
 {
+    [Authorize(Roles = "Specialist")]
     [ApiController]
     [Route("api/[controller]")]
     public class InspectionController : ControllerBase
@@ -18,22 +18,39 @@ namespace AutoSystem.Controllers
             _domain = domain;
         }
 
-        [Authorize(Roles = "Individ")]
-        [HttpPost("request")]
-        public async Task<IActionResult> CreateRequest([FromBody] InspectionRequestCreateDTO dto)
+        [HttpGet("my-requests")]
+        public async Task<IActionResult> GetRequests()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var result = await _domain.GetMyRequestsAsync();
+            return Ok(result);
+        }
 
-            try
-            {
-                var success = await _domain.CreateInspectionRequestAsync(dto);
-                return success ? Ok("Request submitted.") : BadRequest("Submission failed.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+        [HttpPost("review")]
+        public async Task<IActionResult> Review([FromBody] InspectionReviewDTO dto)
+        {
+            var success = await _domain.ReviewInspectionAsync(dto);
+            return success ? Ok("Inspection reviewed.") : BadRequest("Review failed.");
+        }
+
+        [HttpPost("upload-docs")]
+        public async Task<IActionResult> UploadDocs([FromBody] List<InspectionDocumentUploadDTO> documents)
+        {
+            var success = await _domain.UploadDocumentsAsync(documents);
+            return success ? Ok("Documents uploaded.") : BadRequest("Upload failed.");
+        }
+
+        [HttpGet("{requestId}/documents")]
+        public async Task<IActionResult> GetDocs(Guid requestId)
+        {
+            var docs = await _domain.GetDocumentsAsync(requestId);
+            return Ok(docs);
+        }
+
+        [HttpDelete("documents/{docId}")]
+        public async Task<IActionResult> DeleteDoc(Guid docId)
+        {
+            var result = await _domain.DeleteDocumentAsync(docId);
+            return result ? Ok("Deleted.") : BadRequest("Delete failed.");
         }
     }
 }

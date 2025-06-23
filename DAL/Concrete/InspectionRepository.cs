@@ -1,34 +1,40 @@
 ﻿using DAL.Contracts;
 using Entities.Models;
-using Helpers.Enumerations;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
 
 namespace DAL.Concrete
 {
-    public class InspectionRepository : BaseRepository<Auto_InspectionRequests>, IInspectionRepository
+    public class InspectionRepository : BaseRepository<Auto_Inspections>, IInspectionRepository
     {
+        private readonly AutoSystemDbContext _context;
+
         public InspectionRepository(AutoSystemDbContext context) : base(context)
         {
+            _context = context;
         }
 
-        public async Task<int> CountInspectionsByDateAndDirectoryAsync(Guid directoryId, DateTime date)
+        public async Task<Auto_InspectionRequests?> GetRequestByIdAsync(Guid requestId)
         {
-            return await _dbSet
-                .CountAsync(r =>
-                    r.IDFK_Directory == directoryId &&
-                    r.RequestedDate.Date == date.Date &&
-                    r.Invalidated == 0);
+            return await _context.Auto_InspectionRequests
+                .FirstOrDefaultAsync(x => x.IDPK_InspectionRequest == requestId && x.Invalidated == 0);
         }
 
-        public async Task<bool> HasPendingRequestAsync(Guid vehicleId)
+        public async Task<List<Auto_InspectionRequests>> GetRequestsBySpecialistAsync(string specialistId)
         {
-            return await _dbSet
-                .AnyAsync(r =>
-                    r.IDFK_Vehicle == vehicleId &&
-                    r.Status == InspectionStatus.Pending &&
-                    r.Invalidated == 0);
+            var specialist = await _context.Users
+                .OfType<Auto_Users>()
+                .Where(u => u.Id == specialistId)
+                .Select(u => new { u.IDFK_Directory })
+                .FirstOrDefaultAsync();
+
+            if (specialist == null || specialist.IDFK_Directory == null)
+                return new List<Auto_InspectionRequests>();
+
+            return await _context.Auto_InspectionRequests
+                .Include(r => r.Vehicle)
+                .Include(r => r.Requester)
+                .Where(r => r.IDFK_Directory == specialist.IDFK_Directory && r.Invalidated == 0)
+                .ToListAsync();
         }
     }
 }

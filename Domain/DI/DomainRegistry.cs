@@ -1,4 +1,5 @@
-﻿using DAL.Contracts;
+﻿using DAL.Concrete;
+using DAL.Contracts;
 using DAL.DI;
 using Domain.Concrete;
 using Domain.Contracts;
@@ -12,15 +13,22 @@ namespace Domain.DI
     {
         public DomainRegistry()
         {
+
             IncludeRegistry<DomainUnitOfWorkRegistry>();
+
+       
             For<IAuthDomain>().Use<AuthDomain>();
             For<IAdminDomain>().Use<AdminDomain>();
             For<IDirectorateDomain>().Use<DirectorateDomain>();
             For<IVehicleRequestDomain>().Use<VehicleRequestDomain>();
             For<IAdminVehicleRequestDomain>().Use<AdminVehicleRequestDomain>();
             For<IFineDomain>().Use<FineDomain>();
+            For<IInspectionRequestDomain>().Use<InspectionRequestDomain>();
             For<IInspectionDomain>().Use<InspectionDomain>();
-            
+
+           
+
+
 
             AddRepositoryRegistries();
             AddHttpContextRegistries();

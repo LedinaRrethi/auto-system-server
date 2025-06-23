@@ -15,12 +15,15 @@ namespace DAL.DI
     {
         public RepositoryRegistry()
         {
+            For(typeof(IRepository<>)).Use(typeof(BaseRepository<>));
+
             For<IAdminRepository>().Use<AdminRepository>();
             For<IDirectorateRepository>().Use<DirectorateRepository>();
             For<IVehicleRequestRepository>().Use<VehicleRequestRepository>();
             For<IAdminVehicleRequestRepository>().Use<AdminVehicleRequestRepository>();
             For<IFineRepository>().Use<FineRepository>();
-            For<IInspectionRepository>().Use<InspectionRepository>();
+            For<IInspectionRequestRepository>().Use<InspectionRequestRepository>();
+            For<IInspectionRepository>().Use<InspectionRepository>();   
 
             IncludeRegistry<UnitOfWorkRegistry>();
 
