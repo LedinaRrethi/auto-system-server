@@ -17,7 +17,7 @@ namespace Entities.Models
         public Guid IDFK_Directory { get; set; }
 
         [Required]
-        public DateTime RequestedDate { get; set; } = DateTime.UtcNow;
+        public DateTime RequestedDate { get; set; } 
 
         public InspectionStatus Status { get; set; } = InspectionStatus.Pending;
 

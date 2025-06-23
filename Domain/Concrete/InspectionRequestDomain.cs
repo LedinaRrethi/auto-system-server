@@ -30,6 +30,12 @@ namespace Domain.Concrete
             if (count >= 3)
                 throw new InvalidOperationException("This directorate already has 3 inspections scheduled on this date.");
 
+
+    //        dto.RequestedDate = TimeZoneInfo.ConvertTimeFromUtc(
+    //    DateTime.SpecifyKind(dto.RequestedDate, DateTimeKind.Utc),
+    //    TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time")
+    //);
+
             var request = _mapper.Map<Auto_InspectionRequests>(dto);
             request.IDPK_InspectionRequest = Guid.NewGuid();
             SetAuditOnCreate(request);
@@ -37,6 +43,15 @@ namespace Domain.Concrete
             await _repo.AddAsync(request);  
             await _repo.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync()
+        {
+            var userId = GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
+                return new List<MyInspectionRequestDTO>();
+
+            return await _repo.GetRequestsByUserAsync(userId);
         }
     }
 }

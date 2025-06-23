@@ -3,6 +3,7 @@ using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO.InspectionDTO;
+using DTO.VehicleDTO;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -89,5 +90,14 @@ namespace Domain.Concrete
             await _docRepo.SaveChangesAsync();
             return true;
         }
+
+
+
+        public async Task<List<VehicleDTO>> GetMyVehiclesAsync(string userId)
+        {
+            var vehicles = await _repo.GetVehiclesByUserIdAsync(userId);
+            return _mapper.Map<List<VehicleDTO>>(vehicles);
+        }
+
     }
 }

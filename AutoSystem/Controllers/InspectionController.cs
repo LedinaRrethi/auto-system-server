@@ -1,4 +1,5 @@
-﻿using Domain.Contracts;
+﻿using Domain.Concrete;
+using Domain.Contracts;
 using DTO.InspectionDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using System.Security.Claims;
 
 namespace AutoSystem.Controllers
 {
-    [Authorize(Roles = "Specialist")]
+  
     [ApiController]
     [Route("api/[controller]")]
     public class InspectionController : ControllerBase
@@ -18,6 +19,7 @@ namespace AutoSystem.Controllers
             _domain = domain;
         }
 
+        [Authorize(Roles = "Specialist")]
         [HttpGet("my-requests")]
         public async Task<IActionResult> GetRequests()
         {
@@ -25,6 +27,7 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Specialist")]
         [HttpPost("review")]
         public async Task<IActionResult> Review([FromBody] InspectionReviewDTO dto)
         {
@@ -32,6 +35,7 @@ namespace AutoSystem.Controllers
             return success ? Ok("Inspection reviewed.") : BadRequest("Review failed.");
         }
 
+        [Authorize(Roles = "Specialist")]
         [HttpPost("upload-docs")]
         public async Task<IActionResult> UploadDocs([FromBody] List<InspectionDocumentUploadDTO> documents)
         {
@@ -39,6 +43,7 @@ namespace AutoSystem.Controllers
             return success ? Ok("Documents uploaded.") : BadRequest("Upload failed.");
         }
 
+        [Authorize(Roles = "Specialist")]
         [HttpGet("{requestId}/documents")]
         public async Task<IActionResult> GetDocs(Guid requestId)
         {
@@ -46,11 +51,30 @@ namespace AutoSystem.Controllers
             return Ok(docs);
         }
 
+        [Authorize(Roles = "Specialist")]
         [HttpDelete("documents/{docId}")]
         public async Task<IActionResult> DeleteDoc(Guid docId)
         {
             var result = await _domain.DeleteDocumentAsync(docId);
             return result ? Ok("Deleted.") : BadRequest("Delete failed.");
         }
+
+
+        [Authorize(Roles = "Individ")]
+        [HttpGet("my-vehicles")]
+        public async Task<IActionResult> GetMyVehicles()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var vehicles = await _domain.GetMyVehiclesAsync(userId);
+            return Ok(vehicles.Select(v => new
+            {
+                id = v.IDPK_Vehicle,
+                plateNumber = v.PlateNumber
+            }));
+        }
+
     }
 }

@@ -10,6 +10,7 @@ namespace Domain.Contracts
     public interface IInspectionRequestDomain
     {
         Task<bool> CreateInspectionRequestAsync(InspectionRequestCreateDTO dto);
+        Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync();
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using DAL.Contracts;
 using Entities.Models;
+using Helpers.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Concrete
@@ -36,5 +37,13 @@ namespace DAL.Concrete
                 .Where(r => r.IDFK_Directory == specialist.IDFK_Directory && r.Invalidated == 0)
                 .ToListAsync();
         }
+
+        public Task<List<Auto_Vehicles>> GetVehiclesByUserIdAsync(string userId)
+        {
+            return _context.Auto_Vehicles
+                .Where(v => v.IDFK_Owner == userId && v.Invalidated == 0 && v.Status == VehicleStatus.Approved)
+                .ToListAsync();
+        }
+
     }
 }

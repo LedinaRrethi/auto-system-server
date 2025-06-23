@@ -9,7 +9,7 @@ namespace DAL.Seed
         {
             if (!await context.Auto_Directorates.AnyAsync())
             {
-                var creatorId = "b103da7f-891a-45a5-a1c1-00cafba110c0";
+                var creatorId = "070d74c3-7550-4b5a-a618-42bc327fdd0b";
                 var createdOn = DateTime.UtcNow;
                 var createdIp = "127.0.0.1";
 

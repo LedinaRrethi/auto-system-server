@@ -12,7 +12,6 @@ namespace Entities.Models
         [Required]
         public Guid IDFK_InspectionRequest { get; set; }
 
-        // Ne fillim nuk e dime kush specialist do e miratoje
         public string? IDFK_Specialist { get; set; }
 
         public bool IsPassed { get; set; } = false;

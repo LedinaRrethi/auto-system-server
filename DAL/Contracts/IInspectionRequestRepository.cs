@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using DTO.InspectionDTO;
+using Entities.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -8,5 +9,7 @@ namespace DAL.Contracts
     {
         Task<int> CountInspectionsByDateAndDirectoryAsync(Guid directoryId, DateTime date);
         Task<bool> HasPendingRequestAsync(Guid vehicleId);
+
+        Task<List<MyInspectionRequestDTO>> GetRequestsByUserAsync(string userId);
     }
 }

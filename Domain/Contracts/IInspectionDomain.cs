@@ -1,4 +1,5 @@
 ﻿using DTO.InspectionDTO;
+using DTO.VehicleDTO;
 
 namespace Domain.Contracts
 {
@@ -9,5 +10,7 @@ namespace Domain.Contracts
         Task<bool> UploadDocumentsAsync(List<InspectionDocumentUploadDTO> documents);
         Task<List<InspectionDocDTO>> GetDocumentsAsync(Guid requestId);
         Task<bool> DeleteDocumentAsync(Guid docId);
+
+        Task<List<VehicleDTO>> GetMyVehiclesAsync(string userId);
     }
 }

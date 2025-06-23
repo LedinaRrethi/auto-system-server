@@ -35,5 +35,15 @@ namespace AutoSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+        [Authorize(Roles = "Individ")]
+        [HttpGet("my-requests")]
+        public async Task<IActionResult> GetMyRequests()
+        {
+            var result = await _domain.GetRequestsByCurrentUserAsync();
+            return Ok(result);
+        }
+
     }
 }

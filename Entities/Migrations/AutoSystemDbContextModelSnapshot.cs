@@ -70,7 +70,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Directorates");
+                    b.ToTable("Auto_Directorates", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_FineRecipients", b =>
@@ -146,7 +146,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("PlateNumber");
 
-                    b.ToTable("Auto_FineRecipients");
+                    b.ToTable("Auto_FineRecipients", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Fines", b =>
@@ -205,7 +205,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Fines");
+                    b.ToTable("Auto_Fines", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionDocs", b =>
@@ -259,7 +259,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_InspectionDocs");
+                    b.ToTable("Auto_InspectionDocs", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_InspectionRequests", b =>
@@ -314,7 +314,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_InspectionRequests");
+                    b.ToTable("Auto_InspectionRequests", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Inspections", b =>
@@ -371,7 +371,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_Inspections");
+                    b.ToTable("Auto_Inspections", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Notifications", b =>
@@ -418,7 +418,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("IDFK_Receiver");
 
-                    b.ToTable("Auto_Notifications");
+                    b.ToTable("Auto_Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_RefreshTokens", b =>
@@ -459,7 +459,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("IDFK_User");
 
-                    b.ToTable("Auto_RefreshTokens");
+                    b.ToTable("Auto_RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Users", b =>
@@ -660,7 +660,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("ModifiedBy");
 
-                    b.ToTable("Auto_VehicleChangeRequests");
+                    b.ToTable("Auto_VehicleChangeRequests", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Auto_Vehicles", b =>
@@ -739,7 +739,7 @@ namespace Entities.Migrations
                     b.HasIndex("PlateNumber")
                         .IsUnique();
 
-                    b.ToTable("Auto_Vehicles");
+                    b.ToTable("Auto_Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
