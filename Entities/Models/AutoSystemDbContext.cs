@@ -204,10 +204,11 @@ namespace Entities.Models
 
             // Auto_InspectionDocs relationships
             modelBuilder.Entity<Auto_InspectionDocs>()
-                .HasOne(d => d.Inspection)
-                .WithMany()
-                .HasForeignKey(d => d.IDFK_InspectionRequest)
-                .OnDelete(DeleteBehavior.Restrict);
+    .HasOne(d => d.Inspection)
+    .WithMany(i => i.InspectionDocs) 
+    .HasForeignKey(d => d.IDFK_Inspection)
+    .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<Auto_InspectionDocs>()
                 .HasOne(d => d.CreatedByUser)

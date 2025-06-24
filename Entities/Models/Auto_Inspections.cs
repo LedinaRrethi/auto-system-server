@@ -18,7 +18,6 @@ namespace Entities.Models
 
         public string? Comment { get; set; }
 
-        // Audit Fields
         public byte Invalidated { get; set; } = 0;
 
         [Required]
@@ -35,16 +34,18 @@ namespace Entities.Models
         [MaxLength(46)]
         public string? ModifiedIp { get; set; }
 
-        [ForeignKey("IDFK_InspectionRequest")]
+        [ForeignKey(nameof(IDFK_InspectionRequest))]
         public virtual Auto_InspectionRequests Request { get; set; } = null!;
 
-        [ForeignKey("IDFK_Specialist")]
-        public virtual Auto_Users? Specialist { get; set; }  
+        [ForeignKey(nameof(IDFK_Specialist))]
+        public virtual Auto_Users? Specialist { get; set; }
 
-        [ForeignKey("CreatedBy")]
+        [ForeignKey(nameof(CreatedBy))]
         public virtual Auto_Users CreatedByUser { get; set; } = null!;
 
-        [ForeignKey("ModifiedBy")]
+        [ForeignKey(nameof(ModifiedBy))]
         public virtual Auto_Users? ModifiedByUser { get; set; }
+
+        public virtual ICollection<Auto_InspectionDocs> InspectionDocs { get; set; } = new List<Auto_InspectionDocs>();
     }
 }

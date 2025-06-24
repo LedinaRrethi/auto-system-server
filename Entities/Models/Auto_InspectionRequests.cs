@@ -17,7 +17,7 @@ namespace Entities.Models
         public Guid IDFK_Directory { get; set; }
 
         [Required]
-        public DateTime RequestedDate { get; set; } 
+        public DateTime RequestedDate { get; set; }
 
         public InspectionStatus Status { get; set; } = InspectionStatus.Pending;
 
@@ -37,17 +37,17 @@ namespace Entities.Models
         [MaxLength(46)]
         public string? ModifiedIp { get; set; }
 
-        // Relationships
-        [ForeignKey("IDFK_Vehicle")]
+        [ForeignKey(nameof(IDFK_Vehicle))]
+
         public virtual Auto_Vehicles Vehicle { get; set; } = null!;
 
-        [ForeignKey("IDFK_Directory")]
+        [ForeignKey(nameof(IDFK_Directory))]
         public virtual Auto_Directorates Directory { get; set; } = null!;
 
-        [ForeignKey("CreatedBy")]
+        [ForeignKey(nameof(CreatedBy))]
         public virtual Auto_Users Requester { get; set; } = null!;
 
-        [ForeignKey("ModifiedBy")]
+        [ForeignKey(nameof(ModifiedBy))]
         public virtual Auto_Users? ModifiedByUser { get; set; }
     }
 }

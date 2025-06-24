@@ -19,45 +19,49 @@ namespace AutoSystem.Controllers
             _domain = domain;
         }
 
-        [Authorize(Roles = "Specialist")]
+
         [HttpGet("my-requests")]
+        [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> GetRequests()
         {
-            var result = await _domain.GetMyRequestsAsync();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var result = await _domain.GetMyRequestsAsync(userId);
             return Ok(result);
         }
 
-        [Authorize(Roles = "Specialist")]
-        [HttpPost("review")]
-        public async Task<IActionResult> Review([FromBody] InspectionReviewDTO dto)
-        {
-            var success = await _domain.ReviewInspectionAsync(dto);
-            return success ? Ok("Inspection reviewed.") : BadRequest("Review failed.");
-        }
+        //[Authorize(Roles = "Specialist")]
+        //[HttpPost("review")]
+        //public async Task<IActionResult> Review([FromBody] InspectionReviewDTO dto)
+        //{
+        //    var success = await _domain.ReviewInspectionAsync(dto);
+        //    return success ? Ok("Inspection reviewed.") : BadRequest("Review failed.");
+        //}
 
-        [Authorize(Roles = "Specialist")]
-        [HttpPost("upload-docs")]
-        public async Task<IActionResult> UploadDocs([FromBody] List<InspectionDocumentUploadDTO> documents)
-        {
-            var success = await _domain.UploadDocumentsAsync(documents);
-            return success ? Ok("Documents uploaded.") : BadRequest("Upload failed.");
-        }
+        //[Authorize(Roles = "Specialist")]
+        //[HttpPost("upload-docs")]
+        //public async Task<IActionResult> UploadDocs([FromBody] List<InspectionDocumentUploadDTO> documents)
+        //{
+        //    var success = await _domain.UploadDocumentsAsync(documents);
+        //    return success ? Ok("Documents uploaded.") : BadRequest("Upload failed.");
+        //}
 
-        [Authorize(Roles = "Specialist")]
-        [HttpGet("{requestId}/documents")]
-        public async Task<IActionResult> GetDocs(Guid requestId)
-        {
-            var docs = await _domain.GetDocumentsAsync(requestId);
-            return Ok(docs);
-        }
+        //[Authorize(Roles = "Specialist")]
+        //[HttpGet("{requestId}/documents")]
+        //public async Task<IActionResult> GetDocs(Guid requestId)
+        //{
+        //    var docs = await _domain.GetDocumentsAsync(requestId);
+        //    return Ok(docs);
+        //}
 
-        [Authorize(Roles = "Specialist")]
-        [HttpDelete("documents/{docId}")]
-        public async Task<IActionResult> DeleteDoc(Guid docId)
-        {
-            var result = await _domain.DeleteDocumentAsync(docId);
-            return result ? Ok("Deleted.") : BadRequest("Delete failed.");
-        }
+        //[Authorize(Roles = "Specialist")]
+        //[HttpDelete("documents/{docId}")]
+        //public async Task<IActionResult> DeleteDoc(Guid docId)
+        //{
+        //    var result = await _domain.DeleteDocumentAsync(docId);
+        //    return result ? Ok("Deleted.") : BadRequest("Delete failed.");
+        //}
 
 
         [Authorize(Roles = "Individ")]

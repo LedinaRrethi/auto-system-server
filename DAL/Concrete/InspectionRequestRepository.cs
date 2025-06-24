@@ -102,8 +102,8 @@ namespace DAL.Concrete
             var result = requests.Select(r =>
             {
                 var inspection = inspections.FirstOrDefault(i => i.IDFK_InspectionRequest == r.IDPK_InspectionRequest);
-                var inspectionDocs = docs.Where(d => d.IDFK_InspectionRequest == r.IDPK_InspectionRequest)
-                    .Select(d => new InspectionDocDTO
+                var inspectionDocs = docs.Where(d => d.IDFK_Inspection == r.IDPK_InspectionRequest)
+                    .Select(d => new InspectionDocumentDTO
                     {
                         IDPK_InspectionDoc = d.IDPK_InspectionDoc,
                         DocumentName = d.DocumentName,

@@ -16,24 +16,21 @@ namespace Entities.Models
         public Guid IDPK_InspectionDoc { get; set; }
 
         [Required]
-        public Guid IDFK_InspectionRequest { get; set; }
+        public Guid IDFK_Inspection { get; set; }
 
         [Required]
         [MaxLength(255)]
         public string DocumentName { get; set; } = null!;
 
         [Required]
-        [MaxLength(7_000_000)] 
+        [MaxLength(7_000_000)]
         public string FileBase64 { get; set; } = null!;
 
-
-        // Audit
         public byte Invalidated { get; set; } = 0;
 
         [Required]
         public required string CreatedBy { get; set; }
 
-        [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         [MaxLength(46)]
@@ -45,14 +42,13 @@ namespace Entities.Models
         [MaxLength(46)]
         public string? ModifiedIp { get; set; }
 
-        // Relationships
-        [ForeignKey("IDFK_InspectionRequest")]
+        [ForeignKey(nameof(IDFK_Inspection))]
         public virtual Auto_Inspections Inspection { get; set; } = null!;
 
-        [ForeignKey("CreatedBy")]
+        [ForeignKey(nameof(CreatedBy))]
         public virtual Auto_Users CreatedByUser { get; set; } = null!;
 
-        [ForeignKey("ModifiedBy")]
+        [ForeignKey(nameof(ModifiedBy))]
         public virtual Auto_Users? ModifiedByUser { get; set; }
     }
 }
