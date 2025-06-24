@@ -3,9 +3,11 @@ using DAL.Concrete;
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using DTO;
 using DTO.InspectionDTO;
 using DTO.VehicleDTO;
 using Entities.Models;
+using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
 
 namespace Domain.Concrete
@@ -18,11 +20,10 @@ namespace Domain.Concrete
         private IInspectionRepository _repo => _unitOfWork.GetRepository<IInspectionRepository>();
         private IRepository<Auto_InspectionDocs> _docRepo => _unitOfWork.GetRepository<IRepository<Auto_InspectionDocs>>();
 
-        public async Task<List<InspectionRequestListDTO>> GetMyRequestsAsync(string userId)
-            {
-                return await _repo.GetRequestsBySpecialistAsync(userId);
-            }
-        
+        public async Task<PaginationResult<InspectionRequestListDTO>> GetMyRequestsAsync(string userId, PaginationDTO dto)
+        {
+            return await _repo.GetRequestsBySpecialistAsync(userId, dto);
+        }
 
 
         //public async Task<bool> ReviewInspectionAsync(InspectionReviewDTO dto)

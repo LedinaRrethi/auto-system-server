@@ -1,5 +1,6 @@
 ﻿using Domain.Concrete;
 using Domain.Contracts;
+using DTO;
 using DTO.InspectionDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +23,15 @@ namespace AutoSystem.Controllers
 
         [HttpGet("my-requests")]
         [Authorize(Roles = "Specialist")]
-        public async Task<IActionResult> GetRequests()
+        public async Task<IActionResult> GetRequests([FromQuery] PaginationDTO dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
 
-            var result = await _domain.GetMyRequestsAsync(userId);
+            var result = await _domain.GetMyRequestsAsync(userId, dto);
             return Ok(result);
         }
+
 
         //[Authorize(Roles = "Specialist")]
         //[HttpPost("review")]

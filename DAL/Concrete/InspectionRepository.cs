@@ -1,7 +1,9 @@
 ﻿using DAL.Contracts;
+using DTO;
 using DTO.InspectionDTO;
 using Entities.Models;
 using Helpers.Enumerations;
+using Helpers.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Concrete
@@ -21,7 +23,7 @@ namespace DAL.Concrete
         //        .FirstOrDefaultAsync(x => x.IDPK_InspectionRequest == requestId && x.Invalidated == 0);
         //}
 
-        public async Task<List<InspectionRequestListDTO>> GetRequestsBySpecialistAsync(string specialistId)
+        public async Task<PaginationResult<InspectionRequestListDTO>> GetRequestsBySpecialistAsync(string specialistId, PaginationDTO dto)
         {
             var specialistDirectoryId = await _context.Users
                 .OfType<Auto_Users>()
@@ -30,7 +32,7 @@ namespace DAL.Concrete
                 .FirstOrDefaultAsync();
 
             if (specialistDirectoryId == null)
-                return new();
+                return new PaginationResult<InspectionRequestListDTO>();
 
             var inspections = await _context.Auto_Inspections
                 .Include(i => i.Request)
@@ -39,7 +41,7 @@ namespace DAL.Concrete
                 .Where(i => i.Request.IDFK_Directory == specialistDirectoryId && i.Invalidated == 0)
                 .ToListAsync();
 
-            return inspections.Select(i => new InspectionRequestListDTO
+            var projected = inspections.Select(i => new InspectionRequestListDTO
             {
                 IDPK_InspectionRequest = i.IDFK_InspectionRequest,
                 PlateNumber = i.Request.Vehicle.PlateNumber,
@@ -54,8 +56,21 @@ namespace DAL.Concrete
                     DocumentName = d.DocumentName,
                     FileBase64 = d.FileBase64
                 }).ToList()
-            }).ToList();
+            });
+
+            var helper = new PaginationHelper<InspectionRequestListDTO>();
+            return helper.GetPaginatedData(
+                projected,
+                dto.Page,
+                dto.PageSize,
+                dto.SortField,
+                dto.SortOrder,
+                string.IsNullOrEmpty(dto.Search)
+                    ? null
+                    : i => i.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
+            );
         }
+
 
 
 

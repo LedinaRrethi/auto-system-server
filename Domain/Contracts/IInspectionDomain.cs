@@ -1,11 +1,14 @@
-﻿using DTO.InspectionDTO;
+﻿using DTO;
+using DTO.InspectionDTO;
 using DTO.VehicleDTO;
+using Helpers.Pagination;
 
 namespace Domain.Contracts
 {
     public interface IInspectionDomain
     {
-        Task<List<InspectionRequestListDTO>> GetMyRequestsAsync(string userId);
+        Task<PaginationResult<InspectionRequestListDTO>> GetMyRequestsAsync(string userId, PaginationDTO dto);
+
         //Task<bool> ReviewInspectionAsync(InspectionReviewDTO dto);
         //Task<bool> UploadDocumentsAsync(List<InspectionDocumentUploadDTO> documents);
         //Task<List<InspectionDocumentDTO>> GetDocumentsAsync(Guid requestId);
