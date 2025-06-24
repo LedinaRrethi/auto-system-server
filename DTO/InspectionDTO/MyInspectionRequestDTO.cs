@@ -14,7 +14,7 @@ namespace DTO.InspectionDTO
         public string DirectorateName { get; set; } = null!;
         public string Status { get; set; } = null!;
         public string? Comment { get; set; }
-        public List<InspectionDocDTO> Documents { get; set; } = new();
+        public List<InspectionDocumentDTO> Documents { get; set; } = new();
     } 
 
 }
