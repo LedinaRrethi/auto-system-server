@@ -1,4 +1,5 @@
 ﻿using DAL.Contracts;
+using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace DAL.Concrete
 {
     public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly DbContext _context;
+        protected readonly AutoSystemDbContext _context;
         protected readonly DbSet<TEntity> _dbSet;
 
-        public BaseRepository(DbContext context)
+        public BaseRepository(AutoSystemDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<TEntity>();

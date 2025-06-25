@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DAL.Concrete;
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
@@ -15,10 +16,37 @@ namespace Domain.Concrete
 {
     public class InspectionRequestDomain : DomainBase, IInspectionRequestDomain
     {
-        public InspectionRequestDomain(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
-            : base(unitOfWork, mapper, accessor) { }
+        private readonly IInspectionRequestRepository _repo;
 
-        private IInspectionRequestRepository _repo => _unitOfWork.GetRepository<IInspectionRequestRepository>();
+        private IRepository<Auto_Inspections> _inspectionRepo => _unitOfWork.GetRepository<IRepository<Auto_Inspections>>();
+
+
+        public InspectionRequestDomain(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
+            : base(unitOfWork, mapper, accessor) {
+            _repo = unitOfWork.GetRepository<IInspectionRequestRepository>();
+
+        }
+
+        //public async Task<bool> CreateInspectionRequestAsync(InspectionRequestCreateDTO dto)
+        //{
+        //    if (await _repo.HasPendingRequestAsync(dto.IDFK_Vehicle))
+        //        throw new InvalidOperationException("A pending inspection request already exists for this vehicle.");
+
+        //    if (dto.RequestedDate.DayOfWeek == DayOfWeek.Saturday || dto.RequestedDate.DayOfWeek == DayOfWeek.Sunday)
+        //        throw new InvalidOperationException("Inspections cannot be scheduled on weekends.");
+
+        //    int count = await _repo.CountInspectionsByDateAndDirectoryAsync(dto.IDFK_Directory, dto.RequestedDate);
+        //    if (count >= 3)
+        //        throw new InvalidOperationException("This directorate already has 3 inspections scheduled on this date.");
+
+        //    var request = _mapper.Map<Auto_InspectionRequests>(dto);
+        //    request.IDPK_InspectionRequest = Guid.NewGuid();
+        //    SetAuditOnCreate(request);
+
+        //    await _repo.AddAsync(request);  
+        //    await _repo.SaveChangesAsync();
+        //    return true;
+        //}
 
         public async Task<bool> CreateInspectionRequestAsync(InspectionRequestCreateDTO dto)
         {
@@ -32,23 +60,39 @@ namespace Domain.Concrete
             if (count >= 3)
                 throw new InvalidOperationException("This directorate already has 3 inspections scheduled on this date.");
 
-            var request = _mapper.Map<Auto_InspectionRequests>(dto);
-            request.IDPK_InspectionRequest = Guid.NewGuid();
-            SetAuditOnCreate(request);
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            await _repo.AddAsync(request);  
-            await _repo.SaveChangesAsync();
-            return true;
+            try
+            {
+                var request = _mapper.Map<Auto_InspectionRequests>(dto);
+                request.IDPK_InspectionRequest = Guid.NewGuid();
+                SetAuditOnCreate(request);
+
+                await _repo.AddAsync(request);
+
+                var inspection = new Auto_Inspections
+                {
+                    IDPK_Inspection = Guid.NewGuid(),
+                    IDFK_InspectionRequest = request.IDPK_InspectionRequest,
+                    Invalidated = 0
+                };
+                SetAuditOnCreate(inspection); 
+
+             
+
+                await _inspectionRepo.AddAsync(inspection);
+
+                await _repo.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-
-        //public async Task<List<MyInspectionRequestDTO>> GetRequestsByCurrentUserAsync()
-        //{
-        //    var userId = GetCurrentUserId();
-        //    if (string.IsNullOrEmpty(userId))
-        //        return new List<MyInspectionRequestDTO>();
-
-        //    return await _repo.GetRequestsByUserAsync(userId);
-        //}
 
         public async Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(PaginationDTO dto)
         {
