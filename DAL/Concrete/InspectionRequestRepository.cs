@@ -105,7 +105,7 @@ namespace DAL.Concrete
                 var inspectionDocs = docs.Where(d => d.IDFK_Inspection == r.IDPK_InspectionRequest)
                     .Select(d => new InspectionDocumentDTO
                     {
-                        IDPK_InspectionDoc = d.IDPK_InspectionDoc,
+                        IDPK_InspectionDoc = Guid.NewGuid(),
                         DocumentName = d.DocumentName,
                         FileBase64 = d.FileBase64
                     }).ToList();

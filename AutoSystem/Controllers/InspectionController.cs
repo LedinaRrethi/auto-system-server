@@ -39,7 +39,7 @@ namespace AutoSystem.Controllers
             try
             {
                 var result = await _domain.ApproveInspectionAsync(dto);
-                return result ? Ok("Inspektimi u përditësua me sukses.") : NotFound("Inspektimi nuk u gjet.");
+                return result ? Ok("Inspection updated with success.") : NotFound("Inspection not found.");
             }
             catch (Exception ex)
             {

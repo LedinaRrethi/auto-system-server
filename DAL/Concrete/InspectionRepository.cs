@@ -51,7 +51,7 @@ namespace DAL.Concrete
                 IsPassed = i.IsPassed,
                 Documents = i.InspectionDocs.Select(d => new InspectionDocumentDTO
                 {
-                    IDPK_InspectionDoc = d.IDPK_InspectionDoc,
+                    IDPK_InspectionDoc = Guid.NewGuid(),
                     IDFK_InspectionRequest = d.IDFK_Inspection,
                     DocumentName = d.DocumentName,
                     FileBase64 = d.FileBase64
@@ -88,11 +88,11 @@ namespace DAL.Concrete
                 foreach (var doc in dto.Documents)
                 {
                     if (!doc.DocumentName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                        throw new Exception($"File '{doc.DocumentName}' nuk është PDF.");
+                        throw new Exception($"File '{doc.DocumentName}' is not pdf.");
 
                     var fileBytes = Convert.FromBase64String(doc.FileBase64);
                     if (fileBytes.Length > 5 * 1024 * 1024)
-                        throw new Exception($"File '{doc.DocumentName}' është më i madh se 5MB.");
+                        throw new Exception($"File '{doc.DocumentName}' is largen than 5MB.");
                 }
 
                 inspection.IsPassed = dto.IsPassed;
