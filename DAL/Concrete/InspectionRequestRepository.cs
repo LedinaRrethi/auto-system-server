@@ -37,52 +37,6 @@ namespace DAL.Concrete
                     r.Invalidated == 0);
         }
 
-        //public async Task<List<MyInspectionRequestDTO>> GetRequestsByUserAsync(string userId)
-        //{
-        //    var inspections = await _context.Auto_Inspections
-        //        .Where(i => i.Invalidated == 0)
-        //        .ToListAsync();
-
-        //    var docs = await _context.Auto_InspectionDocs
-        //        .Where(d => d.Invalidated == 0)
-        //        .ToListAsync();
-
-        //    var requests = await _context.Auto_InspectionRequests
-        //        .Include(r => r.Vehicle)
-        //        .Include(r => r.Directory)
-        //        .Where(r => r.CreatedBy == userId && r.Invalidated == 0)
-        //        .ToListAsync();
-
-        //    var result = requests.Select(r =>
-        //    {
-        //        var inspection = inspections.FirstOrDefault(i => i.IDFK_InspectionRequest == r.IDPK_InspectionRequest);
-
-        //        var inspectionDocs = docs
-        //            .Where(d => d.IDFK_InspectionRequest == r.IDPK_InspectionRequest)
-        //            .Select(d => new InspectionDocDTO
-        //            {
-        //                IDPK_InspectionDoc = d.IDPK_InspectionDoc,
-        //                DocumentName = d.DocumentName,
-        //                FileBase64 = d.FileBase64
-        //            })
-        //            .ToList();
-
-        //        return new MyInspectionRequestDTO
-        //        {
-        //            IDPK_InspectionRequest = r.IDPK_InspectionRequest,
-        //            PlateNumber = r.Vehicle.PlateNumber,
-        //            RequestedDate = r.RequestedDate,
-        //            DirectorateName = r.Directory.DirectoryName,
-        //            Status = r.Status.ToString(),
-        //            Comment = inspection?.Comment,
-        //            Documents = inspectionDocs
-        //        };
-        //    }).ToList();
-
-        //    return result;
-        //}
-
-
         public async Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(string userId, PaginationDTO dto)
         {
             var inspections = await _context.Auto_Inspections
@@ -102,13 +56,18 @@ namespace DAL.Concrete
             var result = requests.Select(r =>
             {
                 var inspection = inspections.FirstOrDefault(i => i.IDFK_InspectionRequest == r.IDPK_InspectionRequest);
-                var inspectionDocs = docs.Where(d => d.IDFK_Inspection == r.IDPK_InspectionRequest)
-                    .Select(d => new InspectionDocumentDTO
-                    {
-                        IDPK_InspectionDoc = Guid.NewGuid(),
-                        DocumentName = d.DocumentName,
-                        FileBase64 = d.FileBase64
-                    }).ToList();
+
+                var inspectionDocs = inspection != null
+                    ? docs
+                        .Where(d => d.IDFK_Inspection == inspection.IDPK_Inspection)
+                        .Select(d => new InspectionDocumentDTO
+                        {
+                            IDPK_InspectionDoc = d.IDPK_InspectionDoc,
+                            IDFK_InspectionRequest = r.IDPK_InspectionRequest,
+                            DocumentName = d.DocumentName,
+                            FileBase64 = d.FileBase64
+                        }).ToList()
+                    : new List<InspectionDocumentDTO>();
 
                 return new MyInspectionRequestDTO
                 {
@@ -118,7 +77,7 @@ namespace DAL.Concrete
                     DirectorateName = r.Directory.DirectoryName,
                     Status = r.Status.ToString(),
                     Comment = inspection?.Comment,
-                    Documents = inspectionDocs.ToList()
+                    Documents = inspectionDocs
                 };
             });
 

@@ -17,12 +17,6 @@ namespace DAL.Concrete
             _context = context;
         }
 
-        //public async Task<Auto_InspectionRequests?> GetRequestByIdAsync(Guid requestId)
-        //{
-        //    return await _context.Auto_InspectionRequests
-        //        .FirstOrDefaultAsync(x => x.IDPK_InspectionRequest == requestId && x.Invalidated == 0);
-        //}
-
         public async Task<PaginationResult<InspectionRequestListDTO>> GetRequestsBySpecialistAsync(string specialistId, PaginationDTO dto)
         {
             var specialistDirectoryId = await _context.Users
@@ -43,6 +37,7 @@ namespace DAL.Concrete
 
             var projected = inspections.Select(i => new InspectionRequestListDTO
             {
+                IDPK_Inspection = i.IDPK_Inspection,
                 IDPK_InspectionRequest = i.IDFK_InspectionRequest,
                 PlateNumber = i.Request.Vehicle.PlateNumber,
                 RequestedDate = i.Request.RequestedDate,

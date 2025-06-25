@@ -9,6 +9,8 @@ namespace DTO.InspectionDTO
     public class InspectionRequestListDTO
     {
         public Guid IDPK_InspectionRequest { get; set; } // kolone ne Auto_InspectionRequest
+
+        public Guid IDPK_Inspection { get; set; }
         public string PlateNumber { get; set; } = string.Empty; // kolone ne Auto_Vehicles
         public DateTime RequestedDate { get; set; } // kolone ne Auto_InspectionRequest
         public string InspectionDate => RequestedDate.ToString("dd/MM/yyyy"); 
