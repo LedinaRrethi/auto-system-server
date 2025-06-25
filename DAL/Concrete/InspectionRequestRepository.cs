@@ -118,7 +118,7 @@ namespace DAL.Concrete
                     DirectorateName = r.Directory.DirectoryName,
                     Status = r.Status.ToString(),
                     Comment = inspection?.Comment,
-                    Documents = inspectionDocs
+                    Documents = inspectionDocs.ToList()
                 };
             });
 

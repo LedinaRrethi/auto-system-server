@@ -72,6 +72,71 @@ namespace DAL.Concrete
         }
 
 
+        public async Task<bool> ApproveInspectionAsync(InspectionApprovalDTO dto, string? userId, string ip)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var inspection = await _context.Set<Auto_Inspections>()
+                    .Include(i => i.Request)
+                    .FirstOrDefaultAsync(i => i.IDPK_Inspection == dto.IDPK_Inspection);
+
+                if (inspection == null)
+                    return false;
+
+                foreach (var doc in dto.Documents)
+                {
+                    if (!doc.DocumentName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                        throw new Exception($"File '{doc.DocumentName}' nuk është PDF.");
+
+                    var fileBytes = Convert.FromBase64String(doc.FileBase64);
+                    if (fileBytes.Length > 5 * 1024 * 1024)
+                        throw new Exception($"File '{doc.DocumentName}' është më i madh se 5MB.");
+                }
+
+                inspection.IsPassed = dto.IsPassed;
+                inspection.Comment = dto.Comment;
+                inspection.ModifiedBy = userId;
+                inspection.ModifiedOn = DateTime.UtcNow;
+                inspection.ModifiedIp = ip;
+
+                inspection.Request.Status = dto.IsPassed ? InspectionStatus.Approved : InspectionStatus.Rejected;
+                inspection.Request.ModifiedBy = userId;
+                inspection.Request.ModifiedOn = DateTime.UtcNow;
+                inspection.Request.ModifiedIp = ip;
+
+                _context.Update(inspection);
+                _context.Update(inspection.Request);
+
+                foreach (var doc in dto.Documents)
+                {
+                    var docEntity = new Auto_InspectionDocs
+                    {
+                        IDPK_InspectionDoc = Guid.NewGuid(),
+                        IDFK_Inspection = dto.IDPK_Inspection,
+                        DocumentName = doc.DocumentName,
+                        FileBase64 = doc.FileBase64,
+                        CreatedBy = userId!,
+                        CreatedOn = DateTime.UtcNow,
+                        CreatedIp = ip
+                    };
+
+                    _context.Add(docEntity);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
 
 
         public Task<List<Auto_Vehicles>> GetVehiclesByUserIdAsync(string userId)

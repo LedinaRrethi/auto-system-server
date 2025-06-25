@@ -32,39 +32,20 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
-
-        //[Authorize(Roles = "Specialist")]
-        //[HttpPost("review")]
-        //public async Task<IActionResult> Review([FromBody] InspectionReviewDTO dto)
-        //{
-        //    var success = await _domain.ReviewInspectionAsync(dto);
-        //    return success ? Ok("Inspection reviewed.") : BadRequest("Review failed.");
-        //}
-
-        //[Authorize(Roles = "Specialist")]
-        //[HttpPost("upload-docs")]
-        //public async Task<IActionResult> UploadDocs([FromBody] List<InspectionDocumentUploadDTO> documents)
-        //{
-        //    var success = await _domain.UploadDocumentsAsync(documents);
-        //    return success ? Ok("Documents uploaded.") : BadRequest("Upload failed.");
-        //}
-
-        //[Authorize(Roles = "Specialist")]
-        //[HttpGet("{requestId}/documents")]
-        //public async Task<IActionResult> GetDocs(Guid requestId)
-        //{
-        //    var docs = await _domain.GetDocumentsAsync(requestId);
-        //    return Ok(docs);
-        //}
-
-        //[Authorize(Roles = "Specialist")]
-        //[HttpDelete("documents/{docId}")]
-        //public async Task<IActionResult> DeleteDoc(Guid docId)
-        //{
-        //    var result = await _domain.DeleteDocumentAsync(docId);
-        //    return result ? Ok("Deleted.") : BadRequest("Delete failed.");
-        //}
-
+        [HttpPost("approve")]
+        [Authorize(Roles = "Specialist")]
+        public async Task<IActionResult> ApproveInspection([FromBody] InspectionApprovalDTO dto)
+        {
+            try
+            {
+                var result = await _domain.ApproveInspectionAsync(dto);
+                return result ? Ok("Inspektimi u përditësua me sukses.") : NotFound("Inspektimi nuk u gjet.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [Authorize(Roles = "Individ")]
         [HttpGet("my-vehicles")]

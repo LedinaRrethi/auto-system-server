@@ -18,7 +18,7 @@ namespace DAL.Concrete
         {
             return await _context.Auto_VehicleChangeRequests
                 .Where(r => r.IDFK_Requester == userId)
-                .Include(r => r.Vehicle) // Optional: helpful if you want to see vehicle details in list
+                .Include(r => r.Vehicle)
                 .ToListAsync();
         }
 
@@ -35,7 +35,7 @@ namespace DAL.Concrete
         public async Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId)
         {
             return await _context.Auto_Vehicles
-                .AsNoTracking() // Prevents accidental tracking
+                .AsNoTracking() 
                 .FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
         }
 

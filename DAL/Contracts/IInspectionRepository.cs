@@ -11,6 +11,7 @@ namespace DAL.Contracts
 
         Task<PaginationResult<InspectionRequestListDTO>> GetRequestsBySpecialistAsync(string specialistId, PaginationDTO dto);
 
+        Task<bool> ApproveInspectionAsync(InspectionApprovalDTO dto, string? userId, string ip);
 
         Task<List<Auto_Vehicles>> GetVehiclesByUserIdAsync(string userId);
 
