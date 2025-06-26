@@ -75,14 +75,16 @@ public class AuthDomain : DomainBase, IAuthDomain
     public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto, string ipAddress)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-        if (user == null)
+
+        if (user == null || !(await _userManager.CheckPasswordAsync(user, dto.Password)))
             throw new Exception("Invalid email or password.");
+
 
         if (user.Status == UserStatus.Pending)
             throw new Exception("Your account is pending approval.");
 
         if (user.Status == UserStatus.Rejected)
-            throw new Exception("Your account was rejected.");
+            throw new Exception("Your account has been rejected.");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
         if (!result.Succeeded)

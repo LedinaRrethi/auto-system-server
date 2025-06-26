@@ -128,6 +128,7 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AutoSystemDbContext>();
 
     await RoleSeeder.SeedRolesAsync(services);
+    await UserSeeder.SeedAdminAsync(services);
     await DirectorateSeeder.SeedAsync(context); 
 }
 

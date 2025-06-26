@@ -56,7 +56,14 @@ namespace AutoSystem.Controllers
             }
             catch (Exception ex)
             {
-                return Unauthorized(new { error = ex.Message });
+                var msg = ex.Message.ToLowerInvariant();
+                if (msg.Contains("pending") || msg.Contains("rejected"))
+                    return StatusCode(StatusCodes.Status403Forbidden, new { error = ex.Message });
+
+                if (msg.Contains("incorrect") || msg.Contains("invalid"))
+                    return Unauthorized(new { error = ex.Message });
+
+                return BadRequest(new { error = "Login failed." });
             }
         }
 
