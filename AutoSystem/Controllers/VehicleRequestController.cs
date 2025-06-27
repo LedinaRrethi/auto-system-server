@@ -22,36 +22,61 @@ namespace AutoSystem.Controllers
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-
         [HttpPost("register")]
         public async Task<IActionResult> RegisterVehicle([FromBody] VehicleRegisterDTO dto)
         {
-            var vehicleId = Guid.NewGuid(); // Generate a new Guid for the vehicleId
-            await _domain.RegisterVehicleAsync(vehicleId, dto, GetUserId());
-            return Ok(new { message = "Vehicle registration request submitted successfully." });
+            try
+            {
+                var vehicleId = Guid.NewGuid();
+                await _domain.RegisterVehicleAsync(vehicleId, dto, GetUserId());
+                return Ok(new { message = "Vehicle registration request submitted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
-
 
         [HttpPut("request-update/{vehicleId}")]
         public async Task<IActionResult> RequestUpdate(Guid vehicleId, [FromBody] VehicleRegisterDTO dto)
         {
-            await _domain.RequestVehicleUpdateAsync(vehicleId, dto, GetUserId());
-            return Ok(new { message = "Vehicle update request submitted successfully." });
+            try
+            {
+                await _domain.RequestVehicleUpdateAsync(vehicleId, dto, GetUserId());
+                return Ok(new { message = "Vehicle update request submitted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
         [HttpDelete("request-delete/{vehicleId}")]
         public async Task<IActionResult> RequestDelete(Guid vehicleId)
         {
-            await _domain.RequestVehicleDeletionAsync(vehicleId, GetUserId());
-            return Ok(new { message = "Delete request submitted successfully." });
+            try
+            {
+                await _domain.RequestVehicleDeletionAsync(vehicleId, GetUserId());
+                return Ok(new { message = "Vehicle delete request submitted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
-
 
         [HttpGet("my-requests")]
         public async Task<IActionResult> MyRequests()
         {
-            var requests = await _domain.GetMyRequestsAsync(GetUserId());
-            return Ok(requests);
+            try
+            {
+                var requests = await _domain.GetMyRequestsAsync(GetUserId());
+                return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
     }
 }

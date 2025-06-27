@@ -22,6 +22,20 @@ namespace DAL.Concrete
                 .ToListAsync();
         }
 
+        public async Task<Auto_VehicleChangeRequests?> GetChangeRequestByIdAsync(Guid requestId)
+        {
+            return await _context.Auto_VehicleChangeRequests
+                .Include(r => r.Vehicle)
+                .FirstOrDefaultAsync(r => r.IDPK_ChangeRequest == requestId);
+        }
+
+        public async Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId)
+        {
+            return await _context.Auto_Vehicles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
+        }
+
         public async Task AddVehicleAsync(Auto_Vehicles vehicle)
         {
             await _context.Auto_Vehicles.AddAsync(vehicle);
@@ -30,13 +44,6 @@ namespace DAL.Concrete
         public async Task AddRequestAsync(Auto_VehicleChangeRequests request)
         {
             await _context.Auto_VehicleChangeRequests.AddAsync(request);
-        }
-
-        public async Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId)
-        {
-            return await _context.Auto_Vehicles
-                .AsNoTracking() 
-                .FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
         }
 
         public async Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId)

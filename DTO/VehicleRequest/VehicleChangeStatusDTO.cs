@@ -12,7 +12,7 @@ namespace DTO.VehicleRequest
     public class VehicleChangeStatusDTO
     {
         [Required]
-        public ChangeRequestStatus NewStatus { get; set; } 
+        public VehicleStatus NewStatus { get; set; } 
 
         [MaxLength(500)]
         public string? AdminComment { get; set; }

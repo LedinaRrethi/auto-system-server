@@ -24,35 +24,31 @@ namespace Domain.Concrete
         public async Task RegisterVehicleAsync(Guid vehicleId, VehicleRegisterDTO dto, string userId)
         {
             if (await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId))
-                throw new Exception("A pending request already exists for this vehicle plate.");
+                throw new Exception("A pending request already exists for this vehicle.");
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
-
             try
             {
                 var vehicle = _mapper.Map<Auto_Vehicles>(dto);
-                vehicle.IDPK_Vehicle = Guid.NewGuid();
+                vehicle.IDPK_Vehicle = vehicleId;
                 vehicle.IDFK_Owner = userId;
                 vehicle.Status = VehicleStatus.Pending;
                 vehicle.Invalidated = 0;
-                vehicle.CreatedBy = userId;
-                vehicle.CreatedOn = DateTime.UtcNow;
-                vehicle.CreatedIp = GetCurrentIp();
+                SetAuditOnCreate(vehicle);
 
                 await _vehicleRequestRepository.AddVehicleAsync(vehicle);
 
                 var request = new Auto_VehicleChangeRequests
                 {
                     IDPK_ChangeRequest = Guid.NewGuid(),
-                    IDFK_Vehicle = vehicle.IDPK_Vehicle,
+                    IDFK_Vehicle = vehicleId,
                     IDFK_Requester = userId,
                     RequestType = ChangeRequestType.Register,
                     RequestDataJson = JsonSerializer.Serialize(dto),
                     CurrentDataSnapshotJson = string.Empty,
-                    Status = ChangeRequestStatus.Pending,
-                    CreatedBy = userId,
-                    CreatedOn = DateTime.UtcNow
+                    Status = ChangeRequestStatus.Pending
                 };
+                SetAuditOnCreate(request);
 
                 await _vehicleRequestRepository.AddRequestAsync(request);
                 await _vehicleRequestRepository.SaveChangesAsync();
@@ -76,7 +72,6 @@ namespace Domain.Concrete
                 throw new Exception("This vehicle already has a pending request.");
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
-
             try
             {
                 var snapshot = JsonSerializer.Serialize(vehicle);
@@ -89,10 +84,9 @@ namespace Domain.Concrete
                     RequestType = ChangeRequestType.Update,
                     RequestDataJson = JsonSerializer.Serialize(dto),
                     CurrentDataSnapshotJson = snapshot,
-                    Status = ChangeRequestStatus.Pending,
-                    CreatedBy = userId,
-                    CreatedOn = DateTime.UtcNow
+                    Status = ChangeRequestStatus.Pending
                 };
+                SetAuditOnCreate(request);
 
                 await _vehicleRequestRepository.AddRequestAsync(request);
                 await _vehicleRequestRepository.SaveChangesAsync();
@@ -116,7 +110,6 @@ namespace Domain.Concrete
                 throw new Exception("This vehicle already has a pending request.");
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
-
             try
             {
                 var snapshot = JsonSerializer.Serialize(vehicle);
@@ -129,10 +122,9 @@ namespace Domain.Concrete
                     RequestType = ChangeRequestType.Delete,
                     RequestDataJson = string.Empty,
                     CurrentDataSnapshotJson = snapshot,
-                    Status = ChangeRequestStatus.Pending,
-                    CreatedBy = userId,
-                    CreatedOn = DateTime.UtcNow
+                    Status = ChangeRequestStatus.Pending
                 };
+                SetAuditOnCreate(request);
 
                 await _vehicleRequestRepository.AddRequestAsync(request);
                 await _vehicleRequestRepository.SaveChangesAsync();
@@ -145,26 +137,10 @@ namespace Domain.Concrete
             }
         }
 
-
         public async Task<List<VehicleRequestListDTO>> GetMyRequestsAsync(string userId)
         {
             var entities = await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
-
-            var result = entities.Select(r => new VehicleRequestListDTO
-            {
-                IDPK_ChangeRequest = r.IDPK_ChangeRequest,
-                IDFK_Vehicle = r.IDFK_Vehicle,
-                PlateNumber = r.Vehicle?.PlateNumber,
-                RequestType = r.RequestType,
-                Status = r.Status,
-                CreatedOn = r.CreatedOn
-            }).ToList();
-
             return _mapper.Map<List<VehicleRequestListDTO>>(entities);
-
         }
-
-
-
     }
 }
