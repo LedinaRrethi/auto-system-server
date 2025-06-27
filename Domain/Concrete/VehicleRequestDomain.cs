@@ -2,10 +2,12 @@
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using DTO;
 using DTO.VehicleDTO;
 using DTO.VehicleRequest;
 using Entities.Models;
 using Helpers.Enumerations;
+using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
@@ -137,10 +139,26 @@ namespace Domain.Concrete
             }
         }
 
-        public async Task<List<VehicleRequestListDTO>> GetMyRequestsAsync(string userId)
+        public async Task<PaginationResult<VehicleRequestListDTO>> GetMyRequestsAsync(string userId , PaginationDTO dto)
         {
-            var entities = await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
-            return _mapper.Map<List<VehicleRequestListDTO>>(entities);
+            var myRequests = await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
+
+            var mapped = _mapper.Map<List<VehicleRequestListDTO>>(myRequests);
+
+            var helper = new PaginationHelper<VehicleRequestListDTO>();
+
+            return helper.GetPaginatedData(
+               mapped,
+               dto.Page,
+               dto.PageSize,
+               dto.SortField ?? "CreatedOn",
+               dto.SortOrder ?? "desc",
+               string.IsNullOrWhiteSpace(dto.Search)
+           ? null
+           : (Func<VehicleRequestListDTO, bool>)(r =>
+               (!string.IsNullOrEmpty(r.PlateNumber) &&
+                   r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+           ));
         }
     }
 }

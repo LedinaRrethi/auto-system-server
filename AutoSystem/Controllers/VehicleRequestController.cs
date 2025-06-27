@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using DTO.VehicleDTO;
+using DTO;
 
 namespace AutoSystem.Controllers
 {
@@ -66,11 +67,11 @@ namespace AutoSystem.Controllers
         }
 
         [HttpGet("my-requests")]
-        public async Task<IActionResult> MyRequests()
+        public async Task<IActionResult> MyRequests([FromBody] PaginationDTO dto)
         {
             try
             {
-                var requests = await _domain.GetMyRequestsAsync(GetUserId());
+                var requests = await _domain.GetMyRequestsAsync(GetUserId() , dto);
                 return Ok(requests);
             }
             catch (Exception ex)
