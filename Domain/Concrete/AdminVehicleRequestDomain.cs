@@ -47,8 +47,6 @@ namespace Domain.Concrete
                 if (vehicle == null)
                     return false;
 
-
-                // Përditëso statusin e kërkesës
                 request.Status = dto.NewStatus == VehicleStatus.Approved
                     ? ChangeRequestStatus.Approved
                     : ChangeRequestStatus.Rejected;
