@@ -1,4 +1,5 @@
 ﻿using Domain.Contracts;
+using DTO;
 using DTO.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,9 @@ namespace API.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<ActionResult<PaginatedUserDTO>> GetUsers(
-            int page = 1,
-            int pageSize = 10,
-            string sortField = "CreatedOn",
-            string sortOrder = "desc")
+        public async Task<IActionResult> GetUsers([FromQuery] PaginationDTO dto)        
         {
-            var result = await _domain.GetUsersPaginatedAsync(page, pageSize, sortField, sortOrder);
+            var result = await _domain.GetUsersPaginatedAsync(dto);
             return Ok(result);
         }
 

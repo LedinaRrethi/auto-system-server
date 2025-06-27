@@ -1,4 +1,6 @@
-﻿using DTO.UserDTO;
+﻿using DTO;
+using DTO.UserDTO;
+using Helpers.Pagination;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,7 +8,7 @@ namespace Domain.Contracts
 {
     public interface IAdminDomain
     {
-        Task<PaginatedUserDTO> GetUsersPaginatedAsync(int page, int pageSize, string sortField, string sortOrder);
+        Task<PaginationResult<UserDTO>> GetUsersPaginatedAsync(PaginationDTO dto);
         Task<bool> ChangeUserStatusAsync(string userId, string newStatus);
     }
 

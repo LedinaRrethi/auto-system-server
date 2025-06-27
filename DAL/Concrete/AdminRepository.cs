@@ -1,7 +1,9 @@
 ﻿using DAL.Contracts;
+using DTO;
 using DTO.UserDTO;
 using Entities.Models;
 using Helpers.Enumerations;
+using Helpers.Pagination;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +20,7 @@ namespace DAL.Repositories
             _userManager = userManager;
         }
 
-        public async Task<List<UserDTO>> GetAllUsersForApprovalAsync()
+        public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
         {
             var users = await _context.Users
                 .Include(u => u.Directorate)
@@ -46,8 +48,26 @@ namespace DAL.Repositories
                 });
             }
 
-            return result;
+            var helper = new PaginationHelper<UserDTO>();
+
+            return helper.GetPaginatedData(
+                result,
+                dto.Page,
+                dto.PageSize,
+                dto.SortField ?? "CreatedOn",
+                dto.SortOrder ?? "desc",
+                string.IsNullOrWhiteSpace(dto.Search)
+                ? null
+                : (Func<UserDTO, bool>)(u =>
+                {
+                    var fullName = $"{u.FirstName} {u.FatherName} {u.LastName}".Trim();
+                    return fullName.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
+                    || (!string.IsNullOrEmpty(u.Email) && u.Email.Contains(dto.Search, StringComparison.OrdinalIgnoreCase));
+                })
+            );
         }
+
+
 
         public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
         {
