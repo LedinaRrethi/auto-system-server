@@ -1,10 +1,12 @@
-﻿using DTO.VehicleRequest;
+﻿using DTO;
+using DTO.VehicleRequest;
+using Helpers.Pagination;
 
 namespace Domain.Contracts
 {
     public interface IAdminVehicleRequestDomain
     {
-        Task<List<VehicleRequestListDTO>> GetAllRequestsAsync();
+        Task<PaginationResult<VehicleRequestListDTO>> GetAllRequestsAsync(PaginationDTO dto);
         Task<bool> UpdateRequestStatusAsync(Guid requestId, VehicleChangeStatusDTO dto);
     }
 }

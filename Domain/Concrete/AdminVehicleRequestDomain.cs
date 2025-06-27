@@ -2,9 +2,11 @@
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using DTO;
 using DTO.VehicleRequest;
 using Entities.Models;
 using Helpers.Enumerations;
+using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
@@ -18,19 +20,25 @@ namespace Domain.Concrete
         private IAdminVehicleRequestRepository _adminRequestRepo => _unitOfWork.GetRepository<IAdminVehicleRequestRepository>();
         private IRepository<Auto_Vehicles> _vehicleRepo => _unitOfWork.GetRepository<IRepository<Auto_Vehicles>>();
 
-        public async Task<List<VehicleRequestListDTO>> GetAllRequestsAsync()
+        public async Task<PaginationResult<VehicleRequestListDTO>> GetAllRequestsAsync(PaginationDTO dto)
         {
             var requests = await _adminRequestRepo.GetAllRequestsAsync();
+            var mapped = _mapper.Map<List<VehicleRequestListDTO>>(requests);
 
-            return requests.Select(r => new VehicleRequestListDTO
-            {
-                IDPK_ChangeRequest = r.IDPK_ChangeRequest,
-                IDFK_Vehicle = r.IDFK_Vehicle,
-                PlateNumber = r.Vehicle?.PlateNumber,
-                RequestType = r.RequestType,
-                Status = r.Status,
-                CreatedOn = r.CreatedOn
-            }).ToList();
+            var helper = new PaginationHelper<VehicleRequestListDTO>();
+            return helper.GetPaginatedData(
+                mapped,
+                dto.Page,
+                dto.PageSize,
+                dto.SortField??"CreatedOn",
+                dto.SortOrder ?? "desc",
+                string.IsNullOrWhiteSpace(dto.Search)
+            ? null
+            : (Func<VehicleRequestListDTO, bool>)(r =>
+                (!string.IsNullOrEmpty(r.PlateNumber) &&
+                    r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) 
+            )
+    );
         }
 
         public async Task<bool> UpdateRequestStatusAsync(Guid requestId, VehicleChangeStatusDTO dto)

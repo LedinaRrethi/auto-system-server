@@ -1,4 +1,5 @@
 ﻿using Domain.Contracts;
+using DTO;
 using DTO.VehicleRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,12 @@ namespace API.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationDTO dto)
         {
-            var result = await _domain.GetAllRequestsAsync();
+            var result = await _domain.GetAllRequestsAsync(dto);
             return Ok(result);
         }
+
 
         [HttpPost("update-status/{requestId}")]
         public async Task<IActionResult> UpdateStatus(Guid requestId, [FromBody] VehicleChangeStatusDTO dto)

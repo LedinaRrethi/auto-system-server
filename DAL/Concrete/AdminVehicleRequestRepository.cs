@@ -36,8 +36,6 @@ namespace DAL.Repositories
             
 
         }
-
-        //public Task SaveChangesAsync() => _context.SaveChangesAsync();
         public async Task UpdateAsync(Auto_VehicleChangeRequests request)
         {
             _context.Auto_VehicleChangeRequests.Update(request);
