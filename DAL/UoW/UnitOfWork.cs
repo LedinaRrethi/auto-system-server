@@ -37,6 +37,11 @@ namespace DAL.UoW
             return await _context.Database.BeginTransactionAsync();
         }
 
+        public async Task<int> CommitAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
 
     }
 

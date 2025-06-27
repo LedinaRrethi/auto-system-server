@@ -12,13 +12,11 @@ namespace Domain.Concrete
 {
     public class AdminVehicleRequestDomain : DomainBase, IAdminVehicleRequestDomain
     {
-        private readonly IAdminVehicleRequestRepository _adminRequestRepo;
-
         public AdminVehicleRequestDomain(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
-            : base(unitOfWork, mapper, accessor)
-        {
-            _adminRequestRepo = unitOfWork.GetRepository<IAdminVehicleRequestRepository>();
-        }
+            : base(unitOfWork, mapper, accessor) { }
+
+        private IAdminVehicleRequestRepository _adminRequestRepo => _unitOfWork.GetRepository<IAdminVehicleRequestRepository>();
+        private IRepository<Auto_Vehicles> _vehicleRepo => _unitOfWork.GetRepository<IRepository<Auto_Vehicles>>();
 
         public async Task<List<VehicleRequestListDTO>> GetAllRequestsAsync()
         {
@@ -45,38 +43,49 @@ namespace Domain.Concrete
                 if (request == null || request.Status != ChangeRequestStatus.Pending)
                     return false;
 
-                var vehicle = await _adminRequestRepo.GetVehicleByIdAsync(request.IDFK_Vehicle);
+                var vehicle = request.Vehicle;
+                if (vehicle == null)
+                    return false;
 
-                request.Status = dto.NewStatus;
+
+                // Përditëso statusin e kërkesës
+                request.Status = dto.NewStatus == VehicleStatus.Approved
+                    ? ChangeRequestStatus.Approved
+                    : ChangeRequestStatus.Rejected;
+
                 request.AdminComment = dto.AdminComment;
+                SetAuditOnUpdate(request);
+                await _adminRequestRepo.UpdateAsync(request);
 
-                if (dto.NewStatus == ChangeRequestStatus.Approved)
+                if (dto.NewStatus == VehicleStatus.Approved)
                 {
                     switch (request.RequestType)
                     {
-                        case ChangeRequestType.Register when vehicle != null:
+                        case ChangeRequestType.Register:
                             vehicle.Status = VehicleStatus.Approved;
                             break;
 
-                        case ChangeRequestType.Update when vehicle != null:
+                        case ChangeRequestType.Update:
                             var updateDto = JsonSerializer.Deserialize<VehicleUpdateDTO>(request.RequestDataJson);
                             if (updateDto != null)
                             {
                                 vehicle.PlateNumber = updateDto.PlateNumber;
                                 vehicle.Color = updateDto.Color;
-                            
                             }
                             break;
 
-                        case ChangeRequestType.Delete when vehicle != null:
+                        case ChangeRequestType.Delete:
                             vehicle.Invalidated = 1;
                             break;
                     }
+
+                    vehicle.Status = VehicleStatus.Approved;
+                    SetAuditOnUpdate(vehicle);
+                    await _vehicleRepo.UpdateAsync(vehicle);
                 }
 
-                await _adminRequestRepo.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
                 await transaction.CommitAsync();
-
                 return true;
             }
             catch

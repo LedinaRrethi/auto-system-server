@@ -27,11 +27,19 @@ namespace API.Controllers
         [HttpPost("update-status/{requestId}")]
         public async Task<IActionResult> UpdateStatus(Guid requestId, [FromBody] VehicleChangeStatusDTO dto)
         {
-            var success = await _domain.UpdateRequestStatusAsync(requestId, dto);
-            if (!success)
-                return BadRequest("Request not found or already handled.");
+            try
+            {
+                var success = await _domain.UpdateRequestStatusAsync(requestId, dto);
+                if (!success)
+                    return BadRequest(new { error = "Request not found or already handled." });
 
-            return Ok(new { message = $"Request {dto.NewStatus}" });
+                return Ok(new { message = $"Request status updated to {dto.NewStatus}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
+
     }
 }

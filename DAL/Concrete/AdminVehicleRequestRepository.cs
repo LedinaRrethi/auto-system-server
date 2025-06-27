@@ -1,15 +1,16 @@
-﻿using DAL.Contracts;
+﻿using DAL.Concrete;
+using DAL.Contracts;
 using DTO.VehicleRequest;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
-    public class AdminVehicleRequestRepository : IAdminVehicleRequestRepository
+    public class AdminVehicleRequestRepository : BaseRepository<Auto_VehicleChangeRequests>, IAdminVehicleRequestRepository
     {
         private readonly AutoSystemDbContext _context;
 
-        public AdminVehicleRequestRepository(AutoSystemDbContext context)
+        public AdminVehicleRequestRepository(AutoSystemDbContext context)  : base(context)
         {
             _context = context;
         }
@@ -31,12 +32,18 @@ namespace DAL.Repositories
 
         public async Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId)
         {
-            return await _context.Auto_Vehicles.FindAsync(vehicleId);
+            return await _context.Auto_Vehicles.FirstOrDefaultAsync(v => v.IDPK_Vehicle == vehicleId);
+            
+
         }
 
-        public async Task SaveChangesAsync()
+        //public Task SaveChangesAsync() => _context.SaveChangesAsync();
+        public async Task UpdateAsync(Auto_VehicleChangeRequests request)
         {
-            await _context.SaveChangesAsync();
+            _context.Auto_VehicleChangeRequests.Update(request);
+            await Task.CompletedTask; 
         }
+
+
     }
 }

@@ -11,5 +11,7 @@ namespace DAL.UoW
 
         Task<IDbContextTransaction> BeginTransactionAsync();
 
+        Task<int> CommitAsync();
+
     }
 }
