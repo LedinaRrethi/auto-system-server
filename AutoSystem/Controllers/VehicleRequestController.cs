@@ -67,7 +67,7 @@ namespace AutoSystem.Controllers
         }
 
         [HttpGet("my-requests")]
-        public async Task<IActionResult> MyRequests([FromBody] PaginationDTO dto)
+        public async Task<IActionResult> MyRequests([FromQuery] PaginationDTO dto)
         {
             try
             {
