@@ -11,7 +11,7 @@ namespace Domain.Contracts
         Task RegisterVehicleAsync(Guid vehicleId , VehicleRegisterDTO dto, string userId);
         Task RequestVehicleUpdateAsync(Guid vehicleId, VehicleRegisterDTO dto, string userId);
         Task RequestVehicleDeletionAsync(Guid vehicleId, string userId);
-        Task<PaginationResult<VehicleRequestListDTO>> GetMyRequestsAsync(string userId , PaginationDTO dto);
+        Task<PaginationResult<VehicleDTO>> GetMyRequestsAsync(string userId , PaginationDTO dto);
 
     }
 }

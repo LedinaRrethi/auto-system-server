@@ -139,13 +139,15 @@ namespace Domain.Concrete
             }
         }
 
-        public async Task<PaginationResult<VehicleRequestListDTO>> GetMyRequestsAsync(string userId , PaginationDTO dto)
+        public async Task<PaginationResult<VehicleDTO>> GetMyRequestsAsync(string userId , PaginationDTO dto)
         {
             var myRequests = await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
 
-            var mapped = _mapper.Map<List<VehicleRequestListDTO>>(myRequests);
+            //var mapped = _mapper.Map<List<VehicleDTO>>(myRequests);
 
-            var helper = new PaginationHelper<VehicleRequestListDTO>();
+            var mapped = myRequests.Select(r => _mapper.Map<VehicleDTO>(r.Vehicle)).ToList();
+
+            var helper = new PaginationHelper<VehicleDTO>();
 
             return helper.GetPaginatedData(
                mapped,
@@ -155,7 +157,7 @@ namespace Domain.Concrete
                dto.SortOrder ?? "desc",
                string.IsNullOrWhiteSpace(dto.Search)
            ? null
-           : (Func<VehicleRequestListDTO, bool>)(r =>
+           : (Func<VehicleDTO, bool>)(r =>
                (!string.IsNullOrEmpty(r.PlateNumber) &&
                    r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
            ));

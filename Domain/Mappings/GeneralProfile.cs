@@ -136,7 +136,6 @@ namespace Domain.Mappings
             #endregion
 
             #region VehicleRequest
-            CreateMap<Auto_VehicleChangeRequests, VehicleRequestDTO>().ReverseMap();
             CreateMap<Auto_VehicleChangeRequests, VehicleChangeStatusDTO>().ReverseMap();
             #endregion
 
@@ -157,7 +156,7 @@ namespace Domain.Mappings
     .ReverseMap();
 
 
-            CreateMap<Auto_FineRecipients, VehicleOwnerInfoDTO>().ReverseMap();
+     
 
             CreateMap<Auto_InspectionRequests, InspectionRequestCreateDTO>().ReverseMap();
 
