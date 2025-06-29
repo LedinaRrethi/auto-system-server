@@ -38,13 +38,13 @@ namespace DAL.Repositories
                     FirstName = user.FirstName,
                     FatherName = user.FatherName,
                     LastName = user.LastName,
-                    Email = user.Email,
+                    Email = user.Email!,
                     BirthDate = user.BirthDate,
                     Role = roles.FirstOrDefault() ?? "Unknown",
                     Status = user.Status.ToString(),
                     CreatedOn = user.CreatedOn,
                     SpecialistNumber = user.SpecialistNumber,
-                    DirectorateName = user.Directorate?.DirectoryName
+                    DirectorateName = user.Directorate is not null ? user.Directorate.DirectoryName : null
                 });
             }
 
