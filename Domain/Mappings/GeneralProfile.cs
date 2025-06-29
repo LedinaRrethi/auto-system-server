@@ -132,6 +132,7 @@ namespace Domain.Mappings
 
             CreateMap<Auto_Vehicles, VehicleDTO>().ReverseMap();
             CreateMap<Auto_Vehicles, VehicleRegisterDTO>().ReverseMap();
+            CreateMap<Auto_Vehicles, VehicleEditDTO>().ReverseMap();
 
             #endregion
 

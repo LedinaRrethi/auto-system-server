@@ -79,5 +79,20 @@ namespace AutoSystem.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [HttpGet("by-id/{vehicleId}")]
+        public async Task<IActionResult> GetVehicleById(Guid vehicleId)
+        {
+            try
+            {
+                var vehicle = await _domain.GetVehicleForEditAsync(vehicleId, GetUserId());
+                return Ok(vehicle);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
     }
 }

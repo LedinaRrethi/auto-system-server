@@ -162,5 +162,18 @@ namespace Domain.Concrete
                    r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
            ));
         }
+
+        public async Task<VehicleEditDTO> GetVehicleForEditAsync(Guid vehicleId, string userId)
+        {
+            var vehicle = await _vehicleRequestRepository.GetVehicleByIdAsync(vehicleId);
+
+            if (vehicle == null || vehicle.IDFK_Owner != userId)
+                throw new Exception("Vehicle not found or access denied.");
+
+            var mapped = _mapper.Map<VehicleEditDTO>(vehicle);
+
+            return mapped;
+        }
+
     }
 }
