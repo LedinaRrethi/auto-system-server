@@ -1,4 +1,5 @@
-﻿using DAL.Contracts;
+﻿using AutoMapper;
+using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO;
@@ -13,8 +14,8 @@ namespace Domain.Concrete
 {
     public class AdminVehicleRequestDomain : DomainBase, IAdminVehicleRequestDomain
     {
-        public AdminVehicleRequestDomain(IUnitOfWork unitOfWork, IHttpContextAccessor accessor)
-            : base(unitOfWork, null, accessor) { }
+        public AdminVehicleRequestDomain(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
+            : base(unitOfWork, mapper, accessor) { }
 
         private IAdminVehicleRequestRepository _adminRequestRepo => _unitOfWork.GetRepository<IAdminVehicleRequestRepository>();
         private IRepository<Auto_Vehicles> _vehicleRepo => _unitOfWork.GetRepository<IRepository<Auto_Vehicles>>();

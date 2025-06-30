@@ -48,7 +48,7 @@ namespace Domain.Concrete
                     RequestType = ChangeRequestType.Register,
                     RequestDataJson = JsonSerializer.Serialize(dto),
                     CurrentDataSnapshotJson = string.Empty,
-                    Status = ChangeRequestStatus.Pending
+                    Status = VehicleStatus.Pending
                 };
                 SetAuditOnCreate(request);
 
@@ -86,7 +86,7 @@ namespace Domain.Concrete
                     RequestType = ChangeRequestType.Update,
                     RequestDataJson = JsonSerializer.Serialize(dto),
                     CurrentDataSnapshotJson = snapshot,
-                    Status = ChangeRequestStatus.Pending
+                    Status = VehicleStatus.Pending
                 };
                 SetAuditOnCreate(request);
 
@@ -124,7 +124,7 @@ namespace Domain.Concrete
                     RequestType = ChangeRequestType.Delete,
                     RequestDataJson = string.Empty,
                     CurrentDataSnapshotJson = snapshot,
-                    Status = ChangeRequestStatus.Pending
+                    Status = VehicleStatus.Pending
                 };
                 SetAuditOnCreate(request);
 
@@ -139,29 +139,50 @@ namespace Domain.Concrete
             }
         }
 
-        public async Task<PaginationResult<VehicleDTO>> GetMyRequestsAsync(string userId , PaginationDTO dto)
+        public async Task<PaginationResult<VehicleDTO>> GetMyRequestsAsync(string userId, PaginationDTO dto)
         {
             var myRequests = await _vehicleRequestRepository.GetRequestsByUserAsync(userId);
 
-            //var mapped = _mapper.Map<List<VehicleDTO>>(myRequests);
-
-            var mapped = myRequests.Select(r => _mapper.Map<VehicleDTO>(r.Vehicle)).ToList();
+            var mapped = myRequests
+                .Select(r =>
+                {
+                    try
+                    {
+                        var data = JsonSerializer.Deserialize<VehicleDTO>(r.RequestDataJson);
+                        if (data != null)
+                        {
+                            data.IDPK_Vehicle = r.IDFK_Vehicle;
+                            data.Status = r.Status;
+                            data.CreatedOn = r.CreatedOn;
+                            data.ApprovalComment = r.AdminComment;
+                        }
+                        return data;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                })
+                .Where(x => x != null)
+                .ToList();
 
             var helper = new PaginationHelper<VehicleDTO>();
 
             return helper.GetPaginatedData(
-               mapped,
+               mapped!,
                dto.Page,
                dto.PageSize,
                dto.SortField ?? "CreatedOn",
                dto.SortOrder ?? "desc",
                string.IsNullOrWhiteSpace(dto.Search)
-           ? null
-           : (Func<VehicleDTO, bool>)(r =>
-               (!string.IsNullOrEmpty(r.PlateNumber) &&
-                   r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
-           ));
+                   ? null
+                   : (Func<VehicleDTO, bool>)(r =>
+                       (!string.IsNullOrEmpty(r.PlateNumber) &&
+                           r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+                   ));
         }
+
+
 
         public async Task<VehicleEditDTO> GetVehicleForEditAsync(Guid vehicleId, string userId)
         {

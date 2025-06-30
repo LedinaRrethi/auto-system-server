@@ -51,7 +51,7 @@ namespace DAL.Concrete
         public async Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId)
         {
             return await _context.Auto_VehicleChangeRequests
-                .AnyAsync(r => r.IDFK_Vehicle == vehicleId && r.Status == ChangeRequestStatus.Pending);
+                .AnyAsync(r => r.IDFK_Vehicle == vehicleId && r.Status == VehicleStatus.Pending);
         }
 
         public async Task SaveChangesAsync()
