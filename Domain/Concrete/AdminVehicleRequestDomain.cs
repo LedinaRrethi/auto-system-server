@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DAL.Contracts;
+﻿using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO;
@@ -14,8 +13,8 @@ namespace Domain.Concrete
 {
     public class AdminVehicleRequestDomain : DomainBase, IAdminVehicleRequestDomain
     {
-        public AdminVehicleRequestDomain(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
-            : base(unitOfWork, mapper, accessor) { }
+        public AdminVehicleRequestDomain(IUnitOfWork unitOfWork, IHttpContextAccessor accessor)
+            : base(unitOfWork, null, accessor) { }
 
         private IAdminVehicleRequestRepository _adminRequestRepo => _unitOfWork.GetRepository<IAdminVehicleRequestRepository>();
         private IRepository<Auto_Vehicles> _vehicleRepo => _unitOfWork.GetRepository<IRepository<Auto_Vehicles>>();
@@ -23,22 +22,32 @@ namespace Domain.Concrete
         public async Task<PaginationResult<VehicleRequestListDTO>> GetAllRequestsAsync(PaginationDTO dto)
         {
             var requests = await _adminRequestRepo.GetAllRequestsAsync();
-            var mapped = _mapper.Map<List<VehicleRequestListDTO>>(requests);
+
+            var mapped = requests.Select(r => new VehicleRequestListDTO
+            {
+                IDPK_ChangeRequest = r.IDPK_ChangeRequest,
+                IDFK_Vehicle = r.IDFK_Vehicle,
+                RequestType = r.RequestType,
+                RequestDataJson = r.RequestDataJson,
+                CurrentDataSnapshotJson = r.CurrentDataSnapshotJson,
+                PlateNumber = r.Vehicle?.PlateNumber,
+                Status = r.Status,
+                CreatedOn = r.CreatedOn
+            }).ToList();
 
             var helper = new PaginationHelper<VehicleRequestListDTO>();
             return helper.GetPaginatedData(
                 mapped,
                 dto.Page,
                 dto.PageSize,
-                dto.SortField??"CreatedOn",
+                dto.SortField ?? nameof(VehicleRequestListDTO.CreatedOn),
                 dto.SortOrder ?? "desc",
                 string.IsNullOrWhiteSpace(dto.Search)
-            ? null
-            : (Func<VehicleRequestListDTO, bool>)(r =>
-                (!string.IsNullOrEmpty(r.PlateNumber) &&
-                    r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) 
-            )
-    );
+                    ? null
+                    : (Func<VehicleRequestListDTO, bool>)(r =>
+                        !string.IsNullOrEmpty(r.PlateNumber) &&
+                        r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+            );
         }
 
         public async Task<bool> UpdateRequestStatusAsync(Guid requestId, VehicleChangeStatusDTO dto)
@@ -48,17 +57,14 @@ namespace Domain.Concrete
             try
             {
                 var request = await _adminRequestRepo.GetRequestByIdAsync(requestId);
-                if (request == null || request.Status != ChangeRequestStatus.Pending)
+                if (request == null || request.Status != VehicleStatus.Pending)
                     return false;
 
                 var vehicle = request.Vehicle;
                 if (vehicle == null)
                     return false;
 
-                request.Status = dto.NewStatus == VehicleStatus.Approved
-                    ? ChangeRequestStatus.Approved
-                    : ChangeRequestStatus.Rejected;
-
+                request.Status = dto.NewStatus;
                 request.AdminComment = dto.AdminComment;
                 SetAuditOnUpdate(request);
                 await _adminRequestRepo.UpdateAsync(request);
@@ -77,7 +83,11 @@ namespace Domain.Concrete
                             {
                                 vehicle.PlateNumber = updateDto.PlateNumber;
                                 vehicle.Color = updateDto.Color;
+                                vehicle.SeatCount = updateDto.SeatCount;
+                                vehicle.DoorCount = updateDto.DoorCount;
+                                vehicle.ChassisNumber = updateDto.ChassisNumber;
                             }
+                            vehicle.Status = VehicleStatus.Approved;
                             break;
 
                         case ChangeRequestType.Delete:
@@ -85,7 +95,6 @@ namespace Domain.Concrete
                             break;
                     }
 
-                    vehicle.Status = VehicleStatus.Approved;
                     SetAuditOnUpdate(vehicle);
                     await _vehicleRepo.UpdateAsync(vehicle);
                 }

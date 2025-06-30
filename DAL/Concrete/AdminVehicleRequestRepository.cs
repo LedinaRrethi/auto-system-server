@@ -2,6 +2,7 @@
 using DAL.Contracts;
 using DTO.VehicleRequest;
 using Entities.Models;
+using Helpers.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -17,11 +18,22 @@ namespace DAL.Repositories
 
         public async Task<List<Auto_VehicleChangeRequests>> GetAllRequestsAsync()
         {
-            return await _context.Auto_VehicleChangeRequests
+            var latestPerVehicle = await _context.Auto_VehicleChangeRequests
+                .Where(r => r.Status == VehicleStatus.Pending || r.Status == VehicleStatus.Approved)
                 .Include(r => r.Vehicle)
                 .Include(r => r.Requester)
+                .GroupBy(r => r.IDFK_Vehicle)
+                .Select(group =>
+                    group.OrderByDescending(r => r.Status == VehicleStatus.Pending)
+                         .ThenByDescending(r => r.CreatedOn)
+                         .First()
+                )
                 .ToListAsync();
+
+            return latestPerVehicle;
         }
+
+
 
         public async Task<Auto_VehicleChangeRequests?> GetRequestByIdAsync(Guid requestId)
         {
