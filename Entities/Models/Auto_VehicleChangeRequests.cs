@@ -27,7 +27,7 @@ namespace Entities.Models
 
         public string? RequesterComment { get; set; }
 
-        public ChangeRequestStatus Status { get; set; } = ChangeRequestStatus.Pending;
+        public VehicleStatus Status { get; set; } = VehicleStatus.Pending;
 
         [MaxLength(500)]
         public string? AdminComment { get; set; }

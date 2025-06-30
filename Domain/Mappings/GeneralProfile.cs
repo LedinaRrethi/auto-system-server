@@ -142,7 +142,14 @@ namespace Domain.Mappings
 
             CreateMap<Auto_VehicleChangeRequests, VehicleRequestListDTO>()
     .ForMember(dest => dest.PlateNumber, opt => opt.MapFrom(src => src.Vehicle.PlateNumber))
-    .ReverseMap();
+    .ForMember(dest => dest.CurrentDataSnapshotJson, opt => opt.MapFrom(src => src.CurrentDataSnapshotJson))
+    .ForMember(dest => dest.RequestDataJson, opt => opt.MapFrom(src => src.RequestDataJson))
+    .ForMember(dest => dest.RequestType, opt => opt.MapFrom(src => src.RequestType))
+    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+    .ForMember(dest => dest.CreatedOn, opt => opt.MapFrom(src => src.CreatedOn))
+    .ForMember(dest => dest.IDPK_ChangeRequest, opt => opt.MapFrom(src => src.IDPK_ChangeRequest))
+    .ForMember(dest => dest.IDFK_Vehicle, opt => opt.MapFrom(src => src.IDFK_Vehicle));
+
 
             CreateMap<Auto_Fines, FineDTO>().ReverseMap();
             CreateMap<Auto_FineRecipients, FineRecipientDTO>().ReverseMap();
