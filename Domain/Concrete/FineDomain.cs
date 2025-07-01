@@ -2,6 +2,7 @@
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using DTO;
 using DTO.FineDTO;
 using Entities.Models;
 using Helpers.Pagination;
@@ -139,12 +140,42 @@ namespace Domain.Concrete
             );
         }
 
-        public async Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize)
+        //public async Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize)
+        //{
+        //    var fines = await _repo.GetAllFinesAsync();
+        //    var paged = fines.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        //    return _mapper.Map<List<FineResponseDTO>>(paged);
+        //}
+
+        public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(PaginationDTO pagination)
         {
-            var fines = await _repo.GetAllFinesAsync();
-            var paged = fines.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-            return _mapper.Map<List<FineResponseDTO>>(paged);
+            var allFines = await _repo.GetAllFinesAsync();
+
+            var fineDtos = _mapper.Map<List<FineResponseDTO>>(allFines);
+
+            Func<FineResponseDTO, bool>? filterFunc = null;
+            if (!string.IsNullOrWhiteSpace(pagination.Search))
+            {
+                var searchLower = pagination.Search.ToLower();
+                filterFunc = f =>
+                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
+                (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
+                f.FineAmount.ToString().Contains(searchLower);
+            }
+            var helper = new PaginationHelper<FineResponseDTO>();
+            var result = helper.GetPaginatedData(
+                fineDtos,
+                pagination.Page,
+                pagination.PageSize,
+                pagination.SortField,
+                pagination.SortOrder,
+                filterFunc
+            );
+
+            return result;
         }
+
 
         public async Task<object?> GetRecipientDetailsByPlateAsync(string plate)
         {
