@@ -49,6 +49,7 @@ namespace DAL.Concrete
         {
             return await _context.Auto_Fines
                 .Include(f => f.FineRecipient)
+                .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
                 .Where(f => f.FineRecipient.IDFK_User == userId && f.Invalidated == 0)
                 .ToListAsync();

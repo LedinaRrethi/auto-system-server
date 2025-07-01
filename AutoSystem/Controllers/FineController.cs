@@ -40,14 +40,14 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Police")]
-        [HttpGet("my-issued-fines")]
-        public async Task<IActionResult> GetPoliceFines([FromQuery] FineFilterDTO filter)
-        {
-            var policeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _domain.GetFinesCreatedByPoliceAsync(policeId, filter);
-            return Ok(result);
-        }
+        //[Authorize(Roles = "Police")]
+        //[HttpGet("my-issued-fines")]
+        //public async Task<IActionResult> GetPoliceFines([FromQuery] FineFilterDTO filter)
+        //{
+        //    var policeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var result = await _domain.GetFinesCreatedByPoliceAsync(policeId, filter);
+        //    return Ok(result);
+        //}
 
         [Authorize(Roles = "Police")]
         [HttpGet("all")]
