@@ -133,6 +133,7 @@ namespace AutoSystem.Controllers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
+                //per deploy duhet secure=false , SamSite=lax
 
                 Expires = expires
             };

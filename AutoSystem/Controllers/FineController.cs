@@ -1,7 +1,6 @@
 ﻿using Domain.Contracts;
 using DTO.FineDTO;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -23,26 +22,29 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> AddFine([FromBody] FineCreateDTO dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            var success = await _domain.CreateFineAsync(dto, userId, ip ?? "unknown");
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-            return success ? Ok("Fine successfully issued.") : BadRequest("An error occurred while registering the fine.");
+            var success = await _domain.CreateFineAsync(dto, userId, ip);
+            if (success)
+                return Ok("Fine successfully issued.");
+            return BadRequest("An error occurred while registering the fine.");
         }
 
         [Authorize(Roles = "Individ")]
         [HttpGet("my-fines")]
-        public async Task<IActionResult> GetMyFines([FromQuery] FineFilterDTO filter, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetMyFines([FromQuery] FineFilterDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _domain.GetMyFinesAsync(userId, filter, page, pageSize);
+            var result = await _domain.GetMyFinesAsync(userId, filter);
             return Ok(result);
         }
 
         [Authorize(Roles = "Police")]
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchFines([FromQuery] string plate, int page = 1, int pageSize = 10)
+        [HttpGet("my-issued-fines")]
+        public async Task<IActionResult> GetPoliceFines([FromQuery] FineFilterDTO filter)
         {
-            var result = await _domain.SearchFinesByPlateAsync(plate, page, pageSize);
+            var policeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _domain.GetFinesCreatedByPoliceAsync(policeId, filter);
             return Ok(result);
         }
 
@@ -60,29 +62,15 @@ namespace AutoSystem.Controllers
         {
             var result = await _domain.GetRecipientDetailsByPlateAsync(plate);
 
-            if (result == null)
+            return Ok(result ?? new
             {
-                return Ok(new
-                {
-                    IsFrom = "Manual",
-                    FirstName = "",
-                    FatherName = "",
-                    LastName = "",
-                    PhoneNumber = "",
-                    PersonalId = ""
-                });
-            }
-
-            return Ok(result);
-        }
-
-        [Authorize(Roles = "Police")]
-        [HttpGet("my-issued-fines")]
-        public async Task<IActionResult> GetPoliceFines([FromQuery] FineFilterDTO filter, int page = 1, int pageSize = 10)
-        {
-            var policeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _domain.GetFinesCreatedByPoliceAsync(policeId, filter, page, pageSize);
-            return Ok(result);
+                IsFrom = "Manual",
+                FirstName = "",
+                FatherName = "",
+                LastName = "",
+                PhoneNumber = "",
+                PersonalId = ""
+            });
         }
     }
 }

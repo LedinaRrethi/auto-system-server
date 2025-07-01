@@ -1,30 +1,22 @@
 ﻿using DAL.Contracts;
 using DTO.FineDTO;
-using DTO.VehicleDTO;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DAL.Concrete
 {
-    public class FineRepository : IFineRepository
+    public class FineRepository : BaseRepository<Auto_Fines>, IFineRepository
     {
         private readonly AutoSystemDbContext _context;
 
-        public FineRepository(AutoSystemDbContext context) => _context = context;
+        public FineRepository(AutoSystemDbContext context) : base(context)
+        {
+            _context = context;
+        }
 
-
-        //Gjen automjetin me targën përkatëse që nuk është fshirë logjikisht(Invalidated == 0)
         public Task<Auto_Vehicles?> GetVehicleByPlateAsync(string plate) =>
             _context.Auto_Vehicles.FirstOrDefaultAsync(v => v.PlateNumber == plate && v.Invalidated == 0);
 
-
-        // Merr përdoruesin nëse ekziston në databazë (përdoret për të mbushur të dhënat në FineRecipient).
         public Task<Auto_Users?> GetUserByIdAsync(string userId) =>
             _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -34,95 +26,42 @@ namespace DAL.Concrete
         public Task AddFineAsync(Auto_Fines fine) =>
             _context.Auto_Fines.AddAsync(fine).AsTask();
 
-        public Task SaveChangesAsync() => _context.SaveChangesAsync();
+        public Task<Auto_FineRecipients?> GetFineRecipientByUserIdAsync(string userId) =>
+            _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.IDFK_User == userId && r.Invalidated == 0);
 
+        public Task<Auto_FineRecipients?> GetFineRecipientByPersonalIdAsync(string personalId) =>
+            _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.PersonalId == personalId && r.Invalidated == 0);
 
-        public async Task<List<Auto_Fines>> GetFinesForUserAsync(string userId, FineFilterDTO filter, int page, int pageSize)
+        public Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate) =>
+            _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.PlateNumber == plate && r.Invalidated == 0);
+
+        public async Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId)
         {
-            var query = _context.Auto_Fines
+            return await _context.Auto_Fines
                 .Include(f => f.FineRecipient)
+                .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
-                .Where(f => f.FineRecipient.IDFK_User == userId && f.Invalidated == 0);
-
-            if (filter.FromDate.HasValue)
-                query = query.Where(f => f.FineDate >= filter.FromDate.Value);
-            if (filter.ToDate.HasValue)
-                query = query.Where(f => f.FineDate <= filter.ToDate.Value);
-
-            return await query.OrderByDescending(f => f.FineDate)
-                              .Skip((page - 1) * pageSize)
-                              .Take(pageSize).ToListAsync();
+                .Where(f => f.CreatedBy == policeId && f.Invalidated == 0)
+                .ToListAsync();
         }
 
-        public Task<List<Auto_Fines>> SearchFinesByPlateAsync(string plate, int page, int pageSize) =>
-            _context.Auto_Fines.Include(f => f.FineRecipient)
+        public async Task<List<Auto_Fines>> GetFinesForUserAsync(string userId)
+        {
+            return await _context.Auto_Fines
+                .Include(f => f.FineRecipient)
                 .Include(f => f.PoliceOfficer)
-                .Where(f => f.FineRecipient.PlateNumber != null && f.FineRecipient.PlateNumber.Contains(plate))
-                .OrderByDescending(f => f.FineDate)
-                .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                .Where(f => f.FineRecipient.IDFK_User == userId && f.Invalidated == 0)
+                .ToListAsync();
+        }
 
-
-        public async Task<List<Auto_Fines>> GetAllFinesAsync(int page, int pageSize)
+        public async Task<List<Auto_Fines>> GetAllFinesAsync()
         {
             return await _context.Auto_Fines
                 .Include(f => f.FineRecipient)
                 .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
                 .Where(f => f.Invalidated == 0)
-                .OrderByDescending(f => f.FineDate)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
         }
-
- 
-
-        public Task<Auto_FineRecipients?> GetFineRecipientByUserIdAsync(string userId) =>
-    _context.Auto_FineRecipients
-        .FirstOrDefaultAsync(r => r.IDFK_User == userId && r.Invalidated == 0);
-
-        public Task<Auto_FineRecipients?> GetFineRecipientByPersonalIdAsync(string personalId) =>
-            _context.Auto_FineRecipients
-                .FirstOrDefaultAsync(r => r.PersonalId == personalId && r.Invalidated == 0);
-
-
-        public async Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter, int page, int pageSize)
-        {
-            var query = _context.Auto_Fines
-                .Include(f => f.FineRecipient)
-                .Include(f => f.Vehicle)
-                .Include(f => f.PoliceOfficer)
-                .Where(f => f.CreatedBy == policeId && f.Invalidated == 0);
-
-            if (filter.FromDate.HasValue)
-            {
-                query = query.Where(f => f.FineDate >= filter.FromDate.Value.Date);
-            }
-
-            if (filter.ToDate.HasValue)
-            {
-                var toDateExclusive = filter.ToDate.Value.Date.AddDays(1);
-                query = query.Where(f => f.FineDate < toDateExclusive);
-            }
-
-
-            if (!string.IsNullOrWhiteSpace(filter.PlateNumber))
-                query = query.Where(f => f.FineRecipient.PlateNumber != null &&
-                                         f.FineRecipient.PlateNumber.Contains(filter.PlateNumber));
-
-            return await query
-                .OrderByDescending(f => f.FineDate)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-        }
-
-        public Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate) =>
-    _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.PlateNumber == plate);
-
-
-
-
     }
-
 }

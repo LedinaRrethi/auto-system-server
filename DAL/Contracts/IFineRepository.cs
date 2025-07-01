@@ -21,22 +21,22 @@ namespace DAL.Contracts
         //krijon nje rekord te pronarit te automjetit pavaresisht nese eshte apo jo i regjistruar
         Task AddFineRecipientAsync(Auto_FineRecipients recipient);
         Task AddFineAsync(Auto_Fines fine);
-        Task SaveChangesAsync();
-
-        Task<List<Auto_Fines>> GetFinesForUserAsync(string userId, FineFilterDTO filter, int page, int pageSize);
-
-        Task<List<Auto_Fines>> SearchFinesByPlateAsync(string plate, int page, int pageSize);
-
-        Task<List<Auto_Fines>> GetAllFinesAsync(int page, int pageSize);
 
         Task<Auto_FineRecipients?> GetFineRecipientByUserIdAsync(string userId);
         Task<Auto_FineRecipients?> GetFineRecipientByPersonalIdAsync(string personalId);
 
-        Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter, int page, int pageSize);
-
-
         Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate);
-    
+
+        Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId);
+        Task<List<Auto_Fines>> GetFinesForUserAsync(string userId);
+        Task<List<Auto_Fines>> GetAllFinesAsync();
+
+
+
+
+
+
+
 
 
 
