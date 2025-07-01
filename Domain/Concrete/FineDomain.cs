@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
-using DAL.Concrete;
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using DTO;
 using DTO.FineDTO;
-using DTO.VehicleDTO;
 using Entities.Models;
 using Helpers.Pagination;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -32,8 +30,6 @@ namespace Domain.Concrete
             _unitOfWork = unitOfWork;
         }
 
-
-
         public async Task<bool> CreateFineAsync(FineCreateDTO dto, string policeId, string ip)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync();
@@ -46,8 +42,10 @@ namespace Domain.Concrete
                     : null;
 
                 Auto_FineRecipients? recipient = owner != null
-                    ? await _repo.GetFineRecipientByUserIdAsync(owner.Id)
-                    : await _repo.GetFineRecipientByPersonalIdAsync(dto.PersonalId!);
+                  ? await _repo.GetFineRecipientByUserIdAsync(owner.Id)
+                  : await _repo.GetFineRecipientByPersonalIdAsync(dto.PersonalId!);
+
+              
 
                 if (recipient == null)
                 {
@@ -58,7 +56,7 @@ namespace Domain.Concrete
                         FirstName = owner?.FirstName ?? dto.FirstName!,
                         LastName = owner?.LastName ?? dto.LastName!,
                         FatherName = owner?.FatherName ?? dto.FatherName,
-                        PersonalId = owner?.PersonalId ?? dto.PersonalId,
+                        PersonalId = owner?.PersonalId ?? dto.PersonalId!,
                         PlateNumber = dto.PlateNumber,
                         CreatedBy = policeId,
                         CreatedOn = DateTime.UtcNow,
@@ -72,7 +70,7 @@ namespace Domain.Concrete
                 var fine = new Auto_Fines
                 {
                     IDPK_Fine = Guid.NewGuid(),
-                    IDFK_Vehicle = vehicle?.IDPK_Vehicle,
+                    IDFK_Vehicle = vehicle.IDPK_Vehicle,
                     IDFK_FineRecipient = recipient.IDPK_FineRecipient,
                     FineAmount = dto.FineAmount,
                     FineDate = dto.FineDate ?? DateTime.UtcNow,
@@ -95,57 +93,143 @@ namespace Domain.Concrete
             }
         }
 
-
-        public async Task<PaginationResult<FineResponseDTO>> GetMyFinesAsync(string userId, FineFilterDTO filter, int page, int pageSize)
+        public async Task<PaginationResult<FineResponseDTO>> GetMyFinesAsync(string userId, FineFilterDTO filter)
         {
-            var items = await _repo.GetFinesForUserAsync(userId, filter, page, pageSize + 1);
-            var result = _mapper.Map<List<FineResponseDTO>>(items);
+            var fines = await _repo.GetFinesForUserAsync(userId);
 
-            return new PaginationResult<FineResponseDTO>
+            var dtoList = fines.Select(f => new FineResponseDTO
             {
-                Items = result.Take(pageSize).ToList(),
-                Page = page,
-                PageSize = pageSize,
-                HasNextPage = result.Count > pageSize
-            };
-        }
+                IDPK_Fine = f.IDPK_Fine,
+                FineAmount = f.FineAmount,
+                FineReason = f.FineReason,
+                FineDate = f.FineDate,
+                PlateNumber = f.Vehicle?.PlateNumber,
+                PoliceFullName = f.PoliceOfficer != null
+                    ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}"
+                    : null,
+       
+            }).ToList();
 
-        public async Task<PaginationResult<FineResponseDTO>> SearchFinesByPlateAsync(string plate, int page, int pageSize)
-        {
-            var items = await _repo.SearchFinesByPlateAsync(plate, page, pageSize + 1);
-            var result = _mapper.Map<List<FineResponseDTO>>(items);
-
-            return new PaginationResult<FineResponseDTO>
+            bool validDateRange = true;
+            if (filter.FromDate.HasValue && filter.ToDate.HasValue)
             {
-                Items = result.Take(pageSize).ToList(),
-                Page = page,
-                PageSize = pageSize,
-                HasNextPage = result.Count > pageSize
-            };
-        }
+                validDateRange = filter.FromDate.Value.Date <= filter.ToDate.Value.Date;
+            }
 
+            var filteredFines = dtoList.Where(f =>
+                (string.IsNullOrEmpty(filter.PlateNumber) || (f.PlateNumber != null && f.PlateNumber.Contains(filter.PlateNumber))) &&
+                (!filter.FromDate.HasValue || f.FineDate.Date >= filter.FromDate.Value.Date) &&
+                (!filter.ToDate.HasValue || f.FineDate.Date <= filter.ToDate.Value.Date) &&
+                validDateRange
+            ).ToList();
 
-        public async Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize)
-        {
-            var fines = await _repo.GetAllFinesAsync(page, pageSize);
-            return _mapper.Map<List<FineResponseDTO>>(fines);
-        }
-
-     
-
-        public async Task<PaginationResult<FineResponseDTO>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter, int page, int pageSize)
-        {
-            var items = await _repo.GetFinesCreatedByPoliceAsync(policeId, filter, page, pageSize + 1);
-            var result = _mapper.Map<List<FineResponseDTO>>(items);
-
-            return new PaginationResult<FineResponseDTO>
+            Func<FineResponseDTO, bool>? filterFunc = null;
+            if (!string.IsNullOrWhiteSpace(filter.Search))
             {
-                Items = result.Take(pageSize).ToList(),
-                Page = page,
-                PageSize = pageSize,
-                HasNextPage = result.Count > pageSize
-            };
+                var searchLower = filter.Search.ToLower();
+                filterFunc = f =>
+                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||  
+                    (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.PoliceFullName) && f.PoliceFullName.ToLower().Contains(searchLower))||
+                    f.FineAmount.ToString().Contains(searchLower);
+            }
+
+            if (filterFunc is not null)
+                filteredFines = filteredFines.Where(filterFunc).ToList();
+
+            var helper = new PaginationHelper<FineResponseDTO>();
+            var result = helper.GetPaginatedData(
+                filteredFines,
+                filter.Page, 
+                filter.PageSize,
+                filter.SortField,
+                filter.SortOrder
+            );
+
+            return result;
         }
+
+        public async Task<PaginationResult<FineResponseDTO>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter)
+        {
+            var fines = await _repo.GetFinesCreatedByPoliceAsync(policeId);
+            var result = _mapper.Map<List<FineResponseDTO>>(fines);
+
+            var helper = new PaginationHelper<FineResponseDTO>();
+            return helper.GetPaginatedData(
+                source: result,
+                page: filter.Page,
+                pageSize: filter.PageSize,
+                sortField: filter.SortField,
+                sortOrder: filter.SortOrder,
+                filterFunc: f =>
+                    (string.IsNullOrEmpty(filter.PlateNumber) || f.PlateNumber?.Contains(filter.PlateNumber) == true) &&
+                    (string.IsNullOrEmpty(filter.Search) || (
+                        f.PlateNumber?.Contains(filter.Search, StringComparison.OrdinalIgnoreCase) == true ||
+                        f.RecipientFullName?.Contains(filter.Search, StringComparison.OrdinalIgnoreCase) == true ||
+                        f.FineReason?.Contains(filter.Search, StringComparison.OrdinalIgnoreCase) == true
+                    )) &&
+                    (!filter.FromDate.HasValue || f.FineDate >= filter.FromDate.Value) &&
+                    (!filter.ToDate.HasValue || f.FineDate <= filter.ToDate.Value)
+            );
+        }
+
+        public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter)
+        {
+            var allFines = await _repo.GetAllFinesAsync();
+
+            var fineDtos = allFines.Select(f => new FineResponseDTO
+            {
+                IDPK_Fine = f.IDPK_Fine,
+                FineAmount = f.FineAmount,
+                FineReason = f.FineReason,
+                FineDate = f.FineDate,
+                PlateNumber = f.Vehicle?.PlateNumber,
+                PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
+                RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
+            }).ToList();
+
+            bool validDateRange = true;
+            if (filter.FromDate.HasValue && filter.ToDate.HasValue)
+            {
+                validDateRange = filter.FromDate.Value.Date <= filter.ToDate.Value.Date;
+            }
+
+            var filteredFines = fineDtos.Where(f =>
+                (string.IsNullOrEmpty(filter.PlateNumber) || (f.PlateNumber != null && f.PlateNumber.Contains(filter.PlateNumber))) &&
+
+                (!filter.FromDate.HasValue || f.FineDate.Date >= filter.FromDate.Value.Date) &&
+                (!filter.ToDate.HasValue || f.FineDate.Date <= filter.ToDate.Value.Date) &&
+                validDateRange
+            ).ToList();
+
+            Func<FineResponseDTO, bool>? filterFunc = null;
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var searchLower = filter.Search.ToLower();
+                filterFunc = f =>
+                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
+                    f.FineAmount.ToString().Contains(searchLower);
+            }
+
+            if (filterFunc is not null)
+                filteredFines = filteredFines.Where(filterFunc).ToList();
+
+            var helper = new PaginationHelper<FineResponseDTO>();
+            var result = helper.GetPaginatedData(
+                filteredFines,
+                filter.Page,
+                filter.PageSize,
+                filter.SortField,
+                filter.SortOrder
+            );
+
+            return result;
+        }
+
+
+
 
 
         public async Task<object?> GetRecipientDetailsByPlateAsync(string plate)
@@ -183,9 +267,5 @@ namespace Domain.Concrete
 
             return null;
         }
-
-
-
-
     }
 }

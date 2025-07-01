@@ -9,6 +9,7 @@ namespace DTO.FineDTO
     public class FineResponseDTO
     {
         public Guid IDPK_Fine { get; set; }
+
         public decimal FineAmount { get; set; }
         public string? FineReason { get; set; }
         public DateTime FineDate { get; set; }
