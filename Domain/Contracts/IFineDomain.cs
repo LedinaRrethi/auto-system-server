@@ -17,7 +17,7 @@ namespace Domain.Contracts
         Task<PaginationResult<FineResponseDTO>> GetMyFinesAsync(string userId, FineFilterDTO filter);
         Task<PaginationResult<FineResponseDTO>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter);
         //Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize);
-        Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(PaginationDTO pagination);
+        Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter);
         Task<object?> GetRecipientDetailsByPlateAsync(string plate);
 
     }

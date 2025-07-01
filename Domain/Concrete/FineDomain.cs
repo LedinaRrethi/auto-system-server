@@ -204,18 +204,9 @@ namespace Domain.Concrete
             );
         }
 
-        //public async Task<List<FineResponseDTO>> GetAllFinesAsync(int page, int pageSize)
-        //{
-        //    var fines = await _repo.GetAllFinesAsync();
-        //    var paged = fines.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-        //    return _mapper.Map<List<FineResponseDTO>>(paged);
-        //}
-
-        public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(PaginationDTO pagination)
+        public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter)
         {
             var allFines = await _repo.GetAllFinesAsync();
-
-            //var fineDtos = _mapper.Map<List<FineResponseDTO>>(allFines);
 
             var fineDtos = allFines.Select(f => new FineResponseDTO
             {
@@ -228,29 +219,48 @@ namespace Domain.Concrete
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
 
+            bool validDateRange = true;
+            if (filter.FromDate.HasValue && filter.ToDate.HasValue)
+            {
+                validDateRange = filter.FromDate.Value.Date <= filter.ToDate.Value.Date;
+            }
+
+            var filteredFines = fineDtos.Where(f =>
+                (string.IsNullOrEmpty(filter.PlateNumber) || (f.PlateNumber != null && f.PlateNumber.Contains(filter.PlateNumber))) &&
+
+                (!filter.FromDate.HasValue || f.FineDate.Date >= filter.FromDate.Value.Date) &&
+                (!filter.ToDate.HasValue || f.FineDate.Date <= filter.ToDate.Value.Date) &&
+                validDateRange
+            ).ToList();
 
             Func<FineResponseDTO, bool>? filterFunc = null;
-            if (!string.IsNullOrWhiteSpace(pagination.Search))
+            if (!string.IsNullOrWhiteSpace(filter.Search))
             {
-                var searchLower = pagination.Search.ToLower();
+                var searchLower = filter.Search.ToLower();
                 filterFunc = f =>
                     (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
-                (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
-                f.FineAmount.ToString().Contains(searchLower);
+                    (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
+                    f.FineAmount.ToString().Contains(searchLower);
             }
+
+            if (filterFunc is not null)
+                filteredFines = filteredFines.Where(filterFunc).ToList();
+
             var helper = new PaginationHelper<FineResponseDTO>();
             var result = helper.GetPaginatedData(
-                fineDtos,
-                pagination.Page,
-                pagination.PageSize,
-                pagination.SortField,
-                pagination.SortOrder,
-                filterFunc
+                filteredFines,
+                filter.Page,
+                filter.PageSize,
+                filter.SortField,
+                filter.SortOrder
             );
 
             return result;
         }
+
+
+
 
 
         public async Task<object?> GetRecipientDetailsByPlateAsync(string plate)

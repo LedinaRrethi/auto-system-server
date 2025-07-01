@@ -51,9 +51,9 @@ namespace AutoSystem.Controllers
 
         [Authorize(Roles = "Police")]
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllFines([FromQuery] PaginationDTO dto)
+        public async Task<IActionResult> GetAllFines([FromQuery] FineFilterDTO filter)
         {
-            var result = await _domain.GetAllFinesAsync(dto);
+            var result = await _domain.GetAllFinesAsync(filter);
             return Ok(result);
         }
 
