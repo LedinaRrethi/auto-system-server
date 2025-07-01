@@ -31,6 +31,7 @@ namespace DAL.Contracts
         Task<List<Auto_Fines>> GetFinesForUserAsync(string userId);
         Task<List<Auto_Fines>> GetAllFinesAsync();
 
+        Task SaveChangesAsync();
 
 
 

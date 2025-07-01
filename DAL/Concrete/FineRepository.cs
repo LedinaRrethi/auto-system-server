@@ -63,5 +63,7 @@ namespace DAL.Concrete
                 .Where(f => f.Invalidated == 0)
                 .ToListAsync();
         }
+
+        public Task SaveChangesAsync() => _context.SaveChangesAsync();
     }
 }

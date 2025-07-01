@@ -161,10 +161,14 @@ namespace Domain.Mappings
         opt => opt.MapFrom(src => src.FineRecipient.FirstName + " " + src.FineRecipient.LastName))
     .ForMember(dest => dest.PlateNumber,
         opt => opt.MapFrom(src => src.FineRecipient.PlateNumber))
+   
+
     .ReverseMap();
 
 
-     
+
+
+
 
             CreateMap<Auto_InspectionRequests, InspectionRequestCreateDTO>().ReverseMap();
 

@@ -1,4 +1,5 @@
 ﻿using Domain.Contracts;
+using DTO;
 using DTO.FineDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,9 +51,9 @@ namespace AutoSystem.Controllers
 
         [Authorize(Roles = "Police")]
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllFines([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAllFines([FromQuery] PaginationDTO dto)
         {
-            var result = await _domain.GetAllFinesAsync(page, pageSize);
+            var result = await _domain.GetAllFinesAsync(dto);
             return Ok(result);
         }
 
