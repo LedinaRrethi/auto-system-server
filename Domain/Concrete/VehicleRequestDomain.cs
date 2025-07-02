@@ -151,11 +151,11 @@ namespace Domain.Concrete
                         return new VehicleDTO
                         {
                             IDPK_Vehicle = r.IDFK_Vehicle,
-                            PlateNumber = r.Vehicle?.PlateNumber,
-                            Color = r.Vehicle?.Color,
+                            PlateNumber = r.Vehicle?.PlateNumber ?? "",
+                            Color = r.Vehicle?.Color ?? "",
                             SeatCount = r.Vehicle?.SeatCount ?? 0,
                             DoorCount = r.Vehicle?.DoorCount ?? 0,
-                            ChassisNumber = r.Vehicle?.ChassisNumber,
+                            ChassisNumber = r.Vehicle?.ChassisNumber ?? "",
                             Status = r.Status,
                             CreatedOn = r.CreatedOn,
                             ApprovalComment = r.AdminComment
