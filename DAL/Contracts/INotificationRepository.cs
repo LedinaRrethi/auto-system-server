@@ -1,16 +1,20 @@
 ﻿using Entities.Models;
-using Helpers.Enumerations;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DAL.Contracts
 {
     public interface INotificationRepository : IRepository<Auto_Notifications>
     {
-        IEnumerable<Auto_Notifications> GetNotificationsUser(string receiverId);
-        IEnumerable<Auto_Notifications> GetNotificationsUnseen(string receiverId);
-        int CountUnreadNotifications(string receiverId);
+        IEnumerable<Auto_Notifications> GetAllNotificationsUser(string receiverId);
+        IEnumerable<Auto_Notifications> GetAllNotificationsUnseen(string receiverId);
+        int CountUnseenNotifications(string receiverId);
 
         Task AddNotificationAsync(Auto_Notifications notification);
+
+        Task MarkAllAsSeenAsync(string receiverId);
+        Task MarkOneAsSeenAsync(Guid notificationId);
+        Task SaveChangesAsync();
     }
 }

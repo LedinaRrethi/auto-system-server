@@ -26,6 +26,8 @@ namespace Domain.DI
             For<IInspectionRequestDomain>().Use<InspectionRequestDomain>();
             For<IInspectionDomain>().Use<InspectionDomain>();
 
+            For<INotificationDomain>().Use<NotificationDomain>();
+
            
 
 

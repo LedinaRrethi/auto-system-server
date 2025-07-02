@@ -16,7 +16,7 @@ namespace DAL.Concrete
             _context = context;
         }
 
-        public IEnumerable<Auto_Notifications> GetNotificationsUser(string receiverId)
+        public IEnumerable<Auto_Notifications> GetAllNotificationsUser(string receiverId)
         {
             return _context.Auto_Notifications
                 .Where(n => n.IDFK_Receiver == receiverId && n.Invalidated == 0)
@@ -24,14 +24,14 @@ namespace DAL.Concrete
                 .ToList();
         }
 
-        public IEnumerable<Auto_Notifications> GetNotificationsUnseen(string receiverId)
+        public IEnumerable<Auto_Notifications> GetAllNotificationsUnseen(string receiverId)
         {
             return _context.Auto_Notifications
                 .Where(n => n.IDFK_Receiver == receiverId && !n.IsSeen && n.Invalidated == 0)
                 .ToList();
         }
 
-        public int CountUnreadNotifications(string receiverId)
+        public int CountUnseenNotifications(string receiverId)
         {
             return _context.Auto_Notifications
                 .Count(n => n.IDFK_Receiver == receiverId && !n.IsSeen && n.Invalidated == 0);
@@ -40,6 +40,31 @@ namespace DAL.Concrete
         public async Task AddNotificationAsync(Auto_Notifications notification)
         {
             await _context.Auto_Notifications.AddAsync(notification);
+        }
+
+        public async Task MarkAllAsSeenAsync(string receiverId)
+        {
+            await _context.Database.ExecuteSqlRawAsync(@"
+                UPDATE Auto_Notifications
+                SET IsSeen = 1
+                WHERE IDFK_Receiver = {0} AND IsSeen = 0 AND Invalidated = 0", receiverId);
+        }
+
+        public async Task MarkOneAsSeenAsync(Guid notificationId)
+        {
+            var notification = await _context.Auto_Notifications
+                .FirstOrDefaultAsync(n => n.IDPK_Notification == notificationId && n.Invalidated == 0);
+
+            if (notification != null)
+            {
+                notification.IsSeen = true;
+                await SaveChangesAsync();
+            }
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
