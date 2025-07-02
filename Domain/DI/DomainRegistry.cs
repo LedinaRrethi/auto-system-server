@@ -3,6 +3,7 @@ using DAL.Contracts;
 using DAL.DI;
 using Domain.Concrete;
 using Domain.Contracts;
+using Domain.Notifications;
 using Lamar;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +29,9 @@ namespace Domain.DI
 
             For<INotificationDomain>().Use<NotificationDomain>();
 
-           
+            For<NotificationHub>();
+
+
 
 
 
