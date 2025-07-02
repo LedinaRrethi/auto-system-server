@@ -60,9 +60,8 @@ namespace DAL.Concrete
                 dto.PageSize,
                 dto.SortField,
                 dto.SortOrder,
-                string.IsNullOrEmpty(dto.Search)
-                    ? null
-                    : i => i.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
+                string.IsNullOrEmpty(dto.Search) ? null: i => i.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
+                 || i.Status.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
             );
         }
 
@@ -70,6 +69,7 @@ namespace DAL.Concrete
         {
             return await _context.Auto_Inspections
                 .Include(i => i.Request)
+                .ThenInclude(r => r.Vehicle)
                 .FirstOrDefaultAsync(i => i.IDPK_Inspection == inspectionId);
         }
 
