@@ -14,7 +14,7 @@ namespace DAL.Contracts
         Task AddNotificationAsync(Auto_Notifications notification);
 
         Task MarkAllAsSeenAsync(string receiverId);
-        Task MarkOneAsSeenAsync(Guid notificationId);
+        Task<bool> MarkOneAsSeenAsync(Guid notificationId);
         Task SaveChangesAsync();
     }
 }

@@ -1,17 +1,21 @@
 ﻿using DAL.Contracts;
+using DAL.UoW;
 using Domain.Contracts;
 using DTO.NotificationDTOs;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Concrete
 {
     public class NotificationDomain : INotificationDomain
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public NotificationDomain(INotificationRepository notificationRepository)
+        public NotificationDomain(INotificationRepository notificationRepository , IUnitOfWork unitOfWork)
         {
             _notificationRepository = notificationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<NotificationDTO>> GetAllNotificationsAsync(string userId)
@@ -57,10 +61,19 @@ namespace Domain.Concrete
         {
             await _notificationRepository.MarkAllAsSeenAsync(userId);
         }
-
-        public async Task MarkOneNotificationAsSeenAsync(Guid notificationId)
+        public async Task<bool> MarkOneNotificationAsSeenAsync(Guid notificationId)
         {
-            await _notificationRepository.MarkOneAsSeenAsync(notificationId);
+            var updated = await _notificationRepository.MarkOneAsSeenAsync(notificationId);
+            if (updated)
+            {
+                var changes = await _unitOfWork.CommitAsync();
+                Console.WriteLine(changes);
+
+            }
+            return updated;
         }
+
+
+
     }
 }

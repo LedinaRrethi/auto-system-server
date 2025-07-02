@@ -1,6 +1,7 @@
 ﻿using Entities.Models;
 using Lamar;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Threading.Channels;
 
 namespace DAL.UoW
 {
@@ -39,7 +40,10 @@ namespace DAL.UoW
 
         public async Task<int> CommitAsync()
         {
-            return await _context.SaveChangesAsync();
+            //return await _context.SaveChangesAsync();
+            var changes = await _context.SaveChangesAsync();
+            Console.WriteLine(changes);
+            return changes;
         }
 
 

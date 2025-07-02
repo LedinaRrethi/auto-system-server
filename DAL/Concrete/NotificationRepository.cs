@@ -49,8 +49,7 @@ namespace DAL.Concrete
                 SET IsSeen = 1
                 WHERE IDFK_Receiver = {0} AND IsSeen = 0 AND Invalidated = 0", receiverId);
         }
-
-        public async Task MarkOneAsSeenAsync(Guid notificationId)
+        public async Task<bool> MarkOneAsSeenAsync(Guid notificationId)
         {
             var notification = await _context.Auto_Notifications
                 .FirstOrDefaultAsync(n => n.IDPK_Notification == notificationId && n.Invalidated == 0);
@@ -58,9 +57,15 @@ namespace DAL.Concrete
             if (notification != null)
             {
                 notification.IsSeen = true;
-                await SaveChangesAsync();
+
+                //i tregon ef qe ky entitet esht ndryshuar 
+                //_context.Entry(notification).Property(n => n.IsSeen).IsModified = true;
+                return true;
             }
+
+            return false;
         }
+
 
         public async Task SaveChangesAsync()
         {

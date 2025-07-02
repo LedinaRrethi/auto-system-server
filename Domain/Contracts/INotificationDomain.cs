@@ -8,6 +8,6 @@ namespace Domain.Contracts
         Task<List<NotificationDTO>> GetUnseenNotificationsAsync(string userId);
         Task<int> CountUnseenNotificationsAsync(string userId);
         Task MarkAllNotificationsAsSeenAsync(string userId);
-        Task MarkOneNotificationAsSeenAsync(Guid notificationId);
+        Task<bool> MarkOneNotificationAsSeenAsync(Guid notificationId);
     }
 }

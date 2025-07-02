@@ -21,7 +21,7 @@ var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AutoSystemDbContext>(options =>
 {
     options.UseSqlServer(connString);
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 builder.Services.AddIdentity<Auto_Users, IdentityRole>()
