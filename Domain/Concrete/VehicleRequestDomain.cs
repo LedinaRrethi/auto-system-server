@@ -146,17 +146,33 @@ namespace Domain.Concrete
             var mapped = myRequests
                 .Select(r =>
                 {
+                    if (string.IsNullOrEmpty(r.RequestDataJson) && r.RequestType == ChangeRequestType.Delete)
+                    {
+                        return new VehicleDTO
+                        {
+                            IDPK_Vehicle = r.IDFK_Vehicle,
+                            PlateNumber = r.Vehicle?.PlateNumber,
+                            Color = r.Vehicle?.Color,
+                            SeatCount = r.Vehicle?.SeatCount ?? 0,
+                            DoorCount = r.Vehicle?.DoorCount ?? 0,
+                            ChassisNumber = r.Vehicle?.ChassisNumber,
+                            Status = r.Status,
+                            CreatedOn = r.CreatedOn,
+                            ApprovalComment = r.AdminComment
+                        };
+                    }
+
                     try
                     {
-                        var data = JsonSerializer.Deserialize<VehicleDTO>(r.RequestDataJson);
-                        if (data != null)
+                        var deserialized = JsonSerializer.Deserialize<VehicleDTO>(r.RequestDataJson);
+                        if (deserialized != null)
                         {
-                            data.IDPK_Vehicle = r.IDFK_Vehicle;
-                            data.Status = r.Status;
-                            data.CreatedOn = r.CreatedOn;
-                            data.ApprovalComment = r.AdminComment;
+                            deserialized.IDPK_Vehicle = r.IDFK_Vehicle;
+                            deserialized.Status = r.Status;
+                            deserialized.CreatedOn = r.CreatedOn;
+                            deserialized.ApprovalComment = r.AdminComment;
                         }
-                        return data;
+                        return deserialized;
                     }
                     catch
                     {
@@ -169,22 +185,23 @@ namespace Domain.Concrete
             var helper = new PaginationHelper<VehicleDTO>();
 
             return helper.GetPaginatedData(
-               mapped!,
-               dto.Page,
-               dto.PageSize,
-               dto.SortField ?? "CreatedOn",
-               dto.SortOrder ?? "desc",
-               string.IsNullOrWhiteSpace(dto.Search)
-                   ? null
-                   : (Func<VehicleDTO, bool>)(r =>
-                       (!string.IsNullOrEmpty(r.PlateNumber) && r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
-                       (!string.IsNullOrEmpty(r.Color) && r.Color.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
-                       (!string.IsNullOrEmpty(r.ChassisNumber) && r.ChassisNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
-                       r.Status.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase) ||
-                       r.SeatCount.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase) ||
-                       r.DoorCount.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
-                   ));
+                mapped!,
+                dto.Page,
+                dto.PageSize,
+                dto.SortField ?? "CreatedOn",
+                dto.SortOrder ?? "desc",
+                string.IsNullOrWhiteSpace(dto.Search)
+                    ? null
+                    : (Func<VehicleDTO, bool>)(r =>
+                        (!string.IsNullOrEmpty(r.PlateNumber) && r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.Color) && r.Color.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.ChassisNumber) && r.ChassisNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                        r.Status.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase) ||
+                        r.SeatCount.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase) ||
+                        r.DoorCount.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
+                    ));
         }
+
 
         public async Task<VehicleEditDTO> GetVehicleForEditAsync(Guid vehicleId, string userId)
         {
