@@ -18,7 +18,6 @@ namespace DTO.FineDTO
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? FatherName { get; set; }
-        public string? PhoneNumber { get; set; }
         public string? PersonalId { get; set; }
 
         public DateTime? FineDate { get; set; } //nese nuk jepet , vendoset ne backend
