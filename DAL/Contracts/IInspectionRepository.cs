@@ -7,13 +7,11 @@ namespace DAL.Contracts
 {
     public interface IInspectionRepository : IRepository<Auto_Inspections>
     {
-        //Task<Auto_InspectionRequests?> GetRequestByIdAsync(Guid requestId);
-
         Task<PaginationResult<InspectionRequestListDTO>> GetRequestsBySpecialistAsync(string specialistId, PaginationDTO dto);
-
-        Task<bool> ApproveInspectionAsync(InspectionApprovalDTO dto, string? userId, string ip);
-
         Task<List<Auto_Vehicles>> GetVehiclesByUserIdAsync(string userId);
+        Task<Auto_Inspections?> GetInspectionWithRequestAsync(Guid inspectionId);
+
+
 
     }
 }

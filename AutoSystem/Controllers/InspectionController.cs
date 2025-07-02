@@ -4,6 +4,7 @@ using DTO;
 using DTO.InspectionDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace AutoSystem.Controllers
@@ -36,9 +37,12 @@ namespace AutoSystem.Controllers
         [Authorize(Roles = "Specialist")]
         public async Task<IActionResult> ApproveInspection([FromBody] InspectionApprovalDTO dto)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
             try
             {
-                var result = await _domain.ApproveInspectionAsync(dto);
+                var result = await _domain.ApproveInspectionAsync(dto , userId , ip);
                 return result ? Ok("Inspection updated with success.") : NotFound("Inspection not found.");
             }
             catch (Exception ex)

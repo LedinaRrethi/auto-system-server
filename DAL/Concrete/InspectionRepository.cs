@@ -66,73 +66,12 @@ namespace DAL.Concrete
             );
         }
 
-
-        public async Task<bool> ApproveInspectionAsync(InspectionApprovalDTO dto, string? userId, string ip)
+        public async Task<Auto_Inspections?> GetInspectionWithRequestAsync(Guid inspectionId)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                var inspection = await _context.Set<Auto_Inspections>()
-                    .Include(i => i.Request)
-                    .FirstOrDefaultAsync(i => i.IDPK_Inspection == dto.IDPK_Inspection);
-
-                if (inspection == null)
-                    return false;
-
-                foreach (var doc in dto.Documents)
-                {
-                    if (!doc.DocumentName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                        throw new Exception($"File '{doc.DocumentName}' is not pdf.");
-
-                    var fileBytes = Convert.FromBase64String(doc.FileBase64);
-                    if (fileBytes.Length > 5 * 1024 * 1024)
-                        throw new Exception($"File '{doc.DocumentName}' is largen than 5MB.");
-                }
-
-                inspection.IsPassed = dto.IsPassed;
-                inspection.Comment = dto.Comment;
-                inspection.ModifiedBy = userId;
-                inspection.ModifiedOn = DateTime.UtcNow;
-                inspection.ModifiedIp = ip;
-
-                inspection.Request.Status = dto.IsPassed ? InspectionStatus.Approved : InspectionStatus.Rejected;
-                inspection.Request.ModifiedBy = userId;
-                inspection.Request.ModifiedOn = DateTime.UtcNow;
-                inspection.Request.ModifiedIp = ip;
-
-                _context.Update(inspection);
-                _context.Update(inspection.Request);
-
-                foreach (var doc in dto.Documents)
-                {
-                    var docEntity = new Auto_InspectionDocs
-                    {
-                        IDPK_InspectionDoc = Guid.NewGuid(),
-                        IDFK_Inspection = dto.IDPK_Inspection,
-                        DocumentName = doc.DocumentName,
-                        FileBase64 = doc.FileBase64,
-                        CreatedBy = userId!,
-                        CreatedOn = DateTime.UtcNow,
-                        CreatedIp = ip
-                    };
-
-                    _context.Add(docEntity);
-                }
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return true;
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+            return await _context.Auto_Inspections
+                .Include(i => i.Request)
+                .FirstOrDefaultAsync(i => i.IDPK_Inspection == inspectionId);
         }
-
-
 
         public Task<List<Auto_Vehicles>> GetVehiclesByUserIdAsync(string userId)
         {
@@ -140,6 +79,8 @@ namespace DAL.Concrete
                 .Where(v => v.IDFK_Owner == userId && v.Invalidated == 0 && v.Status == VehicleStatus.Approved)
                 .ToListAsync();
         }
+
+        public Task SaveChangesAsync() => _context.SaveChangesAsync();
 
     }
 }

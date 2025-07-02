@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using DAL.Concrete;
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO;
 using DTO.FineDTO;
 using Entities.Models;
+using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -17,17 +19,19 @@ namespace Domain.Concrete
     public class FineDomain : IFineDomain
     {
         private readonly IFineRepository _repo;
+        private readonly INotificationRepository _notificationRepository;
         private readonly IMapper _mapper;
         private readonly UserManager<Auto_Users> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
 
-        public FineDomain(IFineRepository repo, IMapper mapper, UserManager<Auto_Users> userManager, IUnitOfWork unitOfWork)
+        public FineDomain(IFineRepository repo, IMapper mapper, UserManager<Auto_Users> userManager, IUnitOfWork unitOfWork , INotificationRepository notificationRepository)
         {
             _repo = repo;
             _mapper = mapper;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<bool> CreateFineAsync(FineCreateDTO dto, string policeId, string ip)
@@ -82,6 +86,25 @@ namespace Domain.Concrete
 
                 await _repo.AddFineAsync(fine);
                 await _repo.SaveChangesAsync();
+
+                if (owner != null)
+                {
+                    var notification = new Auto_Notifications
+                    {
+                        IDPK_Notification = Guid.NewGuid(),
+                        IDFK_Receiver = owner.Id,
+                        Title = "Fine",
+                        Message = $"You have received a fine for the vehicle with plate: {dto.PlateNumber}.",
+                        Type = NotificationType.FineIssued,
+                        CreatedBy = policeId,
+                        CreatedOn = DateTime.UtcNow,
+                        CreatedIp = ip
+                    };
+
+                    await _notificationRepository.AddNotificationAsync(notification);
+                    await _repo.SaveChangesAsync(); 
+                }
+
 
                 await transaction.CommitAsync();
                 return true;
