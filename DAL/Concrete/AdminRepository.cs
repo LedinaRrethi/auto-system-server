@@ -63,7 +63,8 @@ namespace DAL.Repositories
                     var fullName = $"{u.FirstName} {u.FatherName} {u.LastName}".Trim();
                     return fullName.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
                     || (!string.IsNullOrEmpty(u.Email) && u.Email.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
-                    || (!string.IsNullOrEmpty(u.Role) && u.Role.Contains(dto.Search, StringComparison.OrdinalIgnoreCase));
+                    || (!string.IsNullOrEmpty(u.Role) && u.Role.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+                    || (!string.IsNullOrEmpty(u.Status) && u.Role.Contains(dto.Search, StringComparison.OrdinalIgnoreCase));
                 })
             );
         }

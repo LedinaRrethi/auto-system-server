@@ -177,12 +177,14 @@ namespace Domain.Concrete
                string.IsNullOrWhiteSpace(dto.Search)
                    ? null
                    : (Func<VehicleDTO, bool>)(r =>
-                       (!string.IsNullOrEmpty(r.PlateNumber) &&
-                           r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+                       (!string.IsNullOrEmpty(r.PlateNumber) && r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                       (!string.IsNullOrEmpty(r.Color) && r.Color.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                       (!string.IsNullOrEmpty(r.ChassisNumber) && r.ChassisNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                       r.Status.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase) ||
+                       r.SeatCount.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase) ||
+                       r.DoorCount.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
                    ));
         }
-
-
 
         public async Task<VehicleEditDTO> GetVehicleForEditAsync(Guid vehicleId, string userId)
         {
