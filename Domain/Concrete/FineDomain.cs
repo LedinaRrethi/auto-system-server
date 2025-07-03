@@ -3,12 +3,14 @@ using DAL.Concrete;
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using Domain.Notifications;
 using DTO;
 using DTO.FineDTO;
 using Entities.Models;
 using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,14 +26,24 @@ namespace Domain.Concrete
         private readonly UserManager<Auto_Users> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
+        private readonly IHubContext<NotificationHub, INotificationHub> _notificationHubContext;
 
-        public FineDomain(IFineRepository repo, IMapper mapper, UserManager<Auto_Users> userManager, IUnitOfWork unitOfWork , INotificationRepository notificationRepository)
+
+        public FineDomain(
+            IFineRepository repo, 
+            IMapper mapper, 
+            UserManager<Auto_Users> userManager, 
+            IUnitOfWork unitOfWork , 
+            INotificationRepository notificationRepository ,
+            IHubContext<NotificationHub, INotificationHub> notificationHubContext
+        )        
         {
             _repo = repo;
             _mapper = mapper;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _notificationRepository = notificationRepository;
+            _notificationHubContext = notificationHubContext;
         }
 
         public async Task<bool> CreateFineAsync(FineCreateDTO dto, string policeId, string ip)
@@ -102,7 +114,9 @@ namespace Domain.Concrete
                     };
 
                     await _notificationRepository.AddNotificationAsync(notification);
-                    await _repo.SaveChangesAsync(); 
+                    await _repo.SaveChangesAsync();
+
+                    await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notification, owner.Id);
                 }
 
 

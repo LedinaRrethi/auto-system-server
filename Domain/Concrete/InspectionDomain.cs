@@ -2,6 +2,7 @@
 using DAL.Contracts;
 using DAL.UoW;
 using Domain.Contracts;
+using Domain.Notifications;
 using DTO;
 using DTO.InspectionDTO;
 using DTO.VehicleDTO;
@@ -9,6 +10,7 @@ using Entities.Models;
 using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Domain.Concrete
 {
@@ -20,6 +22,8 @@ namespace Domain.Concrete
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly IHubContext<NotificationHub, INotificationHub> _notificationHubContext;
+
         private IRepository<Auto_InspectionDocs> _docRepo => _unitOfWork.GetRepository<IRepository<Auto_InspectionDocs>>();
         private IRepository<Auto_Inspections> _inspectionRepo => _unitOfWork.GetRepository<IRepository<Auto_Inspections>>();
         private IRepository<Auto_InspectionRequests> _requestRepo => _unitOfWork.GetRepository<IRepository<Auto_InspectionRequests>>();
@@ -29,13 +33,16 @@ namespace Domain.Concrete
             IMapper mapper,
             IUnitOfWork unitOfWork,
             INotificationRepository notificationRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHubContext<NotificationHub, INotificationHub> notificationHubContext
+        )
         {
             _repo = repo;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _notificationRepository = notificationRepository;
             _httpContextAccessor = httpContextAccessor;
+            _notificationHubContext = notificationHubContext;
         }
 
         public async Task<PaginationResult<InspectionRequestListDTO>> GetMyRequestsAsync(string userId, PaginationDTO dto)
@@ -117,6 +124,9 @@ namespace Domain.Concrete
                     };
 
                     await _notificationRepository.AddNotificationAsync(notif);
+
+                    await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notif, vehicleOwnerId);
+
                 }
 
                 await _repo.SaveChangesAsync();

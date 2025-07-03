@@ -27,8 +27,6 @@ namespace Domain.Notifications
                         ConnectedUsers[userId] = new();
                     ConnectedUsers[userId].Add(Context.ConnectionId);
 
-                    Console.WriteLine($" Connected: {userId} => {Context.ConnectionId}");
-
                 }
             }
             return Context.ConnectionId;

@@ -10,7 +10,7 @@ namespace Domain.Notifications
 {
     public static class NotificationConnections
     {
-        public static async Task SendNotificationToUserAsync(IHubContext<NotificationHub, INotificationHub> notificationHubContext, Auto_Notifications notification, Guid? userId)
+        public static async Task SendNotificationToUserAsync(IHubContext<NotificationHub, INotificationHub> notificationHubContext, Auto_Notifications notification, string userId)
         {
             var userConnectionIds = NotificationHub.ConnectedUsers;
             if (userConnectionIds.TryGetValue(userId.ToString(), out var connectionIds))
