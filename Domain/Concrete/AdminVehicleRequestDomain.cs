@@ -46,8 +46,11 @@ namespace Domain.Concrete
                 string.IsNullOrWhiteSpace(dto.Search)
                     ? null
                     : (Func<VehicleRequestListDTO, bool>)(r =>
-                        !string.IsNullOrEmpty(r.PlateNumber) &&
-                        r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+                        (!string.IsNullOrEmpty(r.PlateNumber) && r.PlateNumber.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrEmpty(r.CurrentDataSnapshotJson) && r.CurrentDataSnapshotJson.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                        (r.RequestType.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase)) ||
+                        (r.Status.ToString().Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
+                     )
             );
         }
 
