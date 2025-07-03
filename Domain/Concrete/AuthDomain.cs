@@ -43,6 +43,37 @@ public class AuthDomain : DomainBase, IAuthDomain
             throw new Exception("A user with this email already exists.");
 
 
+        if (dto.FirstName.Length > 50)
+            throw new Exception("First name cannot be longer than 50 characters.");
+
+        if (dto.FatherName.Length > 50)
+            throw new Exception("Father name cannot be longer than 50 characters.");
+
+        if (dto.LastName.Length > 50)
+            throw new Exception("Last name cannot be longer than 50 characters.");
+
+        if (!string.IsNullOrEmpty(dto.PersonalId) && dto.PersonalId.Length > 20)
+            throw new Exception("Personal ID cannot be longer than 20 characters.");
+
+        if (!string.IsNullOrEmpty(dto.SpecialistNumber) && dto.SpecialistNumber.Length > 50)
+            throw new Exception("Specialist number cannot be longer than 50 characters.");
+
+        if (!string.IsNullOrWhiteSpace(dto.PersonalId))
+        {
+            var personalIdExists = await _userManager.Users.AnyAsync(u => u.PersonalId == dto.PersonalId);
+            if (personalIdExists)
+                throw new Exception("Personal ID already exists.");
+        }
+
+        if (dto.Role == UserRole.Specialist && !string.IsNullOrWhiteSpace(dto.SpecialistNumber))
+        {
+            var specialistNumberExists = await _userManager.Users.AnyAsync(u => u.SpecialistNumber == dto.SpecialistNumber);
+            if (specialistNumberExists)
+                throw new Exception("Specialist number already exists.");
+        }
+
+
+
         if (dto.Role == UserRole.Specialist)
         {
             if (string.IsNullOrWhiteSpace(dto.SpecialistNumber) || dto.DirectorateId == null)
