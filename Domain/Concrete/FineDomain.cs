@@ -134,79 +134,116 @@ namespace Domain.Concrete
         {
             var fines = await _repo.GetFinesForUserAsync(userId);
 
-            var dtoList = fines.Select(f => new FineResponseDTO
+            DateTime? fromDateUtc = null;
+            DateTime? toDateUtc = null;
+
+            if (filter.FromDate.HasValue)
+                fromDateUtc = DateTime.SpecifyKind(filter.FromDate.Value, DateTimeKind.Local).ToUniversalTime();
+
+            if (filter.ToDate.HasValue)
+                toDateUtc = DateTime.SpecifyKind(filter.ToDate.Value, DateTimeKind.Local).ToUniversalTime().AddDays(1).AddTicks(-1);
+
+            bool validDateRange = true;
+            if (fromDateUtc.HasValue && toDateUtc.HasValue)
+                validDateRange = fromDateUtc <= toDateUtc;
+
+            var filteredFines = fines
+                .Where(f =>
+                    (string.IsNullOrEmpty(filter.PlateNumber) || (f.Vehicle?.PlateNumber != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber))) &&
+                    (!fromDateUtc.HasValue || f.FineDate >= fromDateUtc.Value) &&
+                    (!toDateUtc.HasValue || f.FineDate <= toDateUtc.Value) &&
+                    validDateRange
+                )
+                .ToList();
+
+            var fineDtos = filteredFines.Select(f => new FineResponseDTO
             {
                 IDPK_Fine = f.IDPK_Fine,
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
-                FineDate = f.FineDate,
+                FineDate = f.FineDate.ToLocalTime(),
                 PlateNumber = f.Vehicle?.PlateNumber,
-                PoliceFullName = f.PoliceOfficer != null
-                    ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}"
-                    : null,
-       
+                PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
+                RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
 
-            bool validDateRange = true;
-            if (filter.FromDate.HasValue && filter.ToDate.HasValue)
-            {
-                validDateRange = filter.FromDate.Value.Date <= filter.ToDate.Value.Date;
-            }
-
-            var filteredFines = dtoList.Where(f =>
-                (string.IsNullOrEmpty(filter.PlateNumber) || (f.PlateNumber != null && f.PlateNumber.Contains(filter.PlateNumber))) &&
-                (!filter.FromDate.HasValue || f.FineDate.Date >= filter.FromDate.Value.Date) &&
-                (!filter.ToDate.HasValue || f.FineDate.Date <= filter.ToDate.Value.Date) &&
-                validDateRange
-            ).ToList();
-
-            Func<FineResponseDTO, bool>? filterFunc = null;
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 var searchLower = filter.Search.ToLower();
-                filterFunc = f =>
-                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||  
+                fineDtos = fineDtos.Where(f =>
+                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
-                    (!string.IsNullOrEmpty(f.PoliceFullName) && f.PoliceFullName.ToLower().Contains(searchLower))||
-                    f.FineAmount.ToString().Contains(searchLower);
+                    f.FineAmount.ToString().Contains(searchLower)
+                ).ToList();
             }
 
-            if (filterFunc is not null)
-                filteredFines = filteredFines.Where(filterFunc).ToList();
-
             var helper = new PaginationHelper<FineResponseDTO>();
-            var result = helper.GetPaginatedData(
-                filteredFines,
-                filter.Page, 
+            return helper.GetPaginatedData(
+                fineDtos,
+                filter.Page,
                 filter.PageSize,
                 filter.SortField,
                 filter.SortOrder
             );
-
-            return result;
         }
+
 
         public async Task<PaginationResult<FineResponseDTO>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter)
         {
             var fines = await _repo.GetFinesCreatedByPoliceAsync(policeId);
-            var result = _mapper.Map<List<FineResponseDTO>>(fines);
+
+            DateTime? fromDateUtc = null;
+            DateTime? toDateUtc = null;
+
+            if (filter.FromDate.HasValue)
+                fromDateUtc = DateTime.SpecifyKind(filter.FromDate.Value, DateTimeKind.Local).ToUniversalTime();
+
+            if (filter.ToDate.HasValue)
+                toDateUtc = DateTime.SpecifyKind(filter.ToDate.Value, DateTimeKind.Local).ToUniversalTime().AddDays(1).AddTicks(-1);
+
+            bool validDateRange = true;
+            if (fromDateUtc.HasValue && toDateUtc.HasValue)
+                validDateRange = fromDateUtc <= toDateUtc;
+
+            var filteredFines = fines
+                .Where(f =>
+                    (string.IsNullOrEmpty(filter.PlateNumber) || (f.Vehicle?.PlateNumber != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber))) &&
+                    (!fromDateUtc.HasValue || f.FineDate >= fromDateUtc.Value) &&
+                    (!toDateUtc.HasValue || f.FineDate <= toDateUtc.Value) &&
+                    validDateRange
+                )
+                .ToList();
+
+            var fineDtos = filteredFines.Select(f => new FineResponseDTO
+            {
+                IDPK_Fine = f.IDPK_Fine,
+                FineAmount = f.FineAmount,
+                FineReason = f.FineReason,
+                FineDate = f.FineDate.ToLocalTime(),
+                PlateNumber = f.Vehicle?.PlateNumber,
+                PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
+                RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
+            }).ToList();
+
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var searchLower = filter.Search.ToLower();
+                fineDtos = fineDtos.Where(f =>
+                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
+                    f.FineAmount.ToString().Contains(searchLower)
+                ).ToList();
+            }
 
             var helper = new PaginationHelper<FineResponseDTO>();
             return helper.GetPaginatedData(
-                source: result,
-                page: filter.Page,
-                pageSize: filter.PageSize,
-                sortField: filter.SortField,
-                sortOrder: filter.SortOrder,
-                filterFunc: f =>
-                    (string.IsNullOrEmpty(filter.PlateNumber) || f.PlateNumber?.Contains(filter.PlateNumber) == true) &&
-                    (string.IsNullOrEmpty(filter.Search) || (
-                        f.PlateNumber?.Contains(filter.Search, StringComparison.OrdinalIgnoreCase) == true ||
-                        f.RecipientFullName?.Contains(filter.Search, StringComparison.OrdinalIgnoreCase) == true ||
-                        f.FineReason?.Contains(filter.Search, StringComparison.OrdinalIgnoreCase) == true
-                    )) &&
-                    (!filter.FromDate.HasValue || f.FineDate >= filter.FromDate.Value) &&
-                    (!filter.ToDate.HasValue || f.FineDate <= filter.ToDate.Value)
+                fineDtos,
+                filter.Page,
+                filter.PageSize,
+                filter.SortField,
+                filter.SortOrder
             );
         }
 
@@ -214,48 +251,62 @@ namespace Domain.Concrete
         {
             var allFines = await _repo.GetAllFinesAsync();
 
-            var fineDtos = allFines.Select(f => new FineResponseDTO
+            DateTime? fromDateUtc = null;
+            DateTime? toDateUtc = null;
+
+            if (filter.FromDate.HasValue)
+            {
+                fromDateUtc = DateTime.SpecifyKind(filter.FromDate.Value, DateTimeKind.Local).ToUniversalTime();
+            }
+
+            if (filter.ToDate.HasValue)
+            {
+                toDateUtc = DateTime.SpecifyKind(filter.ToDate.Value, DateTimeKind.Local).ToUniversalTime().AddDays(1).AddTicks(-1);
+            }
+
+
+            bool validDateRange = true;
+            if (fromDateUtc.HasValue && toDateUtc.HasValue)
+            {
+                validDateRange = fromDateUtc <= toDateUtc;
+            }
+
+            var filteredFines = allFines
+                .Where(f =>
+                    (string.IsNullOrEmpty(filter.PlateNumber) ||
+                     (f.Vehicle?.PlateNumber != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber))) &&
+
+                    (!fromDateUtc.HasValue || f.FineDate >= fromDateUtc.Value) &&
+                    (!toDateUtc.HasValue || f.FineDate <= toDateUtc.Value) &&
+                    validDateRange
+                )
+                .ToList();
+
+            var fineDtos = filteredFines.Select(f => new FineResponseDTO
             {
                 IDPK_Fine = f.IDPK_Fine,
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
-                FineDate = f.FineDate,
+                FineDate = f.FineDate.ToLocalTime(),
                 PlateNumber = f.Vehicle?.PlateNumber,
                 PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
 
-            bool validDateRange = true;
-            if (filter.FromDate.HasValue && filter.ToDate.HasValue)
-            {
-                validDateRange = filter.FromDate.Value.Date <= filter.ToDate.Value.Date;
-            }
-
-            var filteredFines = fineDtos.Where(f =>
-                (string.IsNullOrEmpty(filter.PlateNumber) || (f.PlateNumber != null && f.PlateNumber.Contains(filter.PlateNumber))) &&
-
-                (!filter.FromDate.HasValue || f.FineDate.Date >= filter.FromDate.Value.Date) &&
-                (!filter.ToDate.HasValue || f.FineDate.Date <= filter.ToDate.Value.Date) &&
-                validDateRange
-            ).ToList();
-
-            Func<FineResponseDTO, bool>? filterFunc = null;
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 var searchLower = filter.Search.ToLower();
-                filterFunc = f =>
+                fineDtos = fineDtos.Where(f =>
                     (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
-                    f.FineAmount.ToString().Contains(searchLower);
+                    f.FineAmount.ToString().Contains(searchLower)
+                ).ToList();
             }
-
-            if (filterFunc is not null)
-                filteredFines = filteredFines.Where(filterFunc).ToList();
 
             var helper = new PaginationHelper<FineResponseDTO>();
             var result = helper.GetPaginatedData(
-                filteredFines,
+                fineDtos,
                 filter.Page,
                 filter.PageSize,
                 filter.SortField,
@@ -264,10 +315,6 @@ namespace Domain.Concrete
 
             return result;
         }
-
-
-
-
 
         public async Task<object?> GetRecipientDetailsByPlateAsync(string plate)
         {
