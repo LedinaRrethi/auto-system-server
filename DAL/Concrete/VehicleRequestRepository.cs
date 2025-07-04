@@ -16,7 +16,7 @@ namespace DAL.Concrete
         public async Task<List<Auto_VehicleChangeRequests>> GetRequestsByUserAsync(string userId)
         {
             return await _context.Auto_VehicleChangeRequests
-                .Where(r => r.IDFK_Requester == userId)
+                .Where(r => r.IDFK_Requester == userId && r.Vehicle.Invalidated ==0)
                 .Include(r => r.Vehicle)
                 .GroupBy(r => r.IDFK_Vehicle)
                 .Select(g => g.OrderByDescending(r => r.CreatedOn).First())
@@ -52,6 +52,18 @@ namespace DAL.Concrete
         {
             return await _context.Auto_VehicleChangeRequests
                 .AnyAsync(r => r.IDFK_Vehicle == vehicleId && r.Status == VehicleStatus.Pending);
+        }
+
+        public async Task<bool> PlateNumberExistsAsync(string plateNumber)
+        {
+            return await _context.Auto_Vehicles
+                .AnyAsync(v => v.PlateNumber == plateNumber);
+        }
+
+        public async Task<bool> ChassisNumberExistsAsync(string chassisNumber)
+        {
+            return await _context.Auto_Vehicles
+                .AnyAsync(v => v.ChassisNumber == chassisNumber );
         }
 
         public async Task SaveChangesAsync()
