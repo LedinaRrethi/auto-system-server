@@ -73,7 +73,7 @@ namespace DAL.Concrete
                 {
                     IDPK_InspectionRequest = r.IDPK_InspectionRequest,
                     PlateNumber = r.Vehicle.PlateNumber,
-                    RequestedDate = r.RequestedDate,
+                    RequestedDate = r.RequestedDate.ToLocalTime(),
                     DirectorateName = r.Directory.DirectoryName,
                     Status = r.Status.ToString(),
                     Comment = inspection?.Comment,
