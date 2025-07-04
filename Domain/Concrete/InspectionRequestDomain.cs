@@ -32,10 +32,13 @@ namespace Domain.Concrete
             if (await _repo.HasPendingRequestAsync(dto.IDFK_Vehicle))
                 throw new InvalidOperationException("A pending inspection request already exists for this vehicle.");
 
-            if (dto.RequestedDate.DayOfWeek == DayOfWeek.Saturday || dto.RequestedDate.DayOfWeek == DayOfWeek.Sunday)
+            var requestedDateUtc = DateTime.SpecifyKind(dto.RequestedDate, DateTimeKind.Utc);
+
+            var requestedDateLocal = requestedDateUtc.ToLocalTime();
+            if (requestedDateLocal.DayOfWeek == DayOfWeek.Saturday || requestedDateLocal.DayOfWeek == DayOfWeek.Sunday)
                 throw new InvalidOperationException("Inspections cannot be scheduled on weekends.");
 
-            int count = await _repo.CountInspectionsByDateAndDirectoryAsync(dto.IDFK_Directory, dto.RequestedDate);
+            int count = await _repo.CountInspectionsByDateAndDirectoryAsync(dto.IDFK_Directory, requestedDateUtc);
             if (count >= 3)
                 throw new InvalidOperationException("This directorate already has 3 inspections scheduled on this date.");
 
@@ -45,6 +48,8 @@ namespace Domain.Concrete
             {
                 var request = _mapper.Map<Auto_InspectionRequests>(dto);
                 request.IDPK_InspectionRequest = Guid.NewGuid();
+                request.RequestedDate = requestedDateUtc; 
+
                 SetAuditOnCreate(request);
 
                 await _repo.AddAsync(request);
@@ -55,9 +60,9 @@ namespace Domain.Concrete
                     IDFK_InspectionRequest = request.IDPK_InspectionRequest,
                     Invalidated = 0
                 };
-                SetAuditOnCreate(inspection); 
+                SetAuditOnCreate(inspection);
 
-             
+
 
                 await _inspectionRepo.AddAsync(inspection);
 
