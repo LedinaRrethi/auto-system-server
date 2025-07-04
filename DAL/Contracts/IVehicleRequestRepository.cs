@@ -11,6 +11,8 @@ namespace DAL.Contracts
         Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId);
         Task AddVehicleAsync(Auto_Vehicles vehicle);
         Task AddRequestAsync(Auto_VehicleChangeRequests request);
+        Task<bool> PlateNumberExistsAsync(string plateNumber);
+        Task<bool> ChassisNumberExistsAsync(string chassisNumber);
         Task SaveChangesAsync();
     }
 }

@@ -9,6 +9,7 @@ using Entities.Models;
 using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 
 namespace Domain.Concrete
@@ -27,6 +28,13 @@ namespace Domain.Concrete
         {
             if (await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId))
                 throw new Exception("A pending request already exists for this vehicle.");
+
+            if (await _vehicleRequestRepository.PlateNumberExistsAsync(dto.PlateNumber))
+                throw new Exception("This plate number is already registered.");
+
+            if (await _vehicleRequestRepository.ChassisNumberExistsAsync(dto.ChassisNumber))
+                throw new Exception("This chassis number is already registered.");
+
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try

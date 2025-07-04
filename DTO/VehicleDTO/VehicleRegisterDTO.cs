@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 
 namespace DTO.VehicleDTO
 {
-    /// <Perdoret nga useri per te regjistruar nje automjet>
     public class VehicleRegisterDTO
     {
-        [Required]
-        [MaxLength(20)]
         public string PlateNumber { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
         public string Color { get; set; } = null!;
 
         [Required]
@@ -24,8 +19,6 @@ namespace DTO.VehicleDTO
         [Required]
         public byte DoorCount { get; set; }
 
-        [Required]
-        [MaxLength(50)]
         public string ChassisNumber { get; set; } = null!;
     }
 
