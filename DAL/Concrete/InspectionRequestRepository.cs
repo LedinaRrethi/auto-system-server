@@ -50,7 +50,7 @@ namespace DAL.Concrete
             var requests = await _context.Auto_InspectionRequests
                 .Include(r => r.Vehicle)
                 .Include(r => r.Directory)
-                .Where(r => r.CreatedBy == userId && r.Invalidated == 0)
+                .Where(r => r.CreatedBy == userId && r.Invalidated == 0 && r.Vehicle.Invalidated==0)
                 .ToListAsync();
 
             var result = requests.Select(r =>

@@ -18,7 +18,6 @@ namespace DTO.VehicleDTO
         public string ChassisNumber { get; set; } = null!;
         public VehicleStatus Status { get; set; }
         public string? ApprovalComment { get; set; }
-
         public DateTime CreatedOn { get; set; }
     }
 
