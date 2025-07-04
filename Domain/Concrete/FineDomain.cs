@@ -86,7 +86,7 @@ namespace Domain.Concrete
                 var fine = new Auto_Fines
                 {
                     IDPK_Fine = Guid.NewGuid(),
-                    IDFK_Vehicle = vehicle.IDPK_Vehicle,
+                    IDFK_Vehicle = vehicle?.IDPK_Vehicle,
                     IDFK_FineRecipient = recipient.IDPK_FineRecipient,
                     FineAmount = dto.FineAmount,
                     FineDate = dto.FineDate ?? DateTime.UtcNow,
@@ -162,8 +162,8 @@ namespace Domain.Concrete
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
                 FineDate = f.FineDate.ToLocalTime(),
-                PlateNumber = f.Vehicle?.PlateNumber,
-                PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
+                PlateNumber = f.Vehicle?.PlateNumber ?? f.FineRecipient?.PlateNumber,
+                PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
 
@@ -222,7 +222,7 @@ namespace Domain.Concrete
                 FineReason = f.FineReason,
                 FineDate = f.FineDate.ToLocalTime(),
                 PlateNumber = f.Vehicle?.PlateNumber,
-                PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
+                PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
 
@@ -288,8 +288,8 @@ namespace Domain.Concrete
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
                 FineDate = f.FineDate.ToLocalTime(),
-                PlateNumber = f.Vehicle?.PlateNumber,
-                PoliceFullName = f.PoliceOfficer != null ? $"{f.PoliceOfficer.FirstName} {f.PoliceOfficer.LastName}" : null,
+                PlateNumber = f.Vehicle?.PlateNumber ?? f.FineRecipient?.PlateNumber,
+                PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
 
