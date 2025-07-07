@@ -76,6 +76,20 @@ namespace DAL.Concrete
             _context.Auto_FineRecipients.Update(recipient);
         }
 
+        public async Task<List<Auto_Fines>> GetFinesByPlateWithoutVehicleAsync(string plateNumber)
+        {
+            return await _context.Auto_Fines
+                .Where(f => f.PlateNumber == plateNumber && f.IDFK_Vehicle == null && f.Invalidated == 0)
+                .ToListAsync();
+        }
+
+        public async Task UpdateAsync(Auto_Fines fine)
+        {
+            _context.Auto_Fines.Update(fine);
+            await Task.CompletedTask;
+        }
+
+
 
         public Task SaveChangesAsync() => _context.SaveChangesAsync();
     }

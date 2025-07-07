@@ -35,6 +35,10 @@ namespace DAL.Contracts
 
         void UpdateFineRecipient(Auto_FineRecipients recipient);
 
+        Task<List<Auto_Fines>> GetFinesByPlateWithoutVehicleAsync(string plateNumber);
+
+        Task UpdateAsync(Auto_Fines fine);
+
         Task SaveChangesAsync();
 
 

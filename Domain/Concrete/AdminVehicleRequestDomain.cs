@@ -14,11 +14,15 @@ namespace Domain.Concrete
 {
     public class AdminVehicleRequestDomain : DomainBase, IAdminVehicleRequestDomain
     {
-        public AdminVehicleRequestDomain(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
-            : base(unitOfWork, mapper, accessor) { }
 
         private IAdminVehicleRequestRepository _adminRequestRepo => _unitOfWork.GetRepository<IAdminVehicleRequestRepository>();
         private IRepository<Auto_Vehicles> _vehicleRepo => _unitOfWork.GetRepository<IRepository<Auto_Vehicles>>();
+
+        private readonly IFineRepository _fineRepo;
+        public AdminVehicleRequestDomain(IFineRepository fineRepo, IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor accessor)
+            : base(unitOfWork, mapper, accessor) {
+            _fineRepo = fineRepo;
+        }
 
         public async Task<PaginationResult<VehicleRequestListDTO>> GetAllRequestsAsync(PaginationDTO dto)
         {
@@ -79,6 +83,15 @@ namespace Domain.Concrete
                     {
                         case ChangeRequestType.Register:
                             vehicle.Status = VehicleStatus.Approved;
+
+                            var fineRepo = _unitOfWork.GetRepository<IFineRepository>();
+                            var existingFines = await fineRepo.GetFinesByPlateWithoutVehicleAsync(vehicle.PlateNumber);
+
+                            foreach (var fine in existingFines)
+                            {
+                                fine.IDFK_Vehicle = vehicle.IDPK_Vehicle;
+                                await fineRepo.UpdateAsync(fine); 
+                            }
                             break;
 
                         case ChangeRequestType.Update:
