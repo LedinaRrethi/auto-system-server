@@ -126,8 +126,10 @@ namespace AutoSystem.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
+                //Secure = true,
+                //SameSite = SameSiteMode.None,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
                 //per deploy duhet secure=false , SamSite=lax
 
                 Expires = expires
