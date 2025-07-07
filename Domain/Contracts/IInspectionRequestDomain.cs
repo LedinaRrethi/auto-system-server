@@ -15,6 +15,7 @@ namespace Domain.Contracts
         Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(PaginationDTO dto);
 
         Task<Dictionary<string, int>> GetInspectionStatusCountAsync(Guid directoryId);
+        Task<Dictionary<string, int>> GetInspectionRequestStatusForUserAsync(string userId);
 
 
 

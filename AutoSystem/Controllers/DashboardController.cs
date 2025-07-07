@@ -115,12 +115,16 @@ namespace AutoSystem.Controllers
 
             var finesCount = await _fineDomain.GetFinesCountForUserAsync(userId);
             var vehicleRequestsCount = await _vehicleRequestDomain.GetVehicleRequestCountAsync(userId);
+            var inspectionsCount = await _inspectionRequestDomain.GetInspectionRequestStatusForUserAsync(userId);
+
+
 
 
             return Ok(new
             {
                 myFinesCount = finesCount,
-                myVehicleRequestsCount = vehicleRequestsCount
+                myVehicleRequestsCount = vehicleRequestsCount,
+                myInspectionRequestCount = inspectionsCount
             });
         }
 

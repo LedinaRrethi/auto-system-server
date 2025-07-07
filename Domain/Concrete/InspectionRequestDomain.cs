@@ -91,5 +91,11 @@ namespace Domain.Concrete
         {
             return await _repo.CountInspectionsByStatusForSpecialistAsync(directoryId);
         }
+
+        public async Task<Dictionary<string, int>> GetInspectionRequestStatusForUserAsync(string userId)
+        {
+            return await _repo.CountInspectionRequestsByUserAsync(userId);
+        }
+
     }
 }
