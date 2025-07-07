@@ -17,6 +17,7 @@ namespace AutoSystem.Controllers
         private readonly IAdminVehicleRequestDomain _adminRequestDomain;
         private readonly IInspectionRequestDomain _inspectionRequestDomain;
         private readonly IFineDomain _fineDomain;
+        private readonly IVehicleRequestDomain _vehicleRequestDomain;
         private readonly INotificationDomain _notificationDomain;
         private readonly UserManager<Auto_Users> _userManager;
 
@@ -25,13 +26,14 @@ namespace AutoSystem.Controllers
             return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public DashboardController(UserManager<Auto_Users> userManager, IAdminDomain adminDomain , IAdminVehicleRequestDomain adminRequestDomain, IInspectionRequestDomain inspectionRequestDomain , IFineDomain fineDomain, INotificationDomain notificationDomain)
+        public DashboardController(UserManager<Auto_Users> userManager, IVehicleRequestDomain vehicleRequestDomain, IAdminDomain adminDomain , IAdminVehicleRequestDomain adminRequestDomain, IInspectionRequestDomain inspectionRequestDomain , IFineDomain fineDomain, INotificationDomain notificationDomain)
         {
             _userManager = userManager;
             _adminDomain = adminDomain;
             _adminRequestDomain = adminRequestDomain;
             _inspectionRequestDomain = inspectionRequestDomain;
             _fineDomain = fineDomain;
+            _vehicleRequestDomain = vehicleRequestDomain;
             _notificationDomain = notificationDomain;
 
         }
@@ -112,10 +114,13 @@ namespace AutoSystem.Controllers
                 return Unauthorized();
 
             var finesCount = await _fineDomain.GetFinesCountForUserAsync(userId);
+            var vehicleRequestsCount = await _vehicleRequestDomain.GetVehicleRequestCountAsync(userId);
+
 
             return Ok(new
             {
-                myFines = finesCount
+                myFinesCount = finesCount,
+                myVehicleRequestsCount = vehicleRequestsCount
             });
         }
 

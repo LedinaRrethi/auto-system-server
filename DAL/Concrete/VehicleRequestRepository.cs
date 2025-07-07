@@ -66,6 +66,15 @@ namespace DAL.Concrete
                 .AnyAsync(v => v.ChassisNumber == chassisNumber );
         }
 
+        public async Task<Dictionary<string, int>> CountVehicleRequestStatusForUserAsync(string userId)
+        {
+            return await _context.Auto_VehicleChangeRequests
+                .Where(r => r.CreatedBy == userId && r.Invalidated == 0)
+                .GroupBy(r => r.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToDictionaryAsync(g => g.Status, g => g.Count);
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

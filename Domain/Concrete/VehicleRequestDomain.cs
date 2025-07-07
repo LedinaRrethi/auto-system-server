@@ -223,5 +223,10 @@ namespace Domain.Concrete
             return mapped;
         }
 
+        public async Task<Dictionary<string, int>> GetVehicleRequestCountAsync(string userId)
+        {
+            return await _vehicleRequestRepository.CountVehicleRequestStatusForUserAsync(userId);
+        }
+
     }
 }
