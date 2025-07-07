@@ -65,6 +65,18 @@ namespace DAL.Concrete
                 .ToListAsync();
         }
 
+        public async Task<int> CountFinesByPoliceAsync(string policeId)
+        {
+            return await _context.Auto_Fines
+                .CountAsync(f => f.CreatedBy == policeId && f.Invalidated == 0);
+        }
+
+        public void UpdateFineRecipient(Auto_FineRecipients recipient)
+        {
+            _context.Auto_FineRecipients.Update(recipient);
+        }
+
+
         public Task SaveChangesAsync() => _context.SaveChangesAsync();
     }
 }

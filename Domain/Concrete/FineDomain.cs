@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DAL.Concrete;
 using DAL.Contracts;
+using DAL.Repositories;
 using DAL.UoW;
 using Domain.Contracts;
 using Domain.Notifications;
@@ -11,6 +12,7 @@ using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +63,7 @@ namespace Domain.Concrete
                   ? await _repo.GetFineRecipientByUserIdAsync(owner.Id)
                   : await _repo.GetFineRecipientByPersonalIdAsync(dto.PersonalId!);
 
-              
+
 
                 if (recipient == null)
                 {
@@ -350,6 +352,11 @@ namespace Domain.Concrete
             }
 
             return null;
+        }
+
+        public async Task<int> GetFinesCountAsync(string policeId)
+        {
+            return await _repo.CountFinesByPoliceAsync(policeId);
         }
     }
 }

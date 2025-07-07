@@ -20,6 +20,8 @@ namespace Domain.Contracts
         Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter);
         Task<object?> GetRecipientDetailsByPlateAsync(string plate);
 
+        Task<int> GetFinesCountAsync(string policeId);
+
     }
 
 }

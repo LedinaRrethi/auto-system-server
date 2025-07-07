@@ -31,6 +31,10 @@ namespace DAL.Contracts
         Task<List<Auto_Fines>> GetFinesForUserAsync(string userId);
         Task<List<Auto_Fines>> GetAllFinesAsync();
 
+        Task<int> CountFinesByPoliceAsync(string policeId);
+
+        void UpdateFineRecipient(Auto_FineRecipients recipient);
+
         Task SaveChangesAsync();
 
 
