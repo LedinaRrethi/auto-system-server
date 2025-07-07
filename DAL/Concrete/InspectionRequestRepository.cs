@@ -28,6 +28,7 @@ namespace DAL.Concrete
                     r.Invalidated == 0);
         }
 
+
         public async Task<bool> HasPendingRequestAsync(Guid vehicleId)
         {
             return await _dbSet
@@ -92,6 +93,17 @@ namespace DAL.Concrete
             }
 
             return helper.GetPaginatedData(result, dto.Page, dto.PageSize, dto.SortField, dto.SortOrder, filter);
+        }
+
+        public async Task<Dictionary<string, int>> CountInspectionsByStatusForSpecialistAsync(Guid directoryId)
+        {
+            var counts = await _context.Auto_InspectionRequests
+                .Where(r => r.IDFK_Directory == directoryId && r.Invalidated == 0)
+                .GroupBy(r => r.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToDictionaryAsync(g => g.Status, g => g.Count);
+
+            return counts;
         }
 
 

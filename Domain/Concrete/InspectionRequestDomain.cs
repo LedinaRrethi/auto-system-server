@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DAL.Concrete;
 using DAL.Contracts;
+using DAL.Repositories;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO;
@@ -84,6 +85,11 @@ namespace Domain.Concrete
             if (string.IsNullOrEmpty(userId)) 
                 return new PaginationResult<MyInspectionRequestDTO>();
             return await _repo.GetCurrentUserPagedInspectionRequestsAsync(userId, dto);
+        }
+
+        public async Task<Dictionary<string, int>> GetInspectionStatusCountAsync(Guid directoryId)
+        {
+            return await _repo.CountInspectionsByStatusForSpecialistAsync(directoryId);
         }
     }
 }
