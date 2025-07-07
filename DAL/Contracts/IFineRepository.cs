@@ -39,6 +39,8 @@ namespace DAL.Contracts
 
         Task UpdateAsync(Auto_Fines fine);
 
+        Task<int> CountFinesForUserAsync(string userId);
+
         Task SaveChangesAsync();
 
 

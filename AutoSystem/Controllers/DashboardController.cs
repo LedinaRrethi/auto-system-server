@@ -104,5 +104,21 @@ namespace AutoSystem.Controllers
             });
         }
 
+        [HttpGet("user")]
+        public async Task<IActionResult> GetUserDashboard()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var finesCount = await _fineDomain.GetFinesCountForUserAsync(userId);
+
+            return Ok(new
+            {
+                myFines = finesCount
+            });
+        }
+
+
     }
 }

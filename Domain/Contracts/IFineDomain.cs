@@ -22,6 +22,8 @@ namespace Domain.Contracts
 
         Task<int> GetFinesCountAsync(string policeId);
 
+        Task<int> GetFinesCountForUserAsync(string userId);
+
     }
 
 }

@@ -65,12 +65,6 @@ namespace DAL.Concrete
                 .ToListAsync();
         }
 
-        public async Task<int> CountFinesByPoliceAsync(string policeId)
-        {
-            return await _context.Auto_Fines
-                .CountAsync(f => f.CreatedBy == policeId && f.Invalidated == 0);
-        }
-
         public void UpdateFineRecipient(Auto_FineRecipients recipient)
         {
             _context.Auto_FineRecipients.Update(recipient);
@@ -87,6 +81,18 @@ namespace DAL.Concrete
         {
             _context.Auto_Fines.Update(fine);
             await Task.CompletedTask;
+        }
+
+        public async Task<int> CountFinesByPoliceAsync(string policeId)
+        {
+            return await _context.Auto_Fines
+                .CountAsync(f => f.CreatedBy == policeId && f.Invalidated == 0);
+        }
+        public async Task<int> CountFinesForUserAsync(string userId)
+        {
+            return await _context.Auto_Fines
+                .Where(f => f.FineRecipient.IDFK_User == userId && f.Invalidated == 0)
+                .CountAsync();
         }
 
 

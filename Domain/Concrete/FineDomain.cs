@@ -389,5 +389,11 @@ namespace Domain.Concrete
         {
             return await _repo.CountFinesByPoliceAsync(policeId);
         }
+
+        public async Task<int> GetFinesCountForUserAsync(string userId)
+        {
+            return await _repo.CountFinesForUserAsync(userId);
+        }
+
     }
 }
