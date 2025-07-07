@@ -23,6 +23,9 @@ namespace Entities.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal FineAmount { get; set; }
 
+        [MaxLength(20)]
+        public string? PlateNumber { get; set; } 
+
         [Required]
         public DateTime FineDate { get; set; }
 

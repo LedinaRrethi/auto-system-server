@@ -120,7 +120,7 @@ namespace Domain.Concrete
                     FineAmount = dto.FineAmount,
                     FineDate = dto.FineDate ?? DateTime.UtcNow,
                     FineReason = dto.FineReason,
-                    //PlateNumber = dto.PlateNumber, 
+                    PlateNumber = dto.PlateNumber, 
                     CreatedBy = policeId,
                     CreatedOn = DateTime.UtcNow,
                     CreatedIp = ip
@@ -195,7 +195,7 @@ namespace Domain.Concrete
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
                 FineDate = f.FineDate.ToLocalTime(),
-                PlateNumber = f.Vehicle?.PlateNumber ?? f.FineRecipient?.PlateNumber,
+                PlateNumber = f.PlateNumber,
                 PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
@@ -254,7 +254,7 @@ namespace Domain.Concrete
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
                 FineDate = f.FineDate.ToLocalTime(),
-                PlateNumber = f.Vehicle?.PlateNumber,
+                PlateNumber = f.PlateNumber,
                 PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
@@ -321,7 +321,7 @@ namespace Domain.Concrete
                 FineAmount = f.FineAmount,
                 FineReason = f.FineReason,
                 FineDate = f.FineDate.ToLocalTime(),
-                PlateNumber = f.Vehicle?.PlateNumber ?? f.FineRecipient?.PlateNumber,
+                PlateNumber = f.PlateNumber,
                 PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
                 RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
             }).ToList();
