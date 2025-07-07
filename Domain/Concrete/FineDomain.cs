@@ -54,28 +54,54 @@ namespace Domain.Concrete
 
             try
             {
+                // kerkoj automjetin ose pronarin nese ekziston
                 var vehicle = await _repo.GetVehicleByPlateAsync(dto.PlateNumber);
                 Auto_Users? owner = vehicle?.IDFK_Owner != null
                     ? await _repo.GetUserByIdAsync(vehicle.IDFK_Owner)
                     : null;
 
-                Auto_FineRecipients? recipient = owner != null
-                  ? await _repo.GetFineRecipientByUserIdAsync(owner.Id)
-                  : await _repo.GetFineRecipientByPersonalIdAsync(dto.PersonalId!);
+                Auto_FineRecipients? recipient = null;
+                Auto_Users? matchedUser = null;
 
+                // gjej FineRecipient ekzistues me ane te id se pronarit apo personal id
+                if (owner != null)
+                {
+                    recipient = await _repo.GetFineRecipientByUserIdAsync(owner.Id);
+                }
+                else if (!string.IsNullOrWhiteSpace(dto.PersonalId))
+                {
+                    recipient = await _repo.GetFineRecipientByPersonalIdAsync(dto.PersonalId.Trim());
+                }
 
+                // nese fine recipient ekziston , po nuk ka user id --lidhet me userin nese ekziston
+                if (recipient != null && string.IsNullOrEmpty(recipient.IDFK_User) && !string.IsNullOrWhiteSpace(dto.PersonalId))
+                {
+                    matchedUser = await _userManager.Users
+                        .FirstOrDefaultAsync(u => u.PersonalId.ToLower().Trim() == dto.PersonalId.ToLower().Trim() && u.Invalidated == 0);
 
+                    if (matchedUser != null)
+                    {
+                        recipient.IDFK_User = matchedUser.Id;
+                        _repo.UpdateFineRecipient(recipient);
+                        await _repo.SaveChangesAsync();
+                    }
+                }
+
+                // nese recipient nuk ekzisotn fr krijoj te ri
                 if (recipient == null)
                 {
+                    matchedUser = await _userManager.Users
+                        .FirstOrDefaultAsync(u => u.PersonalId.ToLower().Trim() == dto.PersonalId.ToLower().Trim() && u.Invalidated == 0);
+
                     recipient = new Auto_FineRecipients
                     {
                         IDPK_FineRecipient = Guid.NewGuid(),
-                        IDFK_User = owner?.Id,
+                        IDFK_User = owner?.Id ?? matchedUser?.Id,
                         FirstName = owner?.FirstName ?? dto.FirstName!,
                         LastName = owner?.LastName ?? dto.LastName!,
                         FatherName = owner?.FatherName ?? dto.FatherName,
                         PersonalId = owner?.PersonalId ?? dto.PersonalId!,
-                        PlateNumber = dto.PlateNumber,
+                        PlateNumber = dto.PlateNumber, //TO DO 
                         CreatedBy = policeId,
                         CreatedOn = DateTime.UtcNow,
                         CreatedIp = ip
@@ -85,6 +111,7 @@ namespace Domain.Concrete
                     await _repo.SaveChangesAsync();
                 }
 
+
                 var fine = new Auto_Fines
                 {
                     IDPK_Fine = Guid.NewGuid(),
@@ -93,6 +120,7 @@ namespace Domain.Concrete
                     FineAmount = dto.FineAmount,
                     FineDate = dto.FineDate ?? DateTime.UtcNow,
                     FineReason = dto.FineReason,
+                    //PlateNumber = dto.PlateNumber, 
                     CreatedBy = policeId,
                     CreatedOn = DateTime.UtcNow,
                     CreatedIp = ip
@@ -101,12 +129,15 @@ namespace Domain.Concrete
                 await _repo.AddFineAsync(fine);
                 await _repo.SaveChangesAsync();
 
-                if (owner != null)
+                // dergoj njoftimin
+                var notificationUserId = owner?.Id ?? recipient.IDFK_User;
+
+                if (!string.IsNullOrEmpty(notificationUserId))
                 {
                     var notification = new Auto_Notifications
                     {
                         IDPK_Notification = Guid.NewGuid(),
-                        IDFK_Receiver = owner.Id,
+                        IDFK_Receiver = notificationUserId,
                         Title = "Fine",
                         Message = $"You have received a fine for the vehicle with plate: {dto.PlateNumber}.",
                         Type = NotificationType.FineIssued,
@@ -118,9 +149,8 @@ namespace Domain.Concrete
                     await _notificationRepository.AddNotificationAsync(notification);
                     await _repo.SaveChangesAsync();
 
-                    await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notification, owner.Id);
+                    await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notification, notificationUserId);
                 }
-
 
                 await transaction.CommitAsync();
                 return true;
@@ -131,6 +161,7 @@ namespace Domain.Concrete
                 throw;
             }
         }
+
 
         public async Task<PaginationResult<FineResponseDTO>> GetMyFinesAsync(string userId, FineFilterDTO filter)
         {
