@@ -10,5 +10,6 @@ namespace DAL.Contracts
     {
         Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto);
         Task<bool> UpdateUserStatusAsync(string userId, string newStatus);
+        Task<Dictionary<string, int>> CountUsersByStatusAsync();
     }
 }

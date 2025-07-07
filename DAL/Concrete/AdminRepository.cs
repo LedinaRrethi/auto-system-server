@@ -69,7 +69,7 @@ namespace DAL.Repositories
             );
         }
 
-         public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
+        public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
@@ -84,6 +84,14 @@ namespace DAL.Repositories
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Dictionary<string, int>> CountUsersByStatusAsync()
+        {
+            return await _context.Users
+                .GroupBy(u => u.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToDictionaryAsync(g => g.Status, g => g.Count);
         }
     }
 }

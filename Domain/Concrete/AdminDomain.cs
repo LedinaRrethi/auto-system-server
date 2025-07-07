@@ -29,5 +29,10 @@ namespace Domain.Concrete
         {
             return adminRepository.UpdateUserStatusAsync(userId, newStatus);
         }
+
+        public async Task<Dictionary<string, int>> GetUserCountAsync()
+        {
+            return await adminRepository.CountUsersByStatusAsync();
+        }
     }
 }
