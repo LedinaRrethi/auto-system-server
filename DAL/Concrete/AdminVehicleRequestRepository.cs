@@ -54,6 +54,12 @@ namespace DAL.Repositories
             await Task.CompletedTask; 
         }
 
-
+        public async Task<Dictionary<string, int>> CountVehicleRequestStatusAsync()
+        {
+            return await _context.Auto_VehicleChangeRequests
+                .GroupBy(r => r.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToDictionaryAsync(g => g.Status, g => g.Count);
+        }
     }
 }

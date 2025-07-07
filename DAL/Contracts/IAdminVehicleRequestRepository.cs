@@ -10,5 +10,6 @@ namespace DAL.Contracts
         Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId);
         Task SaveChangesAsync();
         Task UpdateAsync(Auto_VehicleChangeRequests request);
+        Task<Dictionary<string, int>> CountVehicleRequestStatusAsync();
     }
 }

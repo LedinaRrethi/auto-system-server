@@ -8,5 +8,6 @@ namespace Domain.Contracts
     {
         Task<PaginationResult<VehicleRequestListDTO>> GetAllRequestsAsync(PaginationDTO dto);
         Task<bool> UpdateRequestStatusAsync(Guid requestId, VehicleChangeStatusDTO dto);
+        Task<Dictionary<string, int>> GetVehicleRequestCountAsync();
     }
 }

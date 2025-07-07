@@ -113,5 +113,10 @@ namespace Domain.Concrete
                 throw;
             }
         }
+
+        public async Task<Dictionary<string, int>> GetVehicleRequestCountAsync()
+        {
+            return await _adminRequestRepo.CountVehicleRequestStatusAsync();
+        }
     }
 }
