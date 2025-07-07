@@ -1,0 +1,108 @@
+﻿using Domain.Concrete;
+using Domain.Contracts;
+using Entities.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+
+namespace AutoSystem.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DashboardController : ControllerBase
+    {
+        private readonly IAdminDomain _adminDomain;
+        private readonly IAdminVehicleRequestDomain _adminRequestDomain;
+        private readonly IInspectionRequestDomain _inspectionRequestDomain;
+        private readonly IFineDomain _fineDomain;
+        private readonly INotificationDomain _notificationDomain;
+        private readonly UserManager<Auto_Users> _userManager;
+
+        private string? GetUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        public DashboardController(UserManager<Auto_Users> userManager, IAdminDomain adminDomain , IAdminVehicleRequestDomain adminRequestDomain, IInspectionRequestDomain inspectionRequestDomain , IFineDomain fineDomain, INotificationDomain notificationDomain)
+        {
+            _userManager = userManager;
+            _adminDomain = adminDomain;
+            _adminRequestDomain = adminRequestDomain;
+            _inspectionRequestDomain = inspectionRequestDomain;
+            _fineDomain = fineDomain;
+            _notificationDomain = notificationDomain;
+
+        }
+
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetAdminDashboard()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID is required.");
+            }
+
+            var userCounts = await _adminDomain.GetUserCountAsync();
+            var vehicleCounts = await _adminRequestDomain.GetVehicleRequestCountAsync();
+
+            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+
+            return Ok(new
+            {
+                totalUsers = userCounts,
+                totalVehicleRequests = vehicleCounts,
+                notifications = notificationCount
+
+            });
+        }
+
+        [HttpGet("specialist")]
+        public async Task<IActionResult> GetSpecialistDashboard()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID is required.");
+            }
+
+            var specialist = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (specialist == null || specialist.IDFK_Directory == null)
+            {
+                return BadRequest("Specialist or Directorate not found.");
+            }
+
+            var directoryId = specialist.IDFK_Directory.Value;
+
+            var inspectionCounts = await _inspectionRequestDomain.GetInspectionStatusCountAsync(directoryId);
+            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+
+            return Ok(new
+            {
+                inspections = inspectionCounts,
+                notifications = notificationCount
+            });
+        }
+
+        [HttpGet("police")]
+        public async Task<IActionResult> GetPoliceDashboard()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User ID is required.");
+            }
+           
+            var fineCounts = await _fineDomain.GetFinesCountAsync(userId);
+            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+            return Ok(new
+            {
+                fines = fineCounts,
+                notifications = notificationCount
+            });
+        }
+
+    }
+}
