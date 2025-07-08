@@ -282,60 +282,56 @@ namespace Domain.Concrete
 
         public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter)
         {
-            var allFines = await _repo.GetAllFinesAsync();
-
-            DateTime? fromDateUtc = null;
-            DateTime? toDateUtc = null;
+            var query = _repo.QueryAllFines();
 
             if (filter.FromDate.HasValue)
             {
-                fromDateUtc = DateTime.SpecifyKind(filter.FromDate.Value, DateTimeKind.Local).ToUniversalTime();
+                var fromDateUtc = DateTime.SpecifyKind(filter.FromDate.Value, DateTimeKind.Local).ToUniversalTime();
+                query = query.Where(f => f.FineDate >= fromDateUtc);
             }
 
             if (filter.ToDate.HasValue)
             {
-                toDateUtc = DateTime.SpecifyKind(filter.ToDate.Value, DateTimeKind.Local).ToUniversalTime().AddDays(1).AddTicks(-1);
+                var toDateUtc = DateTime.SpecifyKind(filter.ToDate.Value, DateTimeKind.Local).ToUniversalTime().AddDays(1).AddTicks(-1);
+                query = query.Where(f => f.FineDate <= toDateUtc);
             }
 
-
-            bool validDateRange = true;
-            if (fromDateUtc.HasValue && toDateUtc.HasValue)
+            if (!string.IsNullOrWhiteSpace(filter.PlateNumber))
             {
-                validDateRange = fromDateUtc <= toDateUtc;
+                query = query.Where(f => f.Vehicle != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber));
             }
-
-            var filteredFines = allFines
-                .Where(f =>
-                    (string.IsNullOrEmpty(filter.PlateNumber) ||
-                     (f.Vehicle?.PlateNumber != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber))) &&
-
-                    (!fromDateUtc.HasValue || f.FineDate >= fromDateUtc.Value) &&
-                    (!toDateUtc.HasValue || f.FineDate <= toDateUtc.Value) &&
-                    validDateRange
-                )
-                .ToList();
-
-            var fineDtos = filteredFines.Select(f => new FineResponseDTO
-            {
-                IDPK_Fine = f.IDPK_Fine,
-                FineAmount = f.FineAmount,
-                FineReason = f.FineReason,
-                FineDate = f.FineDate.ToLocalTime(),
-                PlateNumber = f.PlateNumber,
-                PoliceFullName = f.PoliceOfficer?.PersonalId ?? "-",
-                RecipientFullName = f.FineRecipient != null ? $"{f.FineRecipient.FirstName} {f.FineRecipient.LastName}" : null
-            }).ToList();
 
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {
                 var searchLower = filter.Search.ToLower();
-                fineDtos = fineDtos.Where(f =>
-                    (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
-                    (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
-                    (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
+                query = query.Where(f =>
+                    (f.PlateNumber != null && f.PlateNumber.ToLower().Contains(searchLower)) ||
+                    (f.FineRecipient.FirstName + " " + f.FineRecipient.LastName).ToLower().Contains(searchLower) ||
+                    (f.FineReason != null && f.FineReason.ToLower().Contains(searchLower)) ||
                     f.FineAmount.ToString().Contains(searchLower)
-                ).ToList();
+                );
             }
+
+            bool descending = filter.SortOrder?.ToLower() == "desc";
+            query = filter.SortField?.ToLower() switch
+            {
+                "finedate" => descending ? query.OrderByDescending(f => f.FineDate) : query.OrderBy(f => f.FineDate),
+                "fineamount" => descending ? query.OrderByDescending(f => f.FineAmount) : query.OrderBy(f => f.FineAmount),
+                _ => descending ? query.OrderByDescending(f => f.CreatedOn) : query.OrderBy(f => f.CreatedOn),
+            };
+
+            var fineDtos = await query
+                .Select(f => new FineResponseDTO
+                {
+                    IDPK_Fine = f.IDPK_Fine,
+                    FineAmount = f.FineAmount,
+                    FineReason = f.FineReason,
+                    FineDate = f.FineDate.ToLocalTime(),
+                    PlateNumber = f.PlateNumber,
+                    PoliceFullName = f.PoliceOfficer != null ? f.PoliceOfficer.PersonalId : "-",
+                    RecipientFullName = f.FineRecipient != null ? f.FineRecipient.FirstName + " " + f.FineRecipient.LastName : null
+                })
+                .ToListAsync();
 
             var helper = new PaginationHelper<FineResponseDTO>();
             var result = helper.GetPaginatedData(

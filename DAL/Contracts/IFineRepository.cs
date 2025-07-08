@@ -29,7 +29,8 @@ namespace DAL.Contracts
 
         Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId);
         Task<List<Auto_Fines>> GetFinesForUserAsync(string userId);
-        Task<List<Auto_Fines>> GetAllFinesAsync();
+        
+        IQueryable<Auto_Fines> QueryAllFines();
 
         Task<int> CountFinesByPoliceAsync(string policeId);
 

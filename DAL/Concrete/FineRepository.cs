@@ -42,6 +42,7 @@ namespace DAL.Concrete
                 .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
                 .Where(f => f.CreatedBy == policeId && f.Invalidated == 0)
+                .OrderByDescending(f => f.CreatedOn)
                 .ToListAsync();
         }
 
@@ -52,18 +53,18 @@ namespace DAL.Concrete
                 .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
                 .Where(f => f.FineRecipient.IDFK_User == userId && f.Invalidated == 0)
+                .OrderByDescending(f => f.CreatedOn)
                 .ToListAsync();
         }
-
-        public async Task<List<Auto_Fines>> GetAllFinesAsync()
+        public IQueryable<Auto_Fines> QueryAllFines()
         {
-            return await _context.Auto_Fines
+            return _context.Auto_Fines
                 .Include(f => f.FineRecipient)
                 .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
-                .Where(f => f.Invalidated == 0)
-                .ToListAsync();
+                .Where(f => f.Invalidated == 0);
         }
+
 
         public void UpdateFineRecipient(Auto_FineRecipients recipient)
         {
