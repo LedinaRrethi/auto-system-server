@@ -138,6 +138,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowSpecificOrigin");
 
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapHub<NotificationHub>("/Notify", options =>
 {
     options.Transports =
@@ -147,10 +151,6 @@ app.MapHub<NotificationHub>("/Notify", options =>
 );
 
 app.UseHttpsRedirection();
-
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

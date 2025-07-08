@@ -308,6 +308,7 @@ namespace Domain.Concrete
                     (f.PlateNumber != null && f.PlateNumber.ToLower().Contains(searchLower)) ||
                     (f.FineRecipient.FirstName + " " + f.FineRecipient.LastName).ToLower().Contains(searchLower) ||
                     (f.FineReason != null && f.FineReason.ToLower().Contains(searchLower)) ||
+                    (f.PoliceOfficer.PersonalId != null && f.PoliceOfficer.PersonalId.ToLower().Contains(searchLower)) ||
                     f.FineAmount.ToString().Contains(searchLower)
                 );
             }
