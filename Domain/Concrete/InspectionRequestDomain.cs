@@ -33,7 +33,10 @@ namespace Domain.Concrete
             if (await _repo.HasPendingRequestAsync(dto.IDFK_Vehicle))
                 throw new InvalidOperationException("A pending inspection request already exists for this vehicle.");
 
-            var requestedDateUtc = DateTime.SpecifyKind(dto.RequestedDate, DateTimeKind.Utc);
+            var requestedDateUtc = dto.RequestedDate.Kind == DateTimeKind.Utc
+                ? dto.RequestedDate
+                : dto.RequestedDate.ToUniversalTime();
+
 
             var requestedDateLocal = requestedDateUtc.ToLocalTime();
             if (requestedDateLocal.DayOfWeek == DayOfWeek.Saturday || requestedDateLocal.DayOfWeek == DayOfWeek.Sunday)
