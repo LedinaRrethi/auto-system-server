@@ -14,6 +14,7 @@ namespace DAL.Contracts
         Task<bool> PlateNumberExistsAsync(string plateNumber);
         Task<bool> ChassisNumberExistsAsync(string chassisNumber);
         Task<Dictionary<string, int>> CountVehicleRequestStatusForUserAsync(string userId);
+        Task<Auto_Vehicles?> GetVehicleByPlateAsync(string plateNumber);
         Task SaveChangesAsync();
     }
 }

@@ -81,6 +81,10 @@ namespace Domain.Concrete
             if (hasPending)
                 throw new Exception("This vehicle already has a pending request.");
 
+            var existingPlate = await _vehicleRequestRepository.GetVehicleByPlateAsync(dto.PlateNumber);
+            if (existingPlate != null && existingPlate.IDPK_Vehicle != vehicleId && existingPlate.Invalidated == 0)
+                throw new Exception("This plate number is already in use by another vehicle.");
+
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {

@@ -75,6 +75,14 @@ namespace DAL.Concrete
                 .ToDictionaryAsync(g => g.Status, g => g.Count);
         }
 
+        public async Task<Auto_Vehicles?> GetVehicleByPlateAsync(string plateNumber)
+        {
+            return await _context.Auto_Vehicles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber && v.Invalidated == 0);
+        }
+
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
