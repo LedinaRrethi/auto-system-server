@@ -19,7 +19,7 @@ namespace DAL.Repositories
         public async Task<List<Auto_VehicleChangeRequests>> GetAllRequestsAsync()
         {
             var latestPerVehicle = await _context.Auto_VehicleChangeRequests
-                .Where(r => r.Status == VehicleStatus.Pending || r.Status == VehicleStatus.Approved)
+                .Where(r => r.Status == VehicleStatus.Pending )
                 .Include(r => r.Vehicle)
                 .Include(r => r.Requester)
                 .GroupBy(r => r.IDFK_Vehicle)
