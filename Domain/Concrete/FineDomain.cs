@@ -206,6 +206,7 @@ namespace Domain.Concrete
                 fineDtos = fineDtos.Where(f =>
                     (!string.IsNullOrEmpty(f.PlateNumber) && f.PlateNumber.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(f.RecipientFullName) && f.RecipientFullName.ToLower().Contains(searchLower)) ||
+                    (!string.IsNullOrEmpty(f.PoliceFullName) && f.PoliceFullName.ToLower().Contains(searchLower)) ||
                     (!string.IsNullOrEmpty(f.FineReason) && f.FineReason.ToLower().Contains(searchLower)) ||
                     f.FineAmount.ToString().Contains(searchLower)
                 ).ToList();
