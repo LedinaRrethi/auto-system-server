@@ -32,8 +32,16 @@ namespace DAL.Concrete
         public Task<Auto_FineRecipients?> GetFineRecipientByPersonalIdAsync(string personalId) =>
             _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.PersonalId == personalId && r.Invalidated == 0);
 
-        public Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate) =>
-            _context.Auto_FineRecipients.FirstOrDefaultAsync(r => r.PlateNumber == plate && r.Invalidated == 0);
+        public async Task<Auto_FineRecipients?> GetFineRecipientByPlateAsync(string plate)
+        {
+            var fineWithRecipient = await _context.Auto_Fines
+                .Include(f => f.FineRecipient)
+                .Where(f => f.PlateNumber == plate && f.Invalidated == 0 && f.FineRecipient != null)
+                .OrderByDescending(f => f.FineDate)
+                .FirstOrDefaultAsync();
+
+            return fineWithRecipient?.FineRecipient;
+        }
 
         public async Task<List<Auto_Fines>> GetFinesCreatedByPoliceAsync(string policeId)
         {
