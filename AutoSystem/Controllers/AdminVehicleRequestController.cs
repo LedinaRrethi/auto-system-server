@@ -23,7 +23,7 @@ namespace API.Controllers
         {
             var result = await _domain.GetAllRequestsAsync(dto);
 
-            result.Message = !result.Items.Any() ? "You have no vehicles." : "Success";
+            result.Message = !result.Items.Any() ? "You have no requests." : "Success";
 
             return Ok(result);  
         }
