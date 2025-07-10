@@ -19,56 +19,6 @@ namespace DAL.Repositories
             _context = context;
             _userManager = userManager;
         }
-        /*
-        public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
-        {
-            var users = await _context.Users
-                .Include(u => u.Directorate)
-                .ToListAsync();
-
-            var result = new List<UserDTO>();
-
-            foreach (var user in users)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-
-                result.Add(new UserDTO
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    FatherName = user.FatherName,
-                    LastName = user.LastName,
-                    Email = user.Email!,
-                    BirthDate = user.BirthDate,
-                    Role = roles.FirstOrDefault() ?? "Unknown",
-                    Status = user.Status.ToString(),
-                    CreatedOn = user.CreatedOn,
-                    SpecialistNumber = user.SpecialistNumber,
-                    DirectorateName = user.Directorate is not null ? user.Directorate.DirectoryName : null
-                });
-            }
-
-            var helper = new PaginationHelper<UserDTO>();
-
-            return helper.GetPaginatedData(
-                result,
-                dto.Page,
-                dto.PageSize,
-                dto.SortField ?? "CreatedOn",
-                dto.SortOrder ?? "desc",
-                string.IsNullOrWhiteSpace(dto.Search)
-                ? null
-                : (Func<UserDTO, bool>)(u =>
-                {
-                    var fullName = $"{u.FirstName} {u.FatherName} {u.LastName}".Trim();
-                    return fullName.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
-                    || (!string.IsNullOrEmpty(u.Email) && u.Email.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
-                    || (!string.IsNullOrEmpty(u.Role) && u.Role.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
-                    || (!string.IsNullOrEmpty(u.Status) && u.Status.Contains(dto.Search, StringComparison.OrdinalIgnoreCase));
-                })
-            );
-        }
-        */
 
         public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
         {
@@ -93,8 +43,12 @@ namespace DAL.Repositories
 
              foreach (var user in users)
             {
+              
                 var appUser = await _userManager.FindByIdAsync(user.Id);
                 var roles = await _userManager.GetRolesAsync(appUser!);
+
+                if (roles.Contains("Admin", StringComparer.OrdinalIgnoreCase))
+                    continue;
 
                 result.Add(new UserDTO
                 {
