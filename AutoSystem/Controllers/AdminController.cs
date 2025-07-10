@@ -19,11 +19,15 @@ namespace API.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<IActionResult> GetUsers([FromQuery] PaginationDTO dto)        
+        public async Task<IActionResult> GetUsers([FromQuery] PaginationDTO dto)
         {
             var result = await _domain.GetUsersPaginatedAsync(dto);
+
+            result.Message = !result.Items.Any() ? "No users found." : "Success";
+
             return Ok(result);
         }
+
 
         [HttpPost("users/{userId}/status")]
         public async Task<ActionResult> UpdateStatus(string userId, [FromBody] string newStatus)
