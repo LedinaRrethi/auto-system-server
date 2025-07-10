@@ -13,15 +13,14 @@ namespace DAL.Concrete
         {
             _context = context;
         }
-        public async Task<List<Auto_VehicleChangeRequests>> GetRequestsByUserAsync(string userId)
+        public async Task<List<Auto_Vehicles>> GetRequestsByUserAsync(string userId)
         {
-            return await _context.Auto_VehicleChangeRequests
-                .Where(r => r.IDFK_Requester == userId && r.Vehicle.Invalidated ==0)
-                .Include(r => r.Vehicle)
-                .GroupBy(r => r.IDFK_Vehicle)
-                .Select(g => g.OrderByDescending(r => r.CreatedOn).First())
+            return await _context.Auto_Vehicles
+                .Include(v => v.VehicleChangeRequests) 
+                .Where(v => v.IDFK_Owner == userId && v.Invalidated == 0)
                 .ToListAsync();
         }
+
 
 
         public async Task<Auto_VehicleChangeRequests?> GetChangeRequestByIdAsync(Guid requestId)

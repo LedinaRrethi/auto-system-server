@@ -15,7 +15,7 @@ namespace DTO.VehicleRequest
         public VehicleStatus NewStatus { get; set; } 
 
         [MaxLength(500)]
-        public string? AdminComment { get; set; }
+        public string? ApprovalComment { get; set; }
     }
 
 }

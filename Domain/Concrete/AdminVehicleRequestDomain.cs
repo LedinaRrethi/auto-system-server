@@ -73,7 +73,7 @@ namespace Domain.Concrete
                     return false;
 
                 request.Status = dto.NewStatus;
-                request.AdminComment = dto.AdminComment;
+                request.Vehicle.ApprovalComment = dto.ApprovalComment;
                 SetAuditOnUpdate(request);
                 await _adminRequestRepo.UpdateAsync(request);
 
