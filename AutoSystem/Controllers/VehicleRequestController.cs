@@ -66,12 +66,16 @@ namespace AutoSystem.Controllers
             }
         }
 
+
         [HttpGet("my-requests")]
         public async Task<IActionResult> MyRequests([FromQuery] PaginationDTO dto)
         {
             try
             {
-                var requests = await _domain.GetMyRequestsAsync(GetUserId() , dto);
+                var requests = await _domain.GetMyRequestsAsync(GetUserId(), dto);
+
+                requests.Message = !requests.Items.Any() ? "You have no vehicles." : "Success";
+
                 return Ok(requests);
             }
             catch (Exception ex)
@@ -79,6 +83,7 @@ namespace AutoSystem.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
 
         [HttpGet("by-id/{vehicleId}")]
         public async Task<IActionResult> GetVehicleById(Guid vehicleId)

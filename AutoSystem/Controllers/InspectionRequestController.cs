@@ -1,4 +1,5 @@
-﻿using Domain.Contracts;
+﻿using Azure.Core;
+using Domain.Contracts;
 using DTO;
 using DTO.InspectionDTO;
 using JasperFx.CodeGeneration.Frames;
@@ -51,6 +52,7 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> GetPagedRequests([FromQuery] PaginationDTO dto)
         {
             var result = await _domain.GetCurrentUserPagedInspectionRequestsAsync(dto);
+            result.Message = !result.Items.Any() ? "You have done no requests." : "Success";
             return Ok(result);
         }
 

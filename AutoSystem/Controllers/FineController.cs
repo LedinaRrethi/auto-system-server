@@ -1,4 +1,5 @@
-﻿using Domain.Contracts;
+﻿using Azure.Core;
+using Domain.Contracts;
 using DTO;
 using DTO.FineDTO;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +38,8 @@ namespace AutoSystem.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _domain.GetMyFinesAsync(userId, filter);
+
+            result.Message = !result.Items.Any() ? "You have no fines." : "Success";
             return Ok(result);
         }
 
@@ -54,6 +57,7 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> GetAllFines([FromQuery] FineFilterDTO filter)
         {
             var result = await _domain.GetAllFinesAsync(filter);
+            result.Message = !result.Items.Any() ? "There are no fines." : "Success";
             return Ok(result);
         }
 
