@@ -30,6 +30,7 @@ namespace AutoSystem.Controllers
             if (userId == null) return Unauthorized();
 
             var result = await _domain.GetMyRequestsAsync(userId, dto);
+            result.Message = !result.Items.Any() ? "You have no inspection requests." : "Success";
             return Ok(result);
         }
 
