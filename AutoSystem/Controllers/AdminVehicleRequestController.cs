@@ -22,7 +22,10 @@ namespace API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] PaginationDTO dto)
         {
             var result = await _domain.GetAllRequestsAsync(dto);
-            return Ok(result);
+
+            result.Message = !result.Items.Any() ? "You have no vehicles." : "Success";
+
+            return Ok(result);  
         }
 
 

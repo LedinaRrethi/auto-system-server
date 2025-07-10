@@ -10,6 +10,8 @@ namespace Helpers.Pagination
         public int Page { get; set; }
         public int PageSize { get; set; }
         public bool HasNextPage { get; set; }
+
+        public string Message { get; set; } = string.Empty;
     }
 
     public class PaginationHelper<T>
