@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using DAL.Contracts;
 
 public class AuthDomain : DomainBase, IAuthDomain
 {
@@ -18,7 +19,10 @@ public class AuthDomain : DomainBase, IAuthDomain
     private readonly AutoSystemDbContext _context;
     private readonly JWT _jwt;
 
+    private readonly IFineRepository _fineRecipientRepo;
+
     public AuthDomain(
+        IFineRepository fineRecipientRepo,
         IUnitOfWork unitOfWork,
         IMapper mapper,
         IHttpContextAccessor httpContextAccessor,
@@ -34,6 +38,7 @@ public class AuthDomain : DomainBase, IAuthDomain
         _roleManager = roleManager;
         _context = context;
         _jwt = new JWT(config);
+        _fineRecipientRepo = fineRecipientRepo;
     }
 
     public async Task RegisterAsync(RegisterDTO dto)
@@ -101,6 +106,17 @@ public class AuthDomain : DomainBase, IAuthDomain
             await _roleManager.CreateAsync(new IdentityRole(roleName));
 
         await _userManager.AddToRoleAsync(user, roleName);
+
+        if (!string.IsNullOrWhiteSpace(dto.PersonalId))
+        {
+            var recipient = await _fineRecipientRepo.GetFineRecipientByPersonalIdAsync(dto.PersonalId);
+            if (recipient != null && string.IsNullOrEmpty(recipient.IDFK_User))
+            {
+                recipient.IDFK_User = user.Id;
+                _fineRecipientRepo.UpdateFineRecipient(recipient);
+                await _fineRecipientRepo.SaveChangesAsync();
+            }
+        }
     }
 
     public async Task<AuthResponseDTO> LoginAsync(LoginDTO dto, string ipAddress)

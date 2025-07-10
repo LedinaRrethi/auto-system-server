@@ -73,20 +73,7 @@ namespace Domain.Concrete
                     recipient = await _repo.GetFineRecipientByPersonalIdAsync(dto.PersonalId.Trim());
                 }
 
-                // nese fine recipient ekziston , po nuk ka user id --lidhet me userin nese ekziston
-                if (recipient != null && string.IsNullOrEmpty(recipient.IDFK_User) && !string.IsNullOrWhiteSpace(dto.PersonalId))
-                {
-                    matchedUser = await _userManager.Users
-                        .FirstOrDefaultAsync(u => u.PersonalId.ToLower().Trim() == dto.PersonalId.ToLower().Trim() && u.Invalidated == 0);
-
-                    if (matchedUser != null)
-                    {
-                        recipient.IDFK_User = matchedUser.Id;
-                        _repo.UpdateFineRecipient(recipient);
-                        await _repo.SaveChangesAsync();
-                    }
-                }
-
+               
                 // nese recipient nuk ekzisotn fr krijoj te ri
                 if (recipient == null)
                 {
