@@ -40,7 +40,7 @@ namespace DAL.Concrete
                 IDPK_Inspection = i.IDPK_Inspection,
                 IDPK_InspectionRequest = i.IDFK_InspectionRequest,
                 PlateNumber = i.Request.Vehicle.PlateNumber,
-                RequestedDate = i.Request.RequestedDate,
+                RequestedDate = i.Request.RequestedDate.ToLocalTime(),
                 Status = i.Request.Status.ToString(),
                 Comment = i.Comment,
                 IsPassed = i.IsPassed,
