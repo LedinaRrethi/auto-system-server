@@ -61,15 +61,20 @@ namespace Domain.Concrete
                 if (inspection == null)
                     return false;
 
-                // Validimi PDF
+                var totalFileSize = 0;
+
+             
                 foreach (var doc in dto.Documents)
                 {
                     if (!doc.DocumentName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
                         throw new Exception($"File '{doc.DocumentName}' is not a PDF.");
 
                     var fileBytes = Convert.FromBase64String(doc.FileBase64);
-                    if (fileBytes.Length > 5 * 1024 * 1024)
+                    totalFileSize += fileBytes.Length;
+                 
+                    if (totalFileSize > 5 * 1024 * 1024)
                         throw new Exception($"File '{doc.DocumentName}' is larger than 5MB.");
+
                 }
 
                 // Update Inspection
