@@ -98,7 +98,8 @@ namespace DAL.Concrete
         public async Task<Dictionary<string, int>> CountInspectionsByStatusForSpecialistAsync(Guid directoryId)
         {
             var counts = await _context.Auto_InspectionRequests
-                .Where(r => r.IDFK_Directory == directoryId && r.Invalidated == 0)
+                .Include(r=>r.Vehicle)
+                .Where(r => r.IDFK_Directory == directoryId && r.Invalidated == 0 && r.Vehicle.Invalidated==0)
                 .GroupBy(r => r.Status)
                 .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
                 .ToDictionaryAsync(g => g.Status, g => g.Count);
