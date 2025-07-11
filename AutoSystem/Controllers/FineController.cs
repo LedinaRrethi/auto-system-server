@@ -39,7 +39,7 @@ namespace AutoSystem.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _domain.GetMyFinesAsync(userId, filter);
 
-            result.Message = !result.Items.Any() ? "You have no fines." : "Success";
+            result.Message = !result.Items.Any() ? "No fines found." : "Success";
             return Ok(result);
         }
 

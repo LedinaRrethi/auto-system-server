@@ -52,7 +52,7 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> GetPagedRequests([FromQuery] PaginationDTO dto)
         {
             var result = await _domain.GetCurrentUserPagedInspectionRequestsAsync(dto);
-            result.Message = !result.Items.Any() ? "You have done no requests." : "Success";
+            result.Message = !result.Items.Any() ? "No inspection request found." : "Success";
             return Ok(result);
         }
 
