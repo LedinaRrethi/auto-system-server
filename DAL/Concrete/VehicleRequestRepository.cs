@@ -67,7 +67,7 @@ namespace DAL.Concrete
 
         public async Task<Dictionary<string, int>> CountVehicleRequestStatusForUserAsync(string userId)
         {
-            return await _context.Auto_VehicleChangeRequests
+            return await _context.Auto_Vehicles
                 .Where(r => r.CreatedBy == userId && r.Invalidated == 0)
                 .GroupBy(r => r.Status)
                 .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
