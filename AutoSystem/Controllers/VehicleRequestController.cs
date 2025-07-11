@@ -74,7 +74,7 @@ namespace AutoSystem.Controllers
             {
                 var requests = await _domain.GetMyRequestsAsync(GetUserId(), dto);
 
-                requests.Message = !requests.Items.Any() ? "You have no vehicles." : "Success";
+                requests.Message = !requests.Items.Any() ? "No vehicles found." : "Success";
 
                 return Ok(requests);
             }

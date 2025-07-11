@@ -107,10 +107,18 @@ namespace AutoSystem.Controllers
             {
                 refreshToken = Uri.UnescapeDataString(refreshToken);
 
-                Console.WriteLine("LogoutAsync i thirrir me refresh token" + refreshToken);
-
                 await _auth.LogoutAsync(refreshToken);
-                Response.Cookies.Delete("refreshToken");
+
+                Response.Cookies.Append("refreshToken", "", new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false, // true në prodhim
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddDays(-1),
+                    Path = "/"
+                });
+
+                //Response.Cookies.Delete("refreshToken");
             }
             else
             {
@@ -132,7 +140,8 @@ namespace AutoSystem.Controllers
                 SameSite = SameSiteMode.Lax,
                 //per deploy duhet secure=false , SamSite=lax
 
-                Expires = expires
+                Expires = expires,
+                Path="/"
             };
 
             //Response.Cookies.Append("refreshToken", token, cookieOptions);

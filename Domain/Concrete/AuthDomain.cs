@@ -164,42 +164,92 @@ public class AuthDomain : DomainBase, IAuthDomain
 
     public async Task<AuthResponseDTO> RefreshTokenAsync(string refreshToken, string ipAddress)
     {
-        var token = await _context.Auto_RefreshTokens
-            .Include(r => r.User)
-            .FirstOrDefaultAsync(r => r.Token == refreshToken);
-
-        if (token == null || token.IsRevoked || token.IsUsed || token.ExpiryDate < DateTime.UtcNow)
-            throw new Exception("Invalid or expired refresh token.");
-
-        token.IsUsed = true;
-        token.IsRevoked = true;
-        _context.Auto_RefreshTokens.Update(token);
-
-        var user = token.User;
-        var roles = await _userManager.GetRolesAsync(user);
-        var tokenData = _jwt.GenerateToken(user, roles);
-        var newRefresh = _jwt.GenerateRefreshToken();
-
-        var dbNew = new Auto_RefreshTokens
+        using (var transaction = await _context.Database.BeginTransactionAsync())
         {
-            Token = newRefresh.Token,
-            JwtId = tokenData.JwtId,
-            IDFK_User = user.Id,
-            CreatedOn = newRefresh.CreatedOn,
-            ExpiryDate = newRefresh.ExpiryDate,
-            CreatedByIp = ipAddress
-        };
+            try
+            {
+                var token = await _context.Auto_RefreshTokens
+                    .Include(r => r.User)
+                    .FirstOrDefaultAsync(r => r.Token == refreshToken);
 
-        await _context.Auto_RefreshTokens.AddAsync(dbNew);
-        await _context.SaveChangesAsync();
+                if (token == null || token.IsRevoked || token.IsUsed || token.ExpiryDate < DateTime.UtcNow)
+                    throw new Exception("Invalid or expired refresh token.");
 
-        return new AuthResponseDTO
-        {
-            Token = tokenData.Token,
-            ExpiresAt = tokenData.Expiry,
-            RefreshToken = newRefresh.Token
-        };
+                token.IsUsed = true;
+                token.IsRevoked = true;
+                token.CreatedOn = DateTime.UtcNow;
+                token.CreatedByIp = ipAddress;
+                _context.Auto_RefreshTokens.Update(token);
+
+                var user = token.User;
+
+                var activeTokens = await _context.Auto_RefreshTokens
+                    .Where(t => t.IDFK_User == user.Id && !t.IsRevoked && !t.IsUsed && t.ExpiryDate > DateTime.UtcNow && t.Token != token.Token)
+                    .ToListAsync();
+
+                foreach (var t in activeTokens)
+                {
+                    t.IsRevoked = true;
+                    t.IsUsed = true;
+                    t.CreatedOn = DateTime.UtcNow;
+                    t.CreatedByIp = ipAddress;
+                }
+
+                _context.Auto_RefreshTokens.UpdateRange(activeTokens);
+
+                await _context.SaveChangesAsync();
+
+                var existingValidToken = await _context.Auto_RefreshTokens
+                    .Where(t => t.IDFK_User == user.Id && !t.IsRevoked && !t.IsUsed && t.ExpiryDate > DateTime.UtcNow)
+                    .OrderByDescending(t => t.CreatedOn)
+                    .FirstOrDefaultAsync();
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var tokenData = _jwt.GenerateToken(user, roles);
+
+                if (existingValidToken != null)
+                {
+                    await transaction.CommitAsync();
+
+                    return new AuthResponseDTO
+                    {
+                        Token = tokenData.Token,
+                        ExpiresAt = tokenData.Expiry,
+                        RefreshToken = existingValidToken.Token
+                    };
+                }
+
+                var newRefresh = _jwt.GenerateRefreshToken();
+
+                var dbNew = new Auto_RefreshTokens
+                {
+                    Token = newRefresh.Token,
+                    JwtId = tokenData.JwtId,
+                    IDFK_User = user.Id,
+                    CreatedOn = newRefresh.CreatedOn,
+                    ExpiryDate = newRefresh.ExpiryDate,
+                    CreatedByIp = ipAddress
+                };
+
+                await _context.Auto_RefreshTokens.AddAsync(dbNew);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new AuthResponseDTO
+                {
+                    Token = tokenData.Token,
+                    ExpiresAt = tokenData.Expiry,
+                    RefreshToken = newRefresh.Token
+                };
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
     }
+
 
     public async Task LogoutAsync(string refreshToken)
     {
