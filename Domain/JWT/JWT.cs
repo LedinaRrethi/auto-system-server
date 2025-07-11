@@ -33,7 +33,7 @@ public class JWT
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["AppSettings:Token"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
-        var expiry = DateTime.UtcNow.AddDays(7);
+        var expiry = DateTime.UtcNow.AddHours(5);
 
         var token = new JwtSecurityToken(
             issuer: _config["JWT:Issuer"],
