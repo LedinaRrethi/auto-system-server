@@ -25,7 +25,7 @@ namespace DAL.DI
             For<IInspectionRequestRepository>().Use<InspectionRequestRepository>();
             For<IInspectionRepository>().Use<InspectionRepository>();
             For<INotificationRepository>().Use<NotificationRepository>();
-
+            For<IUserRepository>().Use<UserRepository>();
             IncludeRegistry<UnitOfWorkRegistry>();
 
         }
