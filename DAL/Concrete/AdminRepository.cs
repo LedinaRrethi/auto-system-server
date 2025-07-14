@@ -20,26 +20,25 @@ namespace DAL.Repositories
             _userManager = userManager;
         }
 
-
         public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
         {
             var query = from user in _context.Users
                         join userRole in _context.UserRoles on user.Id equals userRole.UserId
                         join role in _context.Roles on userRole.RoleId equals role.Id
                         where role.Name.ToLower() != "admin"
-                        select new UserDTO
+                        select new
                         {
-                            Id = user.Id,
-                            FirstName = user.FirstName,
-                            FatherName = user.FatherName,
-                            LastName = user.LastName,
-                            Email = user.Email!,
-                            BirthDate = user.BirthDate,
-                            Role = role.Name,
-                            Status = user.Status.ToString(),
-                            CreatedOn = user.CreatedOn,
-                            SpecialistNumber = user.SpecialistNumber,
-                            DirectorateName = user.Directorate != null ? user.Directorate.DirectoryName : null
+                            user.Id,
+                            user.FirstName,
+                            user.FatherName,
+                            user.LastName,
+                            user.Email,
+                            user.BirthDate,
+                            user.Status,
+                            user.CreatedOn,
+                            user.SpecialistNumber,
+                            DirectorateName = user.Directorate != null ? user.Directorate.DirectoryName : null,
+                            RoleName = role.Name
                         };
 
             if (!string.IsNullOrWhiteSpace(dto.Search))
@@ -48,8 +47,10 @@ namespace DAL.Repositories
                 query = query.Where(u =>
                     (u.FirstName + " " + u.FatherName + " " + u.LastName).ToLower().Contains(search) ||
                     u.Email.ToLower().Contains(search) ||
-                    u.Role.ToLower().Contains(search) ||
-                    u.Status.ToLower().Contains(search));
+                    u.RoleName.ToLower().Contains(search) ||
+                    ((int)u.Status).ToString().Contains(search));
+
+
             }
 
             var totalCount = await query.CountAsync();
@@ -62,13 +63,28 @@ namespace DAL.Repositories
             }
             else
             {
-                query = query.OrderByDescending(e => e.CreatedOn); // default
+                query = query.OrderByDescending(e => e.CreatedOn);
             }
 
-            var users = await query
+            var usersRaw = await query
                 .Skip((dto.Page - 1) * dto.PageSize)
                 .Take(dto.PageSize)
                 .ToListAsync();
+
+            var users = usersRaw.Select(u => new UserDTO
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                FatherName = u.FatherName,
+                LastName = u.LastName,
+                Email = u.Email!,
+                BirthDate = u.BirthDate,
+                Role = u.RoleName,
+                Status = u.Status.ToString(), 
+                CreatedOn = u.CreatedOn,
+                SpecialistNumber = u.SpecialistNumber,
+                DirectorateName = u.DirectorateName
+            }).ToList();
 
             return new PaginationResult<UserDTO>
             {
@@ -79,6 +95,9 @@ namespace DAL.Repositories
                 Message = users.Any() ? "Success" : "No users found."
             };
         }
+
+
+
 
 
 
