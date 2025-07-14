@@ -20,72 +20,66 @@ namespace DAL.Repositories
             _userManager = userManager;
         }
 
+
         public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
         {
-            var users = await _context.Users
-                .Include(u => u.Directorate)
-                .Select(u => new
-                {
-                    u.Id,
-                    u.FirstName,
-                    u.FatherName,
-                    u.LastName,
-                    u.Email,
-                    u.BirthDate,
-                    u.Status,
-                    u.CreatedOn,
-                    u.SpecialistNumber,
-                    DirectorateName = u.Directorate != null ? u.Directorate.DirectoryName : null
-                })
-                .ToListAsync();
+            var query = from user in _context.Users
+                        join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                        join role in _context.Roles on userRole.RoleId equals role.Id
+                        where role.Name.ToLower() != "admin"
+                        select new UserDTO
+                        {
+                            Id = user.Id,
+                            FirstName = user.FirstName,
+                            FatherName = user.FatherName,
+                            LastName = user.LastName,
+                            Email = user.Email!,
+                            BirthDate = user.BirthDate,
+                            Role = role.Name,
+                            Status = user.Status.ToString(),
+                            CreatedOn = user.CreatedOn,
+                            SpecialistNumber = user.SpecialistNumber,
+                            DirectorateName = user.Directorate != null ? user.Directorate.DirectoryName : null
+                        };
 
-            var result = new List<UserDTO>();
-
-             foreach (var user in users)
+            if (!string.IsNullOrWhiteSpace(dto.Search))
             {
-              
-                var appUser = await _userManager.FindByIdAsync(user.Id);
-                var roles = await _userManager.GetRolesAsync(appUser!);
-
-                if (roles.Contains("Admin", StringComparer.OrdinalIgnoreCase))
-                    continue;
-
-                result.Add(new UserDTO
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    FatherName = user.FatherName,
-                    LastName = user.LastName,
-                    Email = user.Email!,
-                    BirthDate = user.BirthDate,
-                    Role = roles.FirstOrDefault() ?? "Unknown",
-                    Status = user.Status.ToString(),
-                    CreatedOn = user.CreatedOn,
-                    SpecialistNumber = user.SpecialistNumber,
-                    DirectorateName = user.DirectorateName
-                });
+                var search = dto.Search.ToLower();
+                query = query.Where(u =>
+                    (u.FirstName + " " + u.FatherName + " " + u.LastName).ToLower().Contains(search) ||
+                    u.Email.ToLower().Contains(search) ||
+                    u.Role.ToLower().Contains(search) ||
+                    u.Status.ToLower().Contains(search));
             }
 
-            var helper = new PaginationHelper<UserDTO>();
+            var totalCount = await query.CountAsync();
 
-            return helper.GetPaginatedData(
-                result,
-                dto.Page,
-                dto.PageSize,
-                dto.SortField ?? "CreatedOn",
-                dto.SortOrder ?? "desc",
-                string.IsNullOrWhiteSpace(dto.Search)
-                ? null
-                : (Func<UserDTO, bool>)(u =>
-                {
-                    var fullName = $"{u.FirstName} {u.FatherName} {u.LastName}".Trim();
-                    return fullName.Contains(dto.Search, StringComparison.OrdinalIgnoreCase)
-                        || (!string.IsNullOrEmpty(u.Email) && u.Email.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
-                        || (!string.IsNullOrEmpty(u.Role) && u.Role.Contains(dto.Search, StringComparison.OrdinalIgnoreCase))
-                        || (!string.IsNullOrEmpty(u.Status) && u.Status.Contains(dto.Search, StringComparison.OrdinalIgnoreCase));
-                })
-            );
+            if (!string.IsNullOrWhiteSpace(dto.SortField))
+            {
+                query = dto.SortOrder?.ToLower() == "desc"
+                    ? query.OrderByDescending(e => EF.Property<object>(e, dto.SortField))
+                    : query.OrderBy(e => EF.Property<object>(e, dto.SortField));
+            }
+            else
+            {
+                query = query.OrderByDescending(e => e.CreatedOn); // default
+            }
+
+            var users = await query
+                .Skip((dto.Page - 1) * dto.PageSize)
+                .Take(dto.PageSize)
+                .ToListAsync();
+
+            return new PaginationResult<UserDTO>
+            {
+                Items = users,
+                Page = dto.Page,
+                PageSize = dto.PageSize,
+                HasNextPage = dto.Page * dto.PageSize < totalCount,
+                Message = users.Any() ? "Success" : "No users found."
+            };
         }
+
 
 
         public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
