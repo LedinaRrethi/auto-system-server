@@ -56,6 +56,18 @@ namespace AutoSystem.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Individ")]
+        [HttpGet("document/{id}")]
+        public async Task<IActionResult> GetDocumentBase64(Guid id)
+        {
+            var fileBase64 = await _domain.GetInspectionDocumentBase64Async(id);
+            if (fileBase64 == null)
+                return NotFound("Document not found.");
+
+            return Ok(new { fileBase64 });
+        }
+
+
 
     }
 }

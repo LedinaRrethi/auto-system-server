@@ -90,6 +90,12 @@ namespace Domain.Concrete
             return await _repo.GetCurrentUserPagedInspectionRequestsAsync(userId, dto);
         }
 
+        public async Task<string?> GetInspectionDocumentBase64Async(Guid documentId)
+        {
+            return await _repo.GetInspectionDocumentBase64Async(documentId);
+        }
+
+
         public async Task<Dictionary<string, int>> GetInspectionStatusCountAsync(Guid directoryId)
         {
             return await _repo.CountInspectionsByStatusForSpecialistAsync(directoryId);

@@ -15,6 +15,7 @@ namespace DAL.Contracts
         //Task<List<MyInspectionRequestDTO>> GetRequestsByUserAsync(string userId);
 
         Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(string userId, PaginationDTO dto);
+        Task<string?> GetInspectionDocumentBase64Async(Guid documentId);
 
         Task<Dictionary<string, int>> CountInspectionsByStatusForSpecialistAsync(Guid directoryId);
         Task<Dictionary<string, int>> CountInspectionRequestsByUserAsync(string userId);

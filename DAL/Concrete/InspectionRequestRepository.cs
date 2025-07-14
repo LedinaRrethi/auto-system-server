@@ -40,33 +40,51 @@ namespace DAL.Concrete
 
         public async Task<PaginationResult<MyInspectionRequestDTO>> GetCurrentUserPagedInspectionRequestsAsync(string userId, PaginationDTO dto)
         {
-            var inspections = await _context.Auto_Inspections
-                .Where(i => i.Invalidated == 0)
-                .ToListAsync();
-
-            var docs = await _context.Auto_InspectionDocs
-                .Where(d => d.Invalidated == 0)
-                .ToListAsync();
-
-            var requests = await _context.Auto_InspectionRequests
+            var requestsQuery = _context.Auto_InspectionRequests
                 .Include(r => r.Vehicle)
                 .Include(r => r.Directory)
-                .Where(r => r.CreatedBy == userId && r.Invalidated == 0 && r.Vehicle.Invalidated==0)
+                .Where(r => r.CreatedBy == userId && r.Invalidated == 0 && r.Vehicle.Invalidated == 0)
+                .OrderByDescending(r => r.RequestedDate)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(dto.Search))
+            {
+                var lower = dto.Search.ToLower();
+                requestsQuery = requestsQuery.Where(r =>
+                    r.Vehicle.PlateNumber.ToLower().Contains(lower) ||
+                    r.Directory.DirectoryName.ToLower().Contains(lower));
+            }
+
+            var totalCount = await requestsQuery.CountAsync();
+
+            var pageData = await requestsQuery
+                .Skip((dto.Page - 1) * dto.PageSize)
+                .Take(dto.PageSize)
                 .ToListAsync();
 
-            var result = requests.Select(r =>
+            var requestIds = pageData.Select(r => r.IDPK_InspectionRequest).ToList();
+
+            var inspections = await _context.Auto_Inspections
+                .Where(i => requestIds.Contains(i.IDFK_InspectionRequest) && i.Invalidated == 0)
+                .ToListAsync();
+
+            var inspectionIds = inspections.Select(i => i.IDPK_Inspection).ToList();
+
+            var docs = await _context.Auto_InspectionDocs
+                .Where(d => inspectionIds.Contains(d.IDFK_Inspection) && d.Invalidated == 0)
+                .ToListAsync();
+
+            var result = pageData.Select(r =>
             {
                 var inspection = inspections.FirstOrDefault(i => i.IDFK_InspectionRequest == r.IDPK_InspectionRequest);
 
                 var inspectionDocs = inspection != null
-                    ? docs
-                        .Where(d => d.IDFK_Inspection == inspection.IDPK_Inspection)
+                    ? docs.Where(d => d.IDFK_Inspection == inspection.IDPK_Inspection)
                         .Select(d => new InspectionDocumentDTO
                         {
                             IDPK_InspectionDoc = d.IDPK_InspectionDoc,
                             IDFK_InspectionRequest = r.IDPK_InspectionRequest,
                             DocumentName = d.DocumentName,
-                            FileBase64 = d.FileBase64
                         }).ToList()
                     : new List<InspectionDocumentDTO>();
 
@@ -80,20 +98,27 @@ namespace DAL.Concrete
                     Comment = inspection?.Comment,
                     Documents = inspectionDocs
                 };
-            });
+            }).ToList();
 
-            var helper = new PaginationHelper<MyInspectionRequestDTO>();
-            Func<MyInspectionRequestDTO, bool> filter = null;
-
-            if (!string.IsNullOrWhiteSpace(dto.Search))
+            return new PaginationResult<MyInspectionRequestDTO>
             {
-                var lower = dto.Search.ToLower();
-                filter = x => x.PlateNumber.ToLower().Contains(lower)
-                           || x.DirectorateName.ToLower().Contains(lower);
-            }
-
-            return helper.GetPaginatedData(result, dto.Page, dto.PageSize, dto.SortField, dto.SortOrder, filter);
+                Items = result,
+                Page = dto.Page,
+                PageSize = dto.PageSize,
+                HasNextPage = dto.Page * dto.PageSize < totalCount,
+                Message = result.Any() ? "Success" : "No inspection request found."
+            };
         }
+
+
+        public async Task<string?> GetInspectionDocumentBase64Async(Guid documentId)
+        {
+            return await _context.Auto_InspectionDocs
+                .Where(d => d.IDPK_InspectionDoc == documentId && d.Invalidated == 0)
+                .Select(d => d.FileBase64)
+                .FirstOrDefaultAsync();
+        }
+
 
         public async Task<Dictionary<string, int>> CountInspectionsByStatusForSpecialistAsync(Guid directoryId)
         {

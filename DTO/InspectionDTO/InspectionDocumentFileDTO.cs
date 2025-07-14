@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace DTO.InspectionDTO
 {
-    public class InspectionDocDeleteDTO
+    public class InspectionDocumentFileDTO
     {
-        public Guid IDPK_InspectionDoc { get; set; }
+        public string FileBase64 { get; set; } = null!;
     }
-
 }
