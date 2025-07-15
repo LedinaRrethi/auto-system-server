@@ -10,12 +10,8 @@ namespace DAL.Concrete
 {
     public class InspectionRepository : BaseRepository<Auto_Inspections>, IInspectionRepository
     {
-        private readonly AutoSystemDbContext _context;
 
-        public InspectionRepository(AutoSystemDbContext context) : base(context)
-        {
-            _context = context;
-        }
+        public InspectionRepository(AutoSystemDbContext context) : base(context){}
 
         public async Task<PaginationResult<InspectionRequestListDTO>> GetRequestsBySpecialistAsync(string specialistId, PaginationDTO dto)
         {
@@ -79,8 +75,6 @@ namespace DAL.Concrete
                 .Where(v => v.IDFK_Owner == userId && v.Invalidated == 0 && v.Status == VehicleStatus.Approved)
                 .ToListAsync();
         }
-
-        public Task SaveChangesAsync() => _context.SaveChangesAsync();
 
     }
 }

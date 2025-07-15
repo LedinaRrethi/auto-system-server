@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using DAL.Concrete;
 using DAL.Contracts;
-using DAL.Repositories;
 using DAL.UoW;
 using Domain.Contracts;
 using Domain.Notifications;
-using DTO;
 using DTO.FineDTO;
 using Entities.Models;
 using Helpers.Enumerations;
@@ -13,10 +10,6 @@ using Helpers.Pagination;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Domain.Concrete
 {
@@ -24,7 +17,6 @@ namespace Domain.Concrete
     {
         private readonly IFineRepository _repo;
         private readonly INotificationRepository _notificationRepository;
-        private readonly IMapper _mapper;
         private readonly UserManager<Auto_Users> _userManager;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -41,7 +33,6 @@ namespace Domain.Concrete
         )        
         {
             _repo = repo;
-            _mapper = mapper;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _notificationRepository = notificationRepository;
@@ -77,8 +68,17 @@ namespace Domain.Concrete
                 // nese recipient nuk ekzisotn fr krijoj te ri
                 if (recipient == null)
                 {
-                    matchedUser = await _userManager.Users
-                        .FirstOrDefaultAsync(u => u.PersonalId.ToLower().Trim() == dto.PersonalId.ToLower().Trim() && u.Invalidated == 0);
+
+                    if (!string.IsNullOrWhiteSpace(dto.PersonalId))
+                    {
+                        var normalizedPersonalId = dto.PersonalId.Trim().ToLower();
+
+                        matchedUser = await _userManager.Users
+                            .FirstOrDefaultAsync(u =>
+                                u.PersonalId != null &&
+                                u.PersonalId.Trim().ToLower() == normalizedPersonalId &&
+                                u.Invalidated == 0);
+                    }
 
                     recipient = new Auto_FineRecipients
                     {
@@ -317,18 +317,22 @@ namespace Domain.Concrete
                     FineReason = f.FineReason,
                     FineDate = f.FineDate.ToLocalTime(),
                     PlateNumber = f.PlateNumber,
-                    PoliceFullName = f.PoliceOfficer != null ? f.PoliceOfficer.PersonalId : "-",
+                    PoliceFullName = f.PoliceOfficer != null && f.PoliceOfficer.PersonalId != null ? f.PoliceOfficer.PersonalId : "-",
                     RecipientFullName = f.FineRecipient != null ? f.FineRecipient.FirstName + " " + f.FineRecipient.LastName : null
                 })
                 .ToListAsync();
 
             var helper = new PaginationHelper<FineResponseDTO>();
+
+            var sortOrder = filter.SortOrder ?? "asc";
+            var sortField = filter.SortField ?? "CreatedOn";
+
             var result = helper.GetPaginatedData(
                 fineDtos,
                 filter.Page,
                 filter.PageSize,
-                filter.SortField,
-                filter.SortOrder
+                sortField,
+                sortOrder
             );
 
             return result;

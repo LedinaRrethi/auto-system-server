@@ -1,17 +1,12 @@
 ﻿using AutoMapper;
-using DAL.Concrete;
 using DAL.Contracts;
-using DAL.Repositories;
 using DAL.UoW;
 using Domain.Contracts;
 using DTO;
 using DTO.InspectionDTO;
 using Entities.Models;
-using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
 
 namespace Domain.Concrete
 {

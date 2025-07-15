@@ -1,11 +1,6 @@
 ﻿using DAL.Contracts;
 using DTO.UserDTO;
 using Domain.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Concrete
 {
@@ -29,7 +24,7 @@ namespace Domain.Concrete
                 FirstName = user.FirstName,
                 FatherName = user.FatherName,
                 LastName = user.LastName,
-                Email = user.Email,
+                Email = string.IsNullOrEmpty(user.Email) ? "" : user.Email,
                 BirthDate = user.BirthDate,
                 PersonalId = user.PersonalId
             };

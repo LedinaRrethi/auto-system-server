@@ -13,11 +13,7 @@ namespace DAL.Concrete
 {
     public class InspectionRequestRepository : BaseRepository<Auto_InspectionRequests>, IInspectionRequestRepository
     {
-        private readonly AutoSystemDbContext _context;
-        public InspectionRequestRepository(AutoSystemDbContext context) : base(context)
-        {
-            _context = context;
-        }
+        public InspectionRequestRepository(AutoSystemDbContext context) : base(context){}
 
         public async Task<int> CountInspectionsByDateAndDirectoryAsync(Guid directoryId, DateTime date)
         {
@@ -141,9 +137,6 @@ namespace DAL.Concrete
                 .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
                 .ToDictionaryAsync(g => g.Status, g => g.Count);
         }
-
-
-
 
     }
 }

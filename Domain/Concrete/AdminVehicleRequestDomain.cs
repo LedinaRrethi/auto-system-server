@@ -75,7 +75,7 @@ namespace Domain.Concrete
                 request.Status = dto.NewStatus;
                 request.Vehicle.ApprovalComment = dto.ApprovalComment;
                 SetAuditOnUpdate(request);
-                await _adminRequestRepo.UpdateAsync(request);
+                await _adminRequestRepo.UpdateVehicleAsync(request);
 
                 if (dto.NewStatus == VehicleStatus.Approved)
                 {
@@ -90,7 +90,7 @@ namespace Domain.Concrete
                             foreach (var fine in existingFines)
                             {
                                 fine.IDFK_Vehicle = vehicle.IDPK_Vehicle;
-                                await fineRepo.UpdateAsync(fine); 
+                                await fineRepo.UpdateFineAsync(fine); 
                             }
                             break;
 

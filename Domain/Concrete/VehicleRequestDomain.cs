@@ -4,12 +4,10 @@ using DAL.UoW;
 using Domain.Contracts;
 using DTO;
 using DTO.VehicleDTO;
-using DTO.VehicleRequest;
 using Entities.Models;
 using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 
 namespace Domain.Concrete

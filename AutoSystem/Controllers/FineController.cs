@@ -24,6 +24,10 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> AddFine([FromBody] FineCreateDTO dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User is not authenticated.");
+
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
             var success = await _domain.CreateFineAsync(dto, userId, ip);
@@ -37,20 +41,16 @@ namespace AutoSystem.Controllers
         public async Task<IActionResult> GetMyFines([FromQuery] FineFilterDTO filter)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User is not authenticated.");
+
             var result = await _domain.GetMyFinesAsync(userId, filter);
 
             result.Message = !result.Items.Any() ? "No fines found." : "Success";
             return Ok(result);
         }
-
-        //[Authorize(Roles = "Police")]
-        //[HttpGet("my-issued-fines")]
-        //public async Task<IActionResult> GetPoliceFines([FromQuery] FineFilterDTO filter)
-        //{
-        //    var policeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    var result = await _domain.GetFinesCreatedByPoliceAsync(policeId, filter);
-        //    return Ok(result);
-        //}
 
         [Authorize(Roles = "Police")]
         [HttpGet("all")]

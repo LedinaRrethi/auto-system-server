@@ -7,12 +7,8 @@ namespace DAL.Concrete
 {
     public class FineRepository : BaseRepository<Auto_Fines>, IFineRepository
     {
-        private readonly AutoSystemDbContext _context;
 
-        public FineRepository(AutoSystemDbContext context) : base(context)
-        {
-            _context = context;
-        }
+        public FineRepository(AutoSystemDbContext context) : base(context){ }
 
         public Task<Auto_Vehicles?> GetVehicleByPlateAsync(string plate) =>
             _context.Auto_Vehicles.FirstOrDefaultAsync(v => v.PlateNumber == plate && v.Invalidated == 0);
@@ -86,7 +82,7 @@ namespace DAL.Concrete
                 .ToListAsync();
         }
 
-        public async Task UpdateAsync(Auto_Fines fine)
+        public async Task UpdateFineAsync(Auto_Fines fine)
         {
             _context.Auto_Fines.Update(fine);
             await Task.CompletedTask;
@@ -104,8 +100,5 @@ namespace DAL.Concrete
                 .CountAsync();
         }
 
-
-
-        public Task SaveChangesAsync() => _context.SaveChangesAsync();
     }
 }

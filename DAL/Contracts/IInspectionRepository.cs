@@ -11,7 +11,5 @@ namespace DAL.Contracts
         Task<List<Auto_Vehicles>> GetVehiclesByUserIdAsync(string userId);
         Task<Auto_Inspections?> GetInspectionWithRequestAsync(Guid inspectionId);
 
-
-
     }
 }

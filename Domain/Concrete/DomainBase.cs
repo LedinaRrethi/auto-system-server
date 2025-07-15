@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
-using DAL.Contracts;
 using DAL.UoW;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Linq;
 using System.Security.Claims;
 
 namespace Domain.Concrete

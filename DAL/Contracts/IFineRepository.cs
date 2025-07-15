@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Contracts
 {
-    public interface IFineRepository
+    public interface IFineRepository : IRepository<Auto_Fines>
     {
         //polici vendos gjobe , dhe duhet te dije qe automjeti eshte regjistruar
         Task<Auto_Vehicles?> GetVehicleByPlateAsync(string plate);
@@ -38,21 +38,9 @@ namespace DAL.Contracts
 
         Task<List<Auto_Fines>> GetFinesByPlateWithoutVehicleAsync(string plateNumber);
 
-        Task UpdateAsync(Auto_Fines fine);
+        Task UpdateFineAsync(Auto_Fines fine);
 
         Task<int> CountFinesForUserAsync(string userId);
-
-        Task SaveChangesAsync();
-
-
-
-
-
-
-
-
-
-
 
     }
 

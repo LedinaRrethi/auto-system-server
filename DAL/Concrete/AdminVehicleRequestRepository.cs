@@ -9,11 +9,10 @@ namespace DAL.Repositories
 {
     public class AdminVehicleRequestRepository : BaseRepository<Auto_VehicleChangeRequests>, IAdminVehicleRequestRepository
     {
-        private readonly AutoSystemDbContext _context;
-
+    
         public AdminVehicleRequestRepository(AutoSystemDbContext context)  : base(context)
         {
-            _context = context;
+      
         }
 
         public async Task<List<Auto_VehicleChangeRequests>> GetAllRequestsAsync()
@@ -48,10 +47,10 @@ namespace DAL.Repositories
             
 
         }
-        public async Task UpdateAsync(Auto_VehicleChangeRequests request)
+        public async Task UpdateVehicleAsync(Auto_VehicleChangeRequests request)
         {
             _context.Auto_VehicleChangeRequests.Update(request);
-            await Task.CompletedTask; 
+            await Task.CompletedTask;
         }
 
         public async Task<Dictionary<string, int>> CountVehicleRequestStatusAsync()

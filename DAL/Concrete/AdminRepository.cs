@@ -25,7 +25,7 @@ namespace DAL.Repositories
             var query = from user in _context.Users
                         join userRole in _context.UserRoles on user.Id equals userRole.UserId
                         join role in _context.Roles on userRole.RoleId equals role.Id
-                        where role.Name.ToLower() != "admin"
+                        where (role.Name ?? "").ToLower() != "admin"
                         select new
                         {
                             user.Id,

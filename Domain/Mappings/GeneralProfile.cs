@@ -81,37 +81,6 @@ namespace Domain.Mappings
 
             #endregion
 
-            #region UpdateUserDTO -> Auto_Users  
-
-            CreateMap<UpdateUserDTO, Auto_Users>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-                .ForMember(dest => dest.ModifiedBy, opt => opt.MapFrom(src => src.ModifiedBy))
-                .ForMember(dest => dest.ModifiedIp, opt => opt.MapFrom(src => src.ModifiedIp))
-                .ForMember(dest => dest.ModifiedOn, opt => opt.MapFrom(_ => DateTime.UtcNow))
-                .ForMember(dest => dest.FirstName, opt => opt.Ignore())
-                .ForMember(dest => dest.FatherName, opt => opt.Ignore())
-                .ForMember(dest => dest.LastName, opt => opt.Ignore())
-                .ForMember(dest => dest.BirthDate, opt => opt.Ignore())
-                .ForMember(dest => dest.Email, opt => opt.Ignore())
-                .ForMember(dest => dest.UserName, opt => opt.Ignore())
-                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
-                .ForMember(dest => dest.IsSpecialist, opt => opt.Ignore())
-                .ForMember(dest => dest.IDFK_Directory, opt => opt.Ignore())
-                .ForMember(dest => dest.SpecialistNumber, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedIp, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedOn, opt => opt.Ignore())
-                .ForMember(dest => dest.PhoneNumberConfirmed, opt => opt.Ignore())
-                .ForMember(dest => dest.EmailConfirmed, opt => opt.Ignore())
-                .ForMember(dest => dest.NormalizedEmail, opt => opt.Ignore())
-                .ForMember(dest => dest.NormalizedUserName, opt => opt.Ignore())
-                .ForMember(dest => dest.AccessFailedCount, opt => opt.Ignore())
-                .ForMember(dest => dest.LockoutEnabled, opt => opt.Ignore())
-                .ForMember(dest => dest.TwoFactorEnabled, opt => opt.Ignore())
-                .ForMember(dest => dest.Directorate, opt => opt.Ignore());
-
-            #endregion
 
             #region LoginDTO <-> Auto_Users  
 
@@ -151,9 +120,6 @@ namespace Domain.Mappings
     .ForMember(dest => dest.IDFK_Vehicle, opt => opt.MapFrom(src => src.IDFK_Vehicle));
 
 
-            CreateMap<Auto_Fines, FineDTO>().ReverseMap();
-            CreateMap<Auto_FineRecipients, FineRecipientDTO>().ReverseMap();
-
             CreateMap<Auto_Fines, FineResponseDTO>()
      .ForMember(dest => dest.PoliceFullName,
          opt => opt.MapFrom(src => src.PoliceOfficer.FirstName + " " + src.PoliceOfficer.LastName))
@@ -175,11 +141,7 @@ namespace Domain.Mappings
 
             CreateMap<Auto_InspectionRequests, InspectionRequestCreateDTO>().ReverseMap();
 
-            CreateMap<Auto_Inspections, InspectionReviewDTO>().ReverseMap();
-
             CreateMap<Auto_InspectionDocs, InspectionDocumentDTO>().ReverseMap();
-
-            CreateMap<Auto_Inspections , InspectionDTO>().ReverseMap();
 
         }
     }

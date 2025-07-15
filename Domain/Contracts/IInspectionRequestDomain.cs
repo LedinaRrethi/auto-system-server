@@ -1,11 +1,6 @@
 ﻿using DTO;
 using DTO.InspectionDTO;
 using Helpers.Pagination;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Contracts
 {
@@ -18,9 +13,5 @@ namespace Domain.Contracts
         Task<Dictionary<string, int>> GetInspectionStatusCountAsync(Guid directoryId);
         Task<Dictionary<string, int>> GetInspectionRequestStatusForUserAsync(string userId);
 
-
-
     }
-
-
 }

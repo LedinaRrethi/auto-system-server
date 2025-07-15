@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace DTO.FineDTO
 {
     public class FineCreateDTO
@@ -19,7 +14,6 @@ namespace DTO.FineDTO
         public string? LastName { get; set; }
         public string? FatherName { get; set; }
         public string? PersonalId { get; set; }
-
         public DateTime? FineDate { get; set; } //nese nuk jepet , vendoset ne backend
     }
 

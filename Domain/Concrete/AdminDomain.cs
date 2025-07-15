@@ -6,8 +6,6 @@ using DTO;
 using DTO.UserDTO;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Domain.Concrete
 {
