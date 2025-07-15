@@ -9,17 +9,17 @@ namespace Entities.Models
         public AutoSystemDbContext(DbContextOptions<AutoSystemDbContext> options)
             : base(options) { }
 
-        public DbSet<Auto_Users> Auto_Users { get; set; }
-        public DbSet<Auto_Vehicles> Auto_Vehicles { get; set; }
-        public DbSet<Auto_VehicleChangeRequests> Auto_VehicleChangeRequests { get; set; }
-        public DbSet<Auto_FineRecipients> Auto_FineRecipients { get; set; }
-        public DbSet<Auto_Fines> Auto_Fines { get; set; }
-        public DbSet<Auto_Directorates> Auto_Directorates { get; set; }
-        public DbSet<Auto_InspectionRequests> Auto_InspectionRequests { get; set; }
-        public DbSet<Auto_Inspections> Auto_Inspections { get; set; }
-        public DbSet<Auto_InspectionDocs> Auto_InspectionDocs { get; set; }
-        public DbSet<Auto_Notifications> Auto_Notifications { get; set; }
-        public DbSet<Auto_RefreshTokens> Auto_RefreshTokens { get; set; }
+        public DbSet<Auto_Users> Auto_Users { get; set; } = null!;
+        public DbSet<Auto_Vehicles> Auto_Vehicles { get; set; } = null!;
+        public DbSet<Auto_VehicleChangeRequests> Auto_VehicleChangeRequests { get; set; } = null!;
+        public DbSet<Auto_FineRecipients> Auto_FineRecipients { get; set; } = null!;
+        public DbSet<Auto_Fines> Auto_Fines { get; set; } = null!;
+        public DbSet<Auto_Directorates> Auto_Directorates { get; set; } = null!;
+        public DbSet<Auto_InspectionRequests> Auto_InspectionRequests { get; set; } = null!;
+        public DbSet<Auto_Inspections> Auto_Inspections { get; set; } = null!;
+        public DbSet<Auto_InspectionDocs> Auto_InspectionDocs { get; set; } = null!;
+        public DbSet<Auto_Notifications> Auto_Notifications { get; set; } = null!;
+        public DbSet<Auto_RefreshTokens> Auto_RefreshTokens { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
