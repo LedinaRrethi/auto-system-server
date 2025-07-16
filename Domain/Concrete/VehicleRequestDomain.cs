@@ -41,13 +41,15 @@ namespace Domain.Concrete
                 vehicle.IDPK_Vehicle = vehicleId;
                 vehicle.IDFK_Owner = userId;
                 vehicle.Status = VehicleStatus.Pending;
+                vehicle.ChassisNumber = vehicle.ChassisNumber.ToUpperInvariant();
+                vehicle.PlateNumber = vehicle.PlateNumber.ToUpperInvariant();
                 vehicle.Invalidated = 0;
                 SetAuditOnCreate(vehicle);
 
                 await _vehicleRequestRepository.AddVehicleAsync(vehicle);
 
                 var request = new Auto_VehicleChangeRequests
-                {
+                { 
                     IDPK_ChangeRequest = Guid.NewGuid(),
                     IDFK_Vehicle = vehicleId,
                     IDFK_Requester = userId,
