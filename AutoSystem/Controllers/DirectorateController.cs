@@ -1,6 +1,5 @@
 ﻿using Domain.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoSystem.Controllers
@@ -28,7 +27,11 @@ namespace AutoSystem.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = "An error occurred while fetching data.", details = ex.Message });
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while fetching data.",
+                    details = ex.Message
+                });
             }
         }
 

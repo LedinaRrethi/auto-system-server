@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using Domain.Contracts;
-using DTO;
+﻿using Domain.Contracts;
 using DTO.FineDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

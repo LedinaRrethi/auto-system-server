@@ -41,93 +41,133 @@ namespace AutoSystem.Controllers
         [HttpGet("admin")]
         public async Task<IActionResult> GetAdminDashboard()
         {
-            var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User ID is required.");
+            try {
+                var userId = GetUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID is required.");
+                }
+
+                var userCounts = await _adminDomain.GetUserCountAsync();
+                var vehicleCounts = await _adminRequestDomain.GetVehicleRequestCountAsync();
+
+                var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+
+                return Ok(new
+                {
+                    totalUsers = userCounts,
+                    totalVehicleRequests = vehicleCounts,
+                    notifications = notificationCount
+
+                });
             }
-
-            var userCounts = await _adminDomain.GetUserCountAsync();
-            var vehicleCounts = await _adminRequestDomain.GetVehicleRequestCountAsync();
-
-            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
-
-            return Ok(new
+            catch(Exception ex)
             {
-                totalUsers = userCounts,
-                totalVehicleRequests = vehicleCounts,
-                notifications = notificationCount
-
-            });
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while loading admin dashboard.",
+                    details = ex.Message
+                });
+            }
         }
 
         [HttpGet("specialist")]
         public async Task<IActionResult> GetSpecialistDashboard()
         {
-            var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
+            try {
+                var userId = GetUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID is required.");
+                }
+
+                var specialist = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (specialist == null || specialist.IDFK_Directory == null)
+                {
+                    return BadRequest("Specialist or Directorate not found.");
+                }
+
+                var directoryId = specialist.IDFK_Directory.Value;
+
+                var inspectionCounts = await _inspectionRequestDomain.GetInspectionStatusCountAsync(directoryId);
+                var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+
+                return Ok(new
+                {
+                    inspections = inspectionCounts,
+                    notifications = notificationCount
+                });
+            }
+            catch (Exception ex)
             {
-                return Unauthorized("User ID is required.");
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while loading specialist dashboard.",
+                    details = ex.Message
+                });
             }
 
-            var specialist = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (specialist == null || specialist.IDFK_Directory == null)
-            {
-                return BadRequest("Specialist or Directorate not found.");
-            }
-
-            var directoryId = specialist.IDFK_Directory.Value;
-
-            var inspectionCounts = await _inspectionRequestDomain.GetInspectionStatusCountAsync(directoryId);
-            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
-
-            return Ok(new
-            {
-                inspections = inspectionCounts,
-                notifications = notificationCount
-            });
         }
 
         [HttpGet("police")]
         public async Task<IActionResult> GetPoliceDashboard()
         {
-            var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User ID is required.");
+            try {
+                var userId = GetUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("User ID is required.");
+                }
+
+                var fineCounts = await _fineDomain.GetFinesCountAsync(userId);
+                var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+                return Ok(new
+                {
+                    fines = fineCounts,
+                    notifications = notificationCount
+                });
             }
-           
-            var fineCounts = await _fineDomain.GetFinesCountAsync(userId);
-            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
-            return Ok(new
+            catch (Exception ex)
             {
-                fines = fineCounts,
-                notifications = notificationCount
-            });
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while loading police dashboard.",
+                    details = ex.Message
+                });
+            }
+
         }
 
         [HttpGet("user")]
         public async Task<IActionResult> GetUserDashboard()
         {
-            var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+            try {
+                var userId = GetUserId();
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized();
 
-            var finesCount = await _fineDomain.GetFinesCountForUserAsync(userId);
-            var vehicleRequestsCount = await _vehicleRequestDomain.GetVehicleRequestCountAsync(userId);
-            var inspectionsCount = await _inspectionRequestDomain.GetInspectionRequestStatusForUserAsync(userId);
-            var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
+                var finesCount = await _fineDomain.GetFinesCountForUserAsync(userId);
+                var vehicleRequestsCount = await _vehicleRequestDomain.GetVehicleRequestCountAsync(userId);
+                var inspectionsCount = await _inspectionRequestDomain.GetInspectionRequestStatusForUserAsync(userId);
+                var notificationCount = await _notificationDomain.CountUnseenNotificationsAsync(userId);
 
-            return Ok(new
+                return Ok(new
+                {
+                    myFinesCount = finesCount,
+                    myVehicleRequestsCount = vehicleRequestsCount,
+                    myInspectionRequestCount = inspectionsCount,
+                    notifications = notificationCount
+
+                });
+            }
+            catch (Exception ex)
             {
-                myFinesCount = finesCount,
-                myVehicleRequestsCount = vehicleRequestsCount,
-                myInspectionRequestCount = inspectionsCount,
-                notifications = notificationCount
-
-            });
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while loading user dashboard.",
+                    details = ex.Message
+                });
+            }
         }
-
-
     }
 }

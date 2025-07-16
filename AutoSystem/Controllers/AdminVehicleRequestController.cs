@@ -21,12 +21,26 @@ namespace API.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAll([FromQuery] PaginationDTO dto)
         {
-            var result = await _domain.GetAllRequestsAsync(dto);
+            try {
 
-            result.Message = !result.Items.Any() ? "No vehicles to display." : "Success";
+                var result = await _domain.GetAllRequestsAsync(dto);
 
-            return Ok(result);  
-        }
+                result.Message = result.Items.Count == 0 ? "No vehicles to display." : "Success";
+
+                return Ok(result);
+
+            } 
+            catch(Exception ex){
+
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while fetching vehicles.",
+                    details = ex.Message
+                });
+
+            }
+            
+            }
 
 
         [HttpPost("update-status/{requestId}")]
@@ -42,7 +56,13 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while updateing status of vehicles.",
+                    details = ex.Message
+                });
+
             }
         }
 

@@ -38,15 +38,6 @@ namespace AutoSystem.Controllers
             }
         }
 
-
-        //[Authorize(Roles = "Individ")]
-        //[HttpGet("my-requests")]
-        //public async Task<IActionResult> GetMyRequests()
-        //{
-        //    var result = await _domain.GetRequestsByCurrentUserAsync();
-        //    return Ok(result);
-        //}
-
         [Authorize(Roles = "Individ")]
         [HttpGet("my-requests-paged")]
         public async Task<IActionResult> GetPagedRequests([FromQuery] PaginationDTO dto)

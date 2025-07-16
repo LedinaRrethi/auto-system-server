@@ -21,7 +21,14 @@ namespace AutoSystem.Controllers
             _domain = domain;
         }
 
-        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        private string GetUserId()
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(id))
+                throw new Exception("User ID not found in claims.");
+            return id;
+        }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> RegisterVehicle([FromBody] VehicleRegisterDTO dto)
