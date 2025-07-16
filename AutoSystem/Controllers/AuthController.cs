@@ -113,7 +113,7 @@ namespace AutoSystem.Controllers
                 {
                     HttpOnly = true,
                     Secure = false, // true në prodhim
-                    SameSite = SameSiteMode.Lax,
+                        SameSite = SameSiteMode.None,
                     Expires = DateTime.UtcNow.AddDays(-1),
                     Path = "/"
                 });
