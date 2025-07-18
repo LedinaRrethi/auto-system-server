@@ -43,6 +43,11 @@ namespace Domain.Concrete
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync();
 
+            if (dto.PersonalId?.Trim().ToLower() == (await _userManager.FindByIdAsync(policeId))?.PersonalId?.Trim().ToLower())
+            {
+                throw new InvalidOperationException("You cannot issue a fine to yourself.");
+            }
+
             try
             {
                 // kerkoj automjetin ose pronarin nese ekziston
@@ -118,8 +123,10 @@ namespace Domain.Concrete
 
                 // dergoj njoftimin
                 var notificationUserId = owner?.Id ?? recipient.IDFK_User;
+                //var notificationUserId = (owner?.Id != policeId) ? owner?.Id : (matchedUser?.Id != policeId ? matchedUser?.Id : null);
 
-                if (!string.IsNullOrEmpty(notificationUserId))
+
+                if (!string.IsNullOrEmpty(notificationUserId) && notificationUserId != policeId)
                 {
                     var notification = new Auto_Notifications
                     {
