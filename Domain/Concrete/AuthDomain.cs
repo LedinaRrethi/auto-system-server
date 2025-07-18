@@ -123,8 +123,12 @@ public class AuthDomain : DomainBase, IAuthDomain
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
 
-        if (user == null || !(await _userManager.CheckPasswordAsync(user, dto.Password)))
-            throw new Exception("Invalid email or password.");
+        if (user == null)
+            throw new Exception("Account with this email address does not exist.");
+
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
+        if (!isPasswordValid)
+            throw new Exception("The password you entered is incorrect. Please try again.");
 
 
         if (user.Status == UserStatus.Pending)

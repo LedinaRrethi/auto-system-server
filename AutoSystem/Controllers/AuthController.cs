@@ -52,14 +52,16 @@ namespace AutoSystem.Controllers
             catch (Exception ex)
             {
                 var msg = ex.Message.ToLowerInvariant();
+
                 if (msg.Contains("pending") || msg.Contains("rejected"))
                     return StatusCode(StatusCodes.Status403Forbidden, new { error = ex.Message });
 
-                if (msg.Contains("incorrect") || msg.Contains("invalid"))
+                if (msg.Contains("incorrect") || msg.Contains("invalid") || msg.Contains("does not exist"))
                     return Unauthorized(new { error = ex.Message });
 
                 return BadRequest(new { error = "Login failed." });
             }
+
         }
 
         [HttpPost("refresh-token")]
