@@ -17,22 +17,15 @@ namespace DAL.Repositories
 
         public async Task<List<Auto_VehicleChangeRequests>> GetAllRequestsAsync()
         {
-            var latestPerVehicle = await _context.Auto_VehicleChangeRequests
-                .Where(r => r.Status == VehicleStatus.Pending )
+            var allRequests = await _context.Auto_VehicleChangeRequests
                 .Include(r => r.Vehicle)
                 .Include(r => r.Requester)
-                .GroupBy(r => r.IDFK_Vehicle)
-                .Select(group =>
-                    group.OrderByDescending(r => r.Status == VehicleStatus.Pending)
-                         .ThenByDescending(r => r.CreatedOn)
-                         .First()
-                )
+                .OrderBy(r => r.Status)
+                .ThenByDescending(r => r.CreatedOn)
                 .ToListAsync();
 
-            return latestPerVehicle;
+            return allRequests;
         }
-
-
 
         public async Task<Auto_VehicleChangeRequests?> GetRequestByIdAsync(Guid requestId)
         {

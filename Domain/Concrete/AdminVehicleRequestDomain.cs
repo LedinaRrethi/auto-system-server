@@ -45,8 +45,8 @@ namespace Domain.Concrete
                 mapped,
                 dto.Page,
                 dto.PageSize,
-                dto.SortField ?? nameof(VehicleRequestListDTO.CreatedOn),
-                dto.SortOrder ?? "desc",
+                null,
+                null,
                 string.IsNullOrWhiteSpace(dto.Search)
                     ? null
                     : (Func<VehicleRequestListDTO, bool>)(r =>

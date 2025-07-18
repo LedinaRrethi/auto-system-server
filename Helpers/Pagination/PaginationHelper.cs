@@ -21,7 +21,7 @@ namespace Helpers.Pagination
             int page,
             int pageSize,
             string? sortField = null,
-            string sortOrder = "asc",
+            string? sortOrder = null,
             Func<T, bool>? filterFunc = null)
         {
             // Filter
