@@ -268,9 +268,11 @@ namespace Domain.Concrete
             );
         }
 
-        public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter)
+        public async Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(string userId, FineFilterDTO filter)
         {
             var query = _repo.QueryAllFines();
+
+            query = query.Where(f => f.CreatedBy == userId);
 
             if (filter.FromDate.HasValue)
             {

@@ -54,7 +54,13 @@ namespace AutoSystem.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAllFines([FromQuery] FineFilterDTO filter)
         {
-            var result = await _domain.GetAllFinesAsync(filter);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User is not authenticated.");
+
+            var result = await _domain.GetAllFinesAsync(userId , filter);
             result.Message = !result.Items.Any() ? "There are no fines." : "Success";
             return Ok(result);
         }

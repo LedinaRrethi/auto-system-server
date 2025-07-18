@@ -10,7 +10,7 @@ namespace Domain.Contracts
         Task<bool> CreateFineAsync(FineCreateDTO dto, string policeId, string ip);
         Task<PaginationResult<FineResponseDTO>> GetMyFinesAsync(string userId, FineFilterDTO filter);
         Task<PaginationResult<FineResponseDTO>> GetFinesCreatedByPoliceAsync(string policeId, FineFilterDTO filter);
-        Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(FineFilterDTO filter);
+        Task<PaginationResult<FineResponseDTO>> GetAllFinesAsync(string userId , FineFilterDTO filter);
         Task<object?> GetRecipientDetailsByPlateAsync(string plate);
         Task<int> GetFinesCountAsync(string policeId);
         Task<int> GetFinesCountForUserAsync(string userId);
