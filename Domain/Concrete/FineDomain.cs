@@ -284,10 +284,17 @@ namespace Domain.Concrete
                 query = query.Where(f => f.FineDate <= toDateUtc);
             }
 
+            //if (!string.IsNullOrWhiteSpace(filter.PlateNumber))
+            //{
+            //    query = query.Where(f => f.Vehicle != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber));
+            //}
+
             if (!string.IsNullOrWhiteSpace(filter.PlateNumber))
             {
-                query = query.Where(f => f.Vehicle != null && f.Vehicle.PlateNumber.Contains(filter.PlateNumber));
+                var plateLower = filter.PlateNumber.ToLower();
+                query = query.Where(f => f.PlateNumber != null && f.PlateNumber.ToLower().Contains(plateLower));
             }
+
 
             if (!string.IsNullOrWhiteSpace(filter.Search))
             {

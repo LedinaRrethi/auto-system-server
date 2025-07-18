@@ -64,11 +64,9 @@ namespace DAL.Concrete
         {
             return _context.Auto_Fines
                 .Include(f => f.FineRecipient)
-                .Include(f => f.Vehicle)
                 .Include(f => f.PoliceOfficer)
                 .Where(f => f.Invalidated == 0);
         }
-
 
         public void UpdateFineRecipient(Auto_FineRecipients recipient)
         {

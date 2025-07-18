@@ -4,7 +4,6 @@ using DTO.UserDTO;
 using Entities.Models;
 using Helpers.Enumerations;
 using Helpers.Pagination;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -12,12 +11,10 @@ namespace DAL.Repositories
     public class AdminRepository : IAdminRepository
     {
         private readonly AutoSystemDbContext _context;
-        private readonly UserManager<Auto_Users> _userManager;
-
-        public AdminRepository(AutoSystemDbContext context, UserManager<Auto_Users> userManager)
+        
+        public AdminRepository(AutoSystemDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
@@ -49,8 +46,6 @@ namespace DAL.Repositories
                     u.Email.ToLower().Contains(search) ||
                     u.RoleName.ToLower().Contains(search) ||
                     ((int)u.Status).ToString().Contains(search));
-
-
             }
 
             var totalCount = await query.CountAsync();
@@ -95,11 +90,6 @@ namespace DAL.Repositories
                 Message = users.Any() ? "Success" : "No users found."
             };
         }
-
-
-
-
-
 
         public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
         {
