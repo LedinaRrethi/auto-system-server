@@ -129,12 +129,14 @@ namespace Domain.Concrete
                 if (!string.IsNullOrEmpty(notificationUserId) && notificationUserId != policeId)
                 {
                     var recipientUser = await _userManager.Users
-                        .Where(u => u.PersonalId != null && u.PersonalId.Trim().ToLower() == recipient.PersonalId.Trim().ToLower())
+                        .Where(u =>
+                            u.Id == notificationUserId &&
+                            u.Invalidated == 0 &&
+                            u.Status == UserStatus.Approved)
                         .FirstOrDefaultAsync();
 
                     if (recipientUser != null && await _userManager.IsInRoleAsync(recipientUser, "Individ"))
                     {
-
                         var notification = new Auto_Notifications
                         {
                             IDPK_Notification = Guid.NewGuid(),
@@ -153,6 +155,7 @@ namespace Domain.Concrete
                         await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notification, notificationUserId);
                     }
                 }
+
 
                 await transaction.CommitAsync();
                 return true;
