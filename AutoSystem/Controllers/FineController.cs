@@ -27,11 +27,29 @@ namespace AutoSystem.Controllers
                 return Unauthorized("User is not authenticated.");
 
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            try
+            {
+                var success = await _domain.CreateFineAsync(dto, userId, ip);
+                if (!success)
+                    return BadRequest("An error occurred while registering the fine.");
 
-            var success = await _domain.CreateFineAsync(dto, userId, ip);
-            if (success)
-                return Ok("Fine successfully issued.");
-            return BadRequest("An error occurred while registering the fine.");
+                return Ok(new { message = "Fine successfully issued." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new
+                {
+                    error = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    error = "An error occurred while creating the fine.",
+                    details = ex.Message
+                });
+            }
         }
 
         [Authorize(Roles = "Individ")]
