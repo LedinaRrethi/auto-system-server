@@ -19,7 +19,7 @@ namespace DAL.Repositories
 
         public async Task<PaginationResult<UserDTO>> GetAllUsersForApprovalAsync(PaginationDTO dto)
         {
-            var query = from user in _context.Users
+            var query = from user in _context.Users.AsNoTracking()
                         join userRole in _context.UserRoles on user.Id equals userRole.UserId
                         join role in _context.Roles on userRole.RoleId equals role.Id
                         where (role.Name ?? "").ToLower() != "admin"
@@ -38,14 +38,24 @@ namespace DAL.Repositories
                             RoleName = role.Name
                         };
 
+            int? statusInt = null;
             if (!string.IsNullOrWhiteSpace(dto.Search))
             {
                 var search = dto.Search.ToLower();
+
+                statusInt = Enum.GetValues(typeof(UserStatus))
+                                .Cast<UserStatus>()
+                                .FirstOrDefault(s => s.ToString().ToLower().Contains(search)) switch
+                {
+                    UserStatus s => (int)s
+                };
+
                 query = query.Where(u =>
                     (u.FirstName + " " + u.FatherName + " " + u.LastName).ToLower().Contains(search) ||
                     u.Email.ToLower().Contains(search) ||
                     u.RoleName.ToLower().Contains(search) ||
-                    ((int)u.Status).ToString().Contains(search));
+                    (statusInt != null && (int)u.Status == statusInt)
+                );
             }
 
             var totalCount = await query.CountAsync();
@@ -75,7 +85,7 @@ namespace DAL.Repositories
                 Email = u.Email!,
                 BirthDate = u.BirthDate,
                 Role = u.RoleName,
-                Status = u.Status.ToString(), 
+                Status = u.Status.ToString(),
                 CreatedOn = u.CreatedOn,
                 SpecialistNumber = u.SpecialistNumber,
                 DirectorateName = u.DirectorateName
