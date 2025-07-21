@@ -38,24 +38,29 @@ namespace DAL.Repositories
                             RoleName = role.Name
                         };
 
-            int? statusInt = null;
             if (!string.IsNullOrWhiteSpace(dto.Search))
             {
                 var search = dto.Search.ToLower();
 
-                statusInt = Enum.GetValues(typeof(UserStatus))
-                                .Cast<UserStatus>()
-                                .FirstOrDefault(s => s.ToString().ToLower().Contains(search)) switch
-                {
-                    UserStatus s => (int)s
-                };
+                var statusMatch = Enum.GetValues(typeof(UserStatus))
+                    .Cast<UserStatus>()
+                    .FirstOrDefault(s => s.ToString().ToLower().Contains(search));
 
-                query = query.Where(u =>
-                    (u.FirstName + " " + u.FatherName + " " + u.LastName).ToLower().Contains(search) ||
-                    u.Email.ToLower().Contains(search) ||
-                    u.RoleName.ToLower().Contains(search) ||
-                    (statusInt != null && (int)u.Status == statusInt)
-                );
+                bool isStatusSearch = statusMatch.ToString().ToLower().Contains(search);
+
+                if (isStatusSearch)
+                {
+                    int statusValue = (int)statusMatch;
+                    query = query.Where(u => (int)u.Status == statusValue);
+                }
+                else
+                {
+                    query = query.Where(u =>
+                        (u.FirstName + " " + u.FatherName + " " + u.LastName).ToLower().Contains(search) ||
+                        u.Email.ToLower().Contains(search) ||
+                        u.RoleName.ToLower().Contains(search)
+                    );
+                }
             }
 
             var totalCount = await query.CountAsync();
@@ -100,6 +105,7 @@ namespace DAL.Repositories
                 Message = users.Any() ? "Success" : "No users found."
             };
         }
+
 
         public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
         {
