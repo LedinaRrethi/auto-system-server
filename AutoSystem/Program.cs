@@ -123,7 +123,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin", b =>
         b.AllowAnyMethod()
          .AllowAnyHeader()
-         .WithOrigins("http://localhost:5173")
+         .WithOrigins("http://localhost:5173" , "http://frontend")
          .AllowCredentials());
 });
 
@@ -135,6 +135,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
 
 app.UseCors("AllowSpecificOrigin");
 
@@ -150,7 +152,7 @@ app.MapHub<NotificationHub>("/Notify", options =>
 }
 );
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.MapControllers();
 
