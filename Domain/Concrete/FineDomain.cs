@@ -128,22 +128,30 @@ namespace Domain.Concrete
 
                 if (!string.IsNullOrEmpty(notificationUserId) && notificationUserId != policeId)
                 {
-                    var notification = new Auto_Notifications
+                    var recipientUser = await _userManager.Users
+                        .Where(u => u.PersonalId != null && u.PersonalId.Trim().ToLower() == recipient.PersonalId.Trim().ToLower())
+                        .FirstOrDefaultAsync();
+
+                    if (recipientUser != null && await _userManager.IsInRoleAsync(recipientUser, "Individ"))
                     {
-                        IDPK_Notification = Guid.NewGuid(),
-                        IDFK_Receiver = notificationUserId,
-                        Title = "Fine",
-                        Message = $"You have received a fine for the vehicle with plate: {dto.PlateNumber}.",
-                        Type = NotificationType.FineIssued,
-                        CreatedBy = policeId,
-                        CreatedOn = DateTime.UtcNow,
-                        CreatedIp = ip
-                    };
 
-                    await _notificationRepository.AddNotificationAsync(notification);
-                    await _repo.SaveChangesAsync();
+                        var notification = new Auto_Notifications
+                        {
+                            IDPK_Notification = Guid.NewGuid(),
+                            IDFK_Receiver = notificationUserId,
+                            Title = "Fine",
+                            Message = $"You have received a fine for the vehicle with plate: {dto.PlateNumber}.",
+                            Type = NotificationType.FineIssued,
+                            CreatedBy = policeId,
+                            CreatedOn = DateTime.UtcNow,
+                            CreatedIp = ip
+                        };
 
-                    await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notification, notificationUserId);
+                        await _notificationRepository.AddNotificationAsync(notification);
+                        await _repo.SaveChangesAsync();
+
+                        await NotificationConnections.SendNotificationToUserAsync(_notificationHubContext, notification, notificationUserId);
+                    }
                 }
 
                 await transaction.CommitAsync();
