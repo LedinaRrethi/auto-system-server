@@ -63,7 +63,7 @@ namespace DAL.Repositories
                 }
             }
 
-            var totalCount = await query.CountAsync();
+            //var totalCount = await query.CountAsync();
 
             if (!string.IsNullOrWhiteSpace(dto.SortField))
             {
@@ -78,8 +78,11 @@ namespace DAL.Repositories
 
             var usersRaw = await query
                 .Skip((dto.Page - 1) * dto.PageSize)
-                .Take(dto.PageSize)
+                .Take(dto.PageSize + 1)
                 .ToListAsync();
+
+            var hasNextPage = usersRaw.Count > dto.PageSize;
+            var pageUsers = usersRaw.Take(dto.PageSize).ToList();
 
             var users = usersRaw.Select(u => new UserDTO
             {
@@ -101,7 +104,7 @@ namespace DAL.Repositories
                 Items = users,
                 Page = dto.Page,
                 PageSize = dto.PageSize,
-                HasNextPage = dto.Page * dto.PageSize < totalCount,
+                HasNextPage = hasNextPage,
                 Message = users.Any() ? "Success" : "No users found."
             };
         }

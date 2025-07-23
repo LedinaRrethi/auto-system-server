@@ -69,6 +69,7 @@ namespace AutoSystem.Controllers
         {
             try
             {
+                //leximi i refresh otken nga cookie
                 var refreshToken = Request.Cookies["refreshToken"];
 
                 if (string.IsNullOrEmpty(refreshToken))
@@ -81,6 +82,7 @@ namespace AutoSystem.Controllers
                 var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 var result = await _auth.RefreshTokenAsync(refreshToken, ip);
 
+                //vendos refresh otken e ri ne cookie
                 SetRefreshTokenCookie(result.RefreshToken, result.ExpiresAt);
 
                 return Ok(new
@@ -115,7 +117,7 @@ namespace AutoSystem.Controllers
                 {
                     HttpOnly = true,
                     Secure = false, // true në prodhim
-                        SameSite = SameSiteMode.None,
+                    SameSite = SameSiteMode.None,
                     Expires = DateTime.UtcNow.AddDays(-1),
                     Path = "/"
                 });
