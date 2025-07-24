@@ -83,6 +83,7 @@ namespace Domain.Concrete
                 inspection.ModifiedBy = userId;
                 inspection.ModifiedOn = DateTime.UtcNow;
                 inspection.ModifiedIp = ip;
+                inspection.IDFK_Specialist = userId;
 
                 // Update Request
                 inspection.Request.Status = dto.IsPassed ? InspectionStatus.Approved : InspectionStatus.Rejected;
