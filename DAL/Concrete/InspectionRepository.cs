@@ -28,7 +28,8 @@ namespace DAL.Concrete
                 .Include(i => i.Request)
                     .ThenInclude(r => r.Vehicle)
                 .Include(i => i.InspectionDocs)
-                .Where(i => i.Request.IDFK_Directory == specialistDirectoryId && i.Invalidated == 0 && i.Request.Vehicle.Invalidated==0 && i.Request.Status ==InspectionStatus.Pending)
+                .Where(i => i.Request.IDFK_Directory == specialistDirectoryId && i.Invalidated == 0 && i.Request.Vehicle.Invalidated == 0)
+                .OrderByDescending(i => i.Request.Status == InspectionStatus.Pending)
                 .ToListAsync();
 
             var projected = inspections.Select(i => new InspectionRequestListDTO
