@@ -164,12 +164,15 @@ namespace Domain.Concrete
 
             var mapped = myVehicles.Select(vehicle =>
             {
-               
                 var latestRequest = vehicle.VehicleChangeRequests?
                     .OrderByDescending(r => r.CreatedOn)
                     .FirstOrDefault();
 
                 var statusToShow = latestRequest != null ? latestRequest.Status : vehicle.Status;
+
+                var commentToShow = latestRequest != null ? latestRequest.AdminComment : vehicle.ApprovalComment;
+
+
 
                 return new VehicleDTO
                 {
@@ -181,7 +184,7 @@ namespace Domain.Concrete
                     ChassisNumber = vehicle.ChassisNumber,
                     Status = statusToShow,
                     CreatedOn = vehicle.CreatedOn,
-                    ApprovalComment = vehicle.ApprovalComment
+                    ApprovalComment = commentToShow
                 };
             });
 

@@ -73,9 +73,16 @@ namespace Domain.Concrete
                     return false;
 
                 request.Status = dto.NewStatus;
-                request.Vehicle.ApprovalComment = dto.ApprovalComment;
+                request.AdminComment = dto.ApprovalComment; 
+
+                if (request.RequestType == ChangeRequestType.Register && request.Vehicle != null)
+                {
+                    request.Vehicle.ApprovalComment = dto.ApprovalComment;
+                }
+
                 SetAuditOnUpdate(request);
                 await _adminRequestRepo.UpdateVehicleAsync(request);
+
 
                 if (dto.NewStatus == VehicleStatus.Approved)
                 {

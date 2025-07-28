@@ -109,23 +109,18 @@ namespace DAL.Repositories
             };
         }
 
-
-        public async Task<bool> UpdateUserStatusAsync(string userId, string newStatus)
+        public async Task<Auto_Users?> GetUserByIdAsync(string userId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-                return false;
-
-            if (!Enum.TryParse(typeof(UserStatus), newStatus, true, out var statusEnum))
-                return false;
-
-            user.Status = (UserStatus)statusEnum!;
-            user.ModifiedOn = DateTime.UtcNow;
-
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-            return true;
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+
+
+        public void UpdateUser(Auto_Users user)
+        {
+            _context.Users.Update(user);
+        }
+
 
         public async Task<Dictionary<string, int>> CountUsersByStatusAsync()
         {
