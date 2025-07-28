@@ -53,6 +53,11 @@ namespace DAL.Concrete
                 .AnyAsync(r => r.IDFK_Vehicle == vehicleId && r.Status == VehicleStatus.Pending);
         }
 
+        public async Task<bool> HasFines(Guid vehicleId)
+        {
+            return await _context.Auto_Fines.AnyAsync(f => f.IDFK_Vehicle == vehicleId && f.Invalidated == 0);
+        }
+
         public async Task<bool> PlateNumberExistsAsync(string plateNumber)
         {
             return await _context.Auto_Vehicles

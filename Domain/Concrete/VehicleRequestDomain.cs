@@ -8,6 +8,8 @@ using Entities.Models;
 using Helpers.Enumerations;
 using Helpers.Pagination;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace Domain.Concrete
@@ -32,8 +34,7 @@ namespace Domain.Concrete
 
             if (await _vehicleRequestRepository.ChassisNumberExistsAsync(dto.ChassisNumber))
                 throw new Exception("This chassis number is already registered.");
-
-
+  
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -122,6 +123,12 @@ namespace Domain.Concrete
             var hasPending = await _vehicleRequestRepository.HasPendingRequestForVehicleAsync(vehicleId);
             if (hasPending)
                 throw new Exception("This vehicle already has a pending request.");
+
+
+            if (await _vehicleRequestRepository.HasFines(vehicleId))
+                throw new Exception("This vehicle has fines to pay , you can't delete it");
+
+
 
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try

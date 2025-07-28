@@ -9,6 +9,8 @@ namespace DAL.Contracts
         Task<List<Auto_Vehicles>> GetRequestsByUserAsync(string userId);
         Task<Auto_Vehicles?> GetVehicleByIdAsync(Guid vehicleId);
         Task<bool> HasPendingRequestForVehicleAsync(Guid vehicleId);
+
+        Task<bool> HasFines(Guid vehicleId);
         Task AddVehicleAsync(Auto_Vehicles vehicle);
         Task AddRequestAsync(Auto_VehicleChangeRequests request);
         Task<bool> PlateNumberExistsAsync(string plateNumber);
